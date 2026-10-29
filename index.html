@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Клинические рекомендации</title>
+  <meta name="description" content="Поиск и структурированный каталог клинических рекомендаций Минздрава России.">
+  <style>
+    :root {
+      --blue: #1769aa;
+      --dark: #17324d;
+      --bg: #f4f7fb;
+      --border: #dce5ef;
+      --muted: #63758a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--dark);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 22px 6%;
+    }
+    .brand { font-size: 14px; color: var(--blue); font-weight: 700; }
+    h1 { font-size: clamp(27px, 4vw, 40px); margin: 8px 0; }
+    .subtitle { color: var(--muted); max-width: 720px; }
+    main { max-width: 1100px; margin: 30px auto; padding: 0 18px; }
+    .search-panel, .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .search-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    input, select, button {
+      font: inherit;
+      border-radius: 9px;
+      padding: 12px 14px;
+    }
+    input, select {
+      border: 1px solid #bdcddd;
+      background: white;
+      min-width: 0;
+    }
+    input { flex: 1; width: 250px; }
+    select { min-width: 180px; }
+    button {
+      background: var(--blue);
+      color: white;
+      border: 0;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(.94); }
+    .notice {
+      background: #eef5fc;
+      border-left: 4px solid var(--blue);
+      border-radius: 6px;
+      padding: 14px 16px;
+      color: #34516d;
+      margin: 18px 0;
+    }
+    .section-title { margin-top: 30px; }
+    .empty {
+      text-align: center;
+      padding: 34px 18px;
+      color: var(--muted);
+    }
+    .empty strong { display: block; color: var(--dark); margin-bottom: 8px; }
+    .source-link { color: var(--blue); }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 25px 18px 40px;
+    }
+    @media (max-width: 600px) {
+      .search-row { flex-direction: column; }
+      input, select, button { width: 100%; }
+      .search-panel, .card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">МЕДИЦИНСКАЯ СПРАВОЧНАЯ СИСТЕМА</div>
+    <h1>Клинические рекомендации</h1>
+    <div class="subtitle">
+      Поиск документов и удобная навигация по основным разделам
+      клинических рекомендаций Минздрава России.
+    </div>
+  </header>
+
+  <main>
+    <section class="search-panel">
+      <h2>Поиск рекомендаций</h2>
+      <p>Введите название заболевания, код МКБ-10 или ключевое слово.</p>
+      <div class="search-row">
+        <input id="search" type="search"
+          placeholder="Например, название или код МКБ-10"
+          aria-label="Поиск по клиническим рекомендациям">
+        <select id="age" aria-label="Возрастная категория">
+          <option value="">Все возрастные категории</option>
+          <option value="Взрослые">Взрослые</option>
+          <option value="Дети">Дети</option>
+        </select>
+        <button id="searchButton">Найти</button>
+      </div>
+    </section>
+
+    <div class="notice">
+      <strong>Важно.</strong> Официальные документы размещены на сайте
+      <a class="source-link" href="https://cr.minzdrav.gov.ru/clin-rec"
+        target="_blank" rel="noopener noreferrer">Рубрикатора клинических рекомендаций</a>.
+      Перед применением необходимо сверять актуальность и статус документа
+      с официальным источником.
+    </div>
+
+    <h2 class="section-title">Каталог рекомендаций</h2>
+    <section class="card" id="results" aria-live="polite">
+      <div class="empty">
+        <strong>Каталог пока не подключён</strong>
+        Структура сайта готова. Следующий этап — загрузить перечень
+        рекомендаций из официального источника и подключить поиск.
+      </div>
+    </section>
+
+    <h2 class="section-title">Структура документа</h2>
+    <section class="card">
+      <ol>
+        <li>Заголовок</li>
+        <li>Определение</li>
+        <li>Кодирование по МКБ-10</li>
+        <li>
+          Диагностика
+          <ul>
+            <li>Лабораторная диагностика</li>
+            <li>Инструментальная диагностика</li>
+            <li>Иная диагностика</li>
+          </ul>
+        </li>
+        <li>Лечение</li>
+      </ol>
+      <p class="subtitle">
+        Для каждого документа также планируется отображать дату публикации,
+        статус актуальности и ссылку на официальный источник.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Справочный каталог. Официальный источник медицинских документов —
+    Минздрав России.
+  </footer>
+</body>
+</html>

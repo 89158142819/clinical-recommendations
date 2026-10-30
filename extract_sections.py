@@ -1,4 +1,5 @@
 
+
 import json
 import re
 from pathlib import Path
@@ -9,11 +10,10 @@ OUTPUT = Path("output/749_2_sections.json")
 data = json.loads(INPUT.read_text(encoding="utf-8"))
 text = data["full_text"]
 
-# Убираем переносы строк внутри заголовков,
-# сохраняя границы страниц для дальнейшей проверки.
+# Убираем лишние пробелы и переносы строк
 text = re.sub(r"\s+", " ", text)
 
-# Ищем начало основного содержания, а не оглавление.
+# Находим начало основного содержания
 markers = list(re.finditer(
     r"1\.\s*Краткая информация по заболеванию",
     text,
@@ -25,11 +25,15 @@ if not markers:
         "Не найдено начало основного содержания документа."
     )
 
-content_start = markers[-1].start()
-body = text[content_start:]
+body = text[markers[-1].start():]
+
 
 def extract(start_pattern, end_pattern):
-    start = re.search(start_pattern, body, re.IGNORECASE)
+    start = re.search(
+        start_pattern,
+        body,
+        re.IGNORECASE
+    )
 
     if not start:
         return {
@@ -54,6 +58,7 @@ def extract(start_pattern, end_pattern):
         "text": section_text.strip(),
         "status": "extracted"
     }
+
 
 sections = {
     "definition": extract(
@@ -92,6 +97,7 @@ sections = {
     )
 }
 
+
 result = {
     "id": data["id"],
     "title": data["title"],
@@ -99,19 +105,30 @@ result = {
     "sections": sections
 }
 
+
 OUTPUT.parent.mkdir(exist_ok=True)
 
 OUTPUT.write_text(
-    json.dumps(result, ensure_ascii=False, indent=2),
+    json.dumps(
+        result,
+        ensure_ascii=False,
+        indent=2
+    ),
     encoding="utf-8"
 )
+
 
 print("Обработка завершена.")
 print("Результат:", OUTPUT)
 
 for name, section in sections.items():
-    print(
-        name,
-        "| статус:", section["status"],
-        "| символов:", len(section["text"])
-    )
+    print("\n" + "=" * 60)
+    print(name)
+    print("Статус:", section["status"])
+    print("Символов:", len(section["text"]))
+
+    print("\nНАЧАЛО РАЗДЕЛА:")
+    print(section["text"][:700])
+
+    print("\nКОНЕЦ РАЗДЕЛА:")
+    print(section["text"][-300:])

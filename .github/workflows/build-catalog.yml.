@@ -1,0 +1,52 @@
+
+name: Формирование каталога клинических рекомендаций
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить библиотеки
+        run: pip install -r requirements.txt
+
+      - name: Сформировать каталог из Excel
+        run: python build_catalog.py
+
+      - name: Проверить результат
+        run: |
+          python -c "import json; d=json.load(open('catalog.json', encoding='utf-8')); assert d['total'] > 0; assert d['total'] == len(d['recommendations']); print('Всего рекомендаций:', d['total']); print('Первая запись:', d['recommendations'][0]['title'])"
+
+      - name: Сохранить каталог в GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add catalog.json
+
+          if git diff --cached --quiet; then
+            echo "Изменений в каталоге нет."
+          else
+            git commit -m "Обновление каталога клинических рекомендаций"
+            git push
+          fi
+
+      - name: Сохранить результат сборки
+        uses: actions/upload-artifact@v4
+        with:
+          name: clinical-recommendations-catalog
+          path: catalog.json
+          if-no-files-found: error

@@ -15,8 +15,6 @@ OUTPUT_FILE = Path(f"output/{DOCUMENT_ID}_sections_v2.json")
 QUALITY_FILE = Path(f"output/{DOCUMENT_ID}_quality_report_v2.json")
 
 
-# Возможные названия разделов
-
 HEADING_ALIASES = {
     "definition": [
         "определение заболевания или состояния",
@@ -55,21 +53,38 @@ HEADING_ALIASES = {
 }
 
 
-# Нумерованные заголовки:
-# 1. Название
-# 1.1 Название
-# 1.1.1. Название
-
 NUMBERED_HEADING_RE = re.compile(
     r"^[ \t]*(?P<number>\d+(?:\.\d+)*(?:\.)?)[ \t]+"
     r"(?P<title>[^\n]{2,180})[ \t]*$"
 )
 
-
-# Признаки строк оглавления
-
 TOC_LEADERS_RE = re.compile(
     r"(?:\.{3,}|…{2,}|·{3,}|_{3,})"
+)
+
+
+# Фразы, с которых часто начинаются нумерованные пункты,
+# а не структурные заголовки.
+
+SENTENCE_STARTS = (
+    "при ",
+    "при этом",
+    "при наличии",
+    "при подозрении",
+    "в случае",
+    "в случаях",
+    "в зависимости",
+    "на амбулаторном",
+    "на стационарном",
+    "на этапе",
+    "для диагностики",
+    "для выявления",
+    "после ",
+    "если ",
+    "когда ",
+    "с целью",
+    "с учетом",
+    "с учётом",
 )
 
 
@@ -78,8 +93,6 @@ TOC_LEADERS_RE = re.compile(
 # ---------------------------------------------------------
 
 def normalize_text(value):
-    """Приводит текст к единому виду для сравнения."""
-
     value = value.lower().replace("ё", "е")
     value = re.sub(r"[^\w\s]", " ", value, flags=re.UNICODE)
     value = re.sub(r"\s+", " ", value)
@@ -95,28 +108,35 @@ def get_heading_depth(number):
     return len(clean_heading_number(number).split("."))
 
 
+def get_number_parts(number):
+    return [
+        int(part)
+        for part in clean_heading_number(number).split(".")
+    ]
+
+
 # ---------------------------------------------------------
-# ОПРЕДЕЛЕНИЕ СТРУКТУРНЫХ ЗАГОЛОВКОВ
+# ПРОВЕРКА СТРОК НА ПРИЗНАКИ ОГЛАВЛЕНИЯ
 # ---------------------------------------------------------
 
 def is_toc_line(title):
+    return bool(TOC_LEADERS_RE.search(title))
+
+
+# ---------------------------------------------------------
+# ПРОВЕРКА СТРУКТУРНЫХ ЗАГОЛОВКОВ
+# ---------------------------------------------------------
+
+def is_structural_heading(number, title):
     """
-    Исключает строки оглавления с точками-лидерами,
-    многоточиями и другими разделителями.
-    """
+    Отделяет структурные заголовки от нумерованных пунктов текста.
 
-    if TOC_LEADERS_RE.search(title):
-        return True
+    В частности, исключает пункты вида:
+    3. При подозрении на заболевание...
 
-    return False
-
-
-def is_structural_heading(title):
-    """
-    Проверяет, похожа ли строка на заголовок раздела.
-
-    Исключаются пустые строки, строки оглавления
-    и обычные пункты перечней, начинающиеся со строчной буквы.
+    При этом сохраняет заголовки вида:
+    2.4 Инструментальные диагностические исследования
+    3.2 Хирургическое лечение
     """
 
     title = title.strip()
@@ -140,14 +160,22 @@ def is_structural_heading(title):
     if not first_letter.isupper():
         return False
 
+    normalized = normalize_text(title)
+
+    # Проверка начала фразы для нумерованных пунктов.
+    for phrase in SENTENCE_STARTS:
+        if normalized.startswith(normalize_text(phrase)):
+            return False
+
+    # Заголовок не должен выглядеть как законченное предложение.
+    if title.endswith((".", ";", ",")):
+        return False
+
     return True
 
 
 def collect_numbered_headings(full_text):
-    """
-    Собирает нумерованные структурные заголовки
-    и сохраняет их позиции в исходном тексте.
-    """
+    """Собирает структурные нумерованные заголовки."""
 
     headings = []
     offset = 0
@@ -168,13 +196,14 @@ def collect_numbered_headings(full_text):
 
             title = match.group("title").strip()
 
-            if is_structural_heading(title):
+            if is_structural_heading(number, title):
 
                 headings.append({
                     "number": number,
                     "title": title,
                     "normalized_title": normalize_text(title),
                     "depth": get_heading_depth(number),
+                    "parts": get_number_parts(number),
                     "start": offset,
                     "end": offset + len(line_without_newline),
                 })
@@ -189,7 +218,6 @@ def collect_numbered_headings(full_text):
 # ---------------------------------------------------------
 
 def find_alias_candidates(headings, aliases):
-    """Находит совпадения с названиями разделов."""
 
     normalized_aliases = [
         normalize_text(alias)
@@ -213,18 +241,14 @@ def find_alias_candidates(headings, aliases):
 
 def find_section_start(headings, field_name):
     """
-    Находит начало нужного раздела.
+    Находит начало раздела.
 
-    Строки оглавления уже исключены на этапе сбора заголовков.
-    Поэтому выбирается первое подходящее совпадение
-    среди оставшихся структурных заголовков.
+    Оглавление предварительно исключается при сборе заголовков.
     """
-
-    aliases = HEADING_ALIASES[field_name]
 
     candidates = find_alias_candidates(
         headings,
-        aliases,
+        HEADING_ALIASES[field_name],
     )
 
     if not candidates:
@@ -234,53 +258,76 @@ def find_section_start(headings, field_name):
 
 
 # ---------------------------------------------------------
-# ОПРЕДЕЛЕНИЕ ГРАНИЦ РАЗДЕЛОВ
+# ПРОВЕРКА ГРАНИЦ РАЗДЕЛА
 # ---------------------------------------------------------
 
+def is_next_section_heading(current_heading, candidate):
+    """
+    Проверяет, может ли следующий заголовок завершать раздел.
+
+    Для раздела 2.3:
+    - 2.3.1 и 2.3.2 остаются внутри;
+    - 2.4 завершает раздел;
+    - нумерованный пункт 3. При подозрении... не считается
+      структурным заголовком благодаря предыдущей проверке.
+
+    Для раздела 3.1:
+    - 3.1.1 и 3.1.2 остаются внутри;
+    - 3.2 завершает раздел.
+
+    Для главы 3:
+    - вложенные подразделы остаются внутри;
+    - следующая глава 4 завершает раздел.
+    """
+
+    current_depth = current_heading["depth"]
+    candidate_depth = candidate["depth"]
+
+    if candidate_depth > current_depth:
+        return False
+
+    current_parts = current_heading["parts"]
+    candidate_parts = candidate["parts"]
+
+    # Следующий заголовок того же уровня.
+    if candidate_depth == current_depth:
+
+        # Например, 2.3 -> 2.4 или 3.1 -> 3.2.
+        if current_parts[:-1] == candidate_parts[:-1]:
+            return True
+
+        # Заголовок другого раздела того же уровня.
+        # Например, 2.5 -> 3.1.
+        return True
+
+    # Заголовок более высокого уровня.
+    # Например, 3.1 -> 4 или 2.3 -> 3.
+    return True
+
+
 def find_section_end(full_text, headings, current_heading):
-    """
-    Следующий заголовок того же или более высокого уровня
-    завершает текущий раздел.
-
-    Вложенные подразделы остаются внутри родительского раздела.
-
-    Например:
-
-    2.3 включает:
-        2.3.1
-        2.3.2
-        2.3.3
-
-    и заканчивается перед:
-        2.4
-
-    3.1 включает:
-        3.1.1
-        3.1.2
-
-    и заканчивается перед:
-        3.2
-
-    3 включает всю главу и заканчивается перед:
-        4
-    """
 
     current_start = current_heading["start"]
-    current_depth = current_heading["depth"]
 
     for heading in headings:
 
         if heading["start"] <= current_start:
             continue
 
-        if heading["depth"] <= current_depth:
+        if is_next_section_heading(
+            current_heading,
+            heading,
+        ):
             return heading["start"]
 
     return len(full_text)
 
 
+# ---------------------------------------------------------
+# ИЗВЛЕЧЕНИЕ ТЕКСТА
+# ---------------------------------------------------------
+
 def extract_block(full_text, headings, field_name):
-    """Извлекает полный текст выбранного раздела."""
 
     heading = find_section_start(
         headings,
@@ -316,12 +363,6 @@ def extract_block(full_text, headings, field_name):
 # ---------------------------------------------------------
 
 def check_suspicious_ending(text):
-    """
-    Выявляет некоторые признаки возможного обрыва текста.
-
-    Результат используется как предупреждение,
-    а не как окончательная оценка полноты.
-    """
 
     if not text:
         return "Пустой текст раздела."
@@ -386,7 +427,7 @@ def build_quality_report(sections, headings):
                 f"{field_name}: {ending_warning}"
             )
 
-    # Проверка относительной длины консервативного лечения
+    # Проверка консервативного лечения.
 
     conservative = sections.get(
         "treatment_conservative",
@@ -400,29 +441,21 @@ def build_quality_report(sections, headings):
 
     if conservative.get("text") and treatment.get("text"):
 
-        conservative_length = len(
-            conservative["text"]
-        )
-
-        treatment_length = len(
-            treatment["text"]
-        )
-
         if (
-            conservative_length < treatment_length * 0.25
-            and "3.2" in treatment["text"]
+            len(conservative["text"]) <
+            len(treatment["text"]) * 0.25
         ):
             warnings.append(
                 "Подраздел консервативного лечения выглядит "
                 "необычно коротким относительно главы лечения."
             )
 
+    quality_check = "passed"
+
     if errors:
         quality_check = "failed"
     elif warnings:
         quality_check = "review_required"
-    else:
-        quality_check = "passed"
 
     return {
         "document_id": DOCUMENT_ID,
@@ -432,13 +465,13 @@ def build_quality_report(sections, headings):
         "matched_headings": matched_headings,
         "numbered_headings_found": len(headings),
         "note": (
-            "Строки оглавления с точками-лидерами исключаются. "
-            "Вложенные подразделы включаются в родительский раздел. "
-            "Границы определяются по следующему структурному "
-            "заголовку того же или более высокого уровня. "
-            "Статус passed подтверждает техническое извлечение, "
-            "но не подтверждает медицинскую полноту и точность. "
-            "Необходима проверка текста и страниц оригинального документа."
+            "При определении границ учитывается уровень "
+            "нумерации и структура заголовков. Нумерованные "
+            "пункты текста с признаками обычного предложения "
+            "исключаются. Вложенные подразделы включаются "
+            "в родительский раздел. Статус passed не подтверждает "
+            "медицинскую полноту и точность. Необходима проверка "
+            "текста и страниц оригинального документа."
         ),
     }
 
@@ -469,14 +502,12 @@ def main():
         )
 
     print("Исходный текст загружен.")
-    print(
-        f"Количество символов: {len(full_text)}"
-    )
+    print(f"Количество символов: {len(full_text)}")
 
     headings = collect_numbered_headings(full_text)
 
     print(
-        "Найдено структурных нумерованных заголовков: "
+        "Найдено структурных заголовков: "
         f"{len(headings)}"
     )
 

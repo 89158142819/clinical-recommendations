@@ -1,0 +1,69 @@
+
+name: Тест загрузки и извлечения текста PDF
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить библиотеки
+        run: pip install requests pypdf
+
+      - name: Скачать PDF и извлечь текст
+        run: |
+          python - <<'PY'
+          import requests
+          from pypdf import PdfReader
+          from io import BytesIO
+
+          recommendation_id = "750_2"
+
+          url = (
+              "https://apicr.minzdrav.gov.ru/API.ashx"
+              f"?op=GetClinrecPdf&id={recommendation_id}"
+          )
+
+          print("Загружаем рекомендацию:", recommendation_id)
+
+          response = requests.get(url, timeout=120)
+          response.raise_for_status()
+
+          print("HTTP статус:", response.status_code)
+          print("Размер PDF:", len(response.content), "байт")
+          print("Тип содержимого:", response.headers.get("Content-Type"))
+
+          assert response.content.startswith(b"%PDF"), (
+              "Сервер не вернул PDF-файл"
+          )
+
+          reader = PdfReader(BytesIO(response.content))
+
+          print("Количество страниц:", len(reader.pages))
+
+          text = reader.pages[0].extract_text() or ""
+
+          print("Длина текста первой страницы:", len(text))
+          print("Текст первой страницы:")
+          print(text[:3000])
+
+          assert len(reader.pages) > 0
+          assert len(text.strip()) > 0, (
+              "Не удалось извлечь текст первой страницы"
+          )
+
+          print("ТЕСТ УСПЕШНО ЗАВЕРШЁН")
+          PY

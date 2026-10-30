@@ -1,3 +1,4 @@
+
 name: Проверка структуры рекомендации
 
 on:
@@ -22,7 +23,7 @@ jobs:
       - name: Установить библиотеки
         run: pip install -r requirements.txt
 
-      - name: Скачать рекомендацию
+      - name: Скачать тестовую рекомендацию
         run: python download_one.py
 
       - name: Найти заголовки
@@ -30,6 +31,9 @@ jobs:
 
       - name: Выделить разделы
         run: python extract_sections.py
+
+      - name: Проверить качество извлечения
+        run: python discover_catalog.py --min-id 740 --max-id 755 --min-ver 1 --max-ver 5 --delay 0.6
 
       - name: Сохранить результаты
         uses: actions/upload-artifact@v4
@@ -40,4 +44,5 @@ jobs:
             output/headings.txt
             output/749_2_sections.json
             output/749_2_quality_report.json
+            output/catalog_discovered.json
           if-no-files-found: error

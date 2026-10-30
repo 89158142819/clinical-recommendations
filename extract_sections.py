@@ -1,5 +1,4 @@
 
-
 import json
 import re
 from pathlib import Path
@@ -7,13 +6,11 @@ from pathlib import Path
 INPUT = Path("output/749_2.json")
 OUTPUT = Path("output/749_2_sections.json")
 
+# Загружаем текст рекомендации
 data = json.loads(INPUT.read_text(encoding="utf-8"))
-text = data["full_text"]
+text = re.sub(r"\s+", " ", data["full_text"])
 
-# Убираем лишние пробелы и переносы строк
-text = re.sub(r"\s+", " ", text)
-
-# Находим начало основного содержания
+# Находим начало основного содержания документа
 markers = list(re.finditer(
     r"1\.\s*Краткая информация по заболеванию",
     text,
@@ -29,6 +26,8 @@ body = text[markers[-1].start():]
 
 
 def extract(start_pattern, end_pattern):
+    """Извлекает текст между двумя заголовками."""
+
     start = re.search(
         start_pattern,
         body,
@@ -41,23 +40,32 @@ def extract(start_pattern, end_pattern):
             "status": "heading_not_found"
         }
 
+    remainder = body[start.end():]
+
     end = re.search(
         end_pattern,
-        body[start.end():],
+        remainder,
         re.IGNORECASE
     )
 
     if not end:
-        section_text = body[start.start():]
-    else:
-        section_text = body[
-            start.start():start.end() + end.start()
-        ]
+        return {
+            "text": body[start.start():].strip(),
+            "status": "end_heading_not_found"
+        }
+
+    section_text = body[
+        start.start():start.end() + end.start()
+    ]
 
     return {
         "text": section_text.strip(),
         "status": "extracted"
     }
+
+
+# Заголовок четвертого раздела рекомендаций
+chapter4_pattern = r"(?<!\d)4\.\s+[А-ЯЁ]"
 
 
 sections = {
@@ -81,11 +89,20 @@ sections = {
         r"2\.5\.?\s*Иные диагностические исследования"
     ),
 
+    # Диагностика заканчивается перед началом главы 3
     "other_diagnostics": extract(
         r"2\.5\.?\s*Иные диагностические исследования",
-        r"3\.1\.?\s*Консервативное лечение"
+        r"3\.\s*Лечение(?:,|\s)"
     ),
 
+    # Весь раздел лечения: вводная часть + консервативное
+    # и хирургическое лечение
+    "treatment": extract(
+        r"3\.\s*Лечение(?:,|\s)",
+        chapter4_pattern
+    ),
+
+    # Отдельные подразделы лечения оставляем для проверки
     "treatment_conservative": extract(
         r"3\.1\.?\s*Консервативное лечение",
         r"3\.2\.?\s*Хирургическое лечение"
@@ -93,7 +110,7 @@ sections = {
 
     "treatment_surgical": extract(
         r"3\.2\.?\s*Хирургическое лечение",
-        r"4\.\s"
+        chapter4_pattern
     )
 }
 
@@ -106,6 +123,7 @@ result = {
 }
 
 
+# Сохраняем результат
 OUTPUT.parent.mkdir(exist_ok=True)
 
 OUTPUT.write_text(
@@ -118,6 +136,7 @@ OUTPUT.write_text(
 )
 
 
+# Выводим результаты проверки
 print("Обработка завершена.")
 print("Результат:", OUTPUT)
 
@@ -128,7 +147,7 @@ for name, section in sections.items():
     print("Символов:", len(section["text"]))
 
     print("\nНАЧАЛО РАЗДЕЛА:")
-    print(section["text"][:700])
+    print(section["text"][:500])
 
     print("\nКОНЕЦ РАЗДЕЛА:")
-    print(section["text"][-300:])
+    print(section["text"][-250:])

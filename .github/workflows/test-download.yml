@@ -29,11 +29,15 @@ jobs:
       - name: Найти заголовки
         run: python inspect_headings.py
 
+      - name: Выделить разделы
+        run: python extract_sections.py
+
       - name: Сохранить результаты
         uses: actions/upload-artifact@v4
         with:
-          name: analysis-749-2
+          name: sections-749-2
           path: |
             output/749_2.json
             output/headings.txt
+            output/749_2_sections.json
           if-no-files-found: error

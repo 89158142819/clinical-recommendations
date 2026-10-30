@@ -1,0 +1,40 @@
+
+name: Тест извлечения разделов v2
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить библиотеки
+        run: pip install -r requirements.txt
+
+      - name: Скачать тестовую рекомендацию
+        run: python download_one.py
+
+      - name: Извлечь разделы новой версией
+        run: python extract_sections_v2.py
+
+      - name: Сохранить результаты
+        uses: actions/upload-artifact@v4
+        with:
+          name: extraction-v2-749-2
+          path: |
+            output/749_2.json
+            output/749_2_sections_v2.json
+            output/749_2_quality_report_v2.json
+          if-no-files-found: error

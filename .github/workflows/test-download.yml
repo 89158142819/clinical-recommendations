@@ -1,5 +1,5 @@
 
-name: Проверка загрузки рекомендации
+name: Проверка структуры рекомендации
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  download:
+  inspect:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,9 +26,14 @@ jobs:
       - name: Скачать рекомендацию
         run: python download_one.py
 
-      - name: Сохранить результат
+      - name: Найти заголовки
+        run: python inspect_headings.py
+
+      - name: Сохранить результаты
         uses: actions/upload-artifact@v4
         with:
-          name: recommendation-749-2
-          path: output/749_2.json
+          name: analysis-749-2
+          path: |
+            output/749_2.json
+            output/headings.txt
           if-no-files-found: error

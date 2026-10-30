@@ -23,7 +23,7 @@ jobs:
       - name: Установить библиотеки
         run: pip install requests pypdf
 
-      - name: Скачать PDF и извлечь текст
+      - name: Проверить извлечение текста из разных страниц
         run: |
           python - <<'PY'
           import requests
@@ -42,28 +42,33 @@ jobs:
           response = requests.get(url, timeout=120)
           response.raise_for_status()
 
-          print("HTTP статус:", response.status_code)
-          print("Размер PDF:", len(response.content), "байт")
-          print("Тип содержимого:", response.headers.get("Content-Type"))
-
           assert response.content.startswith(b"%PDF"), (
-              "Сервер не вернул PDF-файл"
+              "Сервер не вернул PDF"
           )
 
           reader = PdfReader(BytesIO(response.content))
 
           print("Количество страниц:", len(reader.pages))
 
-          text = reader.pages[0].extract_text() or ""
+          pages_to_check = [0, 49, 103]
 
-          print("Длина текста первой страницы:", len(text))
-          print("Текст первой страницы:")
-          print(text[:3000])
+          total_characters = 0
 
-          assert len(reader.pages) > 0
-          assert len(text.strip()) > 0, (
-              "Не удалось извлечь текст первой страницы"
-          )
+          for page_number in pages_to_check:
+              text = reader.pages[page_number].extract_text() or ""
 
+              total_characters += len(text)
+
+              print("\n" + "=" * 50)
+              print("СТРАНИЦА:", page_number + 1)
+              print("Символов:", len(text))
+              print(text[:1500])
+
+              assert len(text.strip()) > 0, (
+                  f"На странице {page_number + 1} нет текста"
+              )
+
+          print("\n" + "=" * 50)
+          print("Всего символов на проверенных страницах:", total_characters)
           print("ТЕСТ УСПЕШНО ЗАВЕРШЁН")
           PY

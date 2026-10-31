@@ -1503,6 +1503,56 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                     "source_section": section_kind,
                 })
 
+    # Отдельно собираем рекомендации по контрольной диагностике
+    # во время и после глютеновой нагрузки. Это единый протокол наблюдения,
+    # а не новые дубли лабораторных и инструментальных методов.
+    if section_kind == "other_diagnostics":
+        heading_match = re.search(
+            r"(?i)Провокационный\s+тест\s*\(нагрузка\s+глютеном\)",
+            section_text
+        )
+        if heading_match:
+            followup_items = []
+            tail = section_text[heading_match.end():]
+            followup_bullets = list(bullet_re.finditer(tail))
+            for idx, bullet in enumerate(followup_bullets):
+                item_end = (
+                    followup_bullets[idx + 1].start()
+                    if idx + 1 < len(followup_bullets)
+                    else len(tail)
+                )
+                item_text = clean_diagnostic_value(
+                    tail[bullet.end():item_end]
+                )
+                if not re.match(
+                    r"(?i)^(?:не\s+)?рекомендуется\b|^рекомендовано\b",
+                    item_text
+                ):
+                    continue
+                if not re.search(
+                    r"(?i)глютен|провокационн|антител|биопси|"
+                    r"патолого-анатомическ|гистологическ|наблюдени",
+                    item_text
+                ):
+                    continue
+                item_text = re.split(
+                    r"\bУровень\s+достоверности\s+доказательств\b",
+                    item_text, maxsplit=1, flags=re.IGNORECASE
+                )[0]
+                item_text = clean_diagnostic_value(item_text)
+                if item_text and item_text not in followup_items:
+                    followup_items.append(item_text)
+
+            if followup_items:
+                results.append({
+                    "name": "Контрольная диагностика и наблюдение при глютеновой нагрузке",
+                    "indications": "Детям с подозрением на целиакию во время проведения провокационного теста, а также детям после периода глютеновой нагрузки при оценке результатов обследования.",
+                    "purpose": "Своевременное подтверждение или исключение целиакии и определение дальнейшей тактики обследования и питания.",
+                    "recommendation_type": "recommended",
+                    "source_excerpt": " || ".join(followup_items)[:4000],
+                    "source_section": section_kind,
+                })
+
     # Объединяем одинаковые исследования независимо от показаний.
     # Разные клинические ситуации сохраняются внутри одной карточки.
     grouped = {}

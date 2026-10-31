@@ -1267,6 +1267,26 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             "", name, flags=re.IGNORECASE
         )
         name = clean_diagnostic_value(name)
+        name = re.sub(r"(?i)^содержание\s+", "Определение содержания ", name)
+        if name.count("(") > name.count(")"):
+            name += ")" * (name.count("(") - name.count(")"))
+
+        # Часто встречающиеся лабораторные и инструментальные методы
+        # приводим к коротким и понятным названиям.
+        lower_name = name.lower()
+        if "тканевой трансглютаминазе" in lower_name and "igg" in lower_name and "деамидированным пептидам" in lower_name:
+            name = "Антитела к тканевой трансглютаминазе IgG и деамидированным пептидам глиадина IgG"
+        elif "тканевой трансглютаминазе" in lower_name and ("iga" in lower_name or "класса а" in lower_name):
+            name = "Антитела к тканевой трансглютаминазе IgA (anti-tTG IgA)"
+        elif "антител" in lower_name and "эндомизию" in lower_name:
+            name = "Антитела к эндомизию IgA (EMA)"
+        elif "антител" in lower_name and "нативному глиадину" in lower_name:
+            name = "Антитела к нативному глиадину (AGA)"
+        elif "эзофагогастродуоденоскопия" in lower_name:
+            name = "ЭГДС с биопсией двенадцатиперстной кишки"
+        elif "h la-dq2" in lower_name or "hla-dq2" in lower_name or "hla dq2" in lower_name:
+            name = "Генетическое исследование HLA-DQ2/DQ8"
+
         if len(name) > 260:
             name = name[:257].rsplit(" ", 1)[0] + "…"
         if not name:
@@ -1288,16 +1308,36 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             purpose = clean_diagnostic_value(block[purpose_start:purpose_end])
         else:
             purpose_match_alt = re.search(
-                r"\bдля\s+(?:скрининга|диагностики|подтверждения|"
+                r"\bдля\s+[^.;]{0,70}\b(?:скрининга|диагностики|подтверждения|"
                 r"исключения|верификации|оценки|выявления)\b[^.;]{0,180}",
                 block, flags=re.IGNORECASE
             )
             if purpose_match_alt:
                 purpose = clean_diagnostic_value(purpose_match_alt.group(0))
 
+        if "anti-ttg iga" in name.lower():
+            indication = re.sub(
+                r"\s+и\s+исследование\s+уровня\s+иммуноглобулина\s+а\b.*$",
+                "", indication, flags=re.IGNORECASE
+            )
         if not indication:
             indication = "В тексте рекомендации отдельные показания не выделены."
-        if not purpose:
+
+        if purpose and purpose.lower().startswith("с целью "):
+            purpose = purpose[8:]
+        elif purpose and purpose.lower().startswith("с диагностической целью"):
+            purpose = "Диагностика заболевания"
+        elif purpose and purpose.lower().startswith("для патолого"):
+            purpose = "Морфологическое подтверждение диагноза"
+        elif purpose and purpose.lower().startswith("для подтверждения диагноза"):
+            purpose = "Подтверждение диагноза"
+        elif purpose and purpose.lower().startswith("для установления диагноза"):
+            purpose = "Установление диагноза"
+
+        purpose = clean_diagnostic_value(purpose)
+        if purpose:
+            purpose = purpose[0].upper() + purpose[1:]
+        else:
             purpose = "Отдельная цель исследования в формулировке рекомендации не указана."
 
         results.append({

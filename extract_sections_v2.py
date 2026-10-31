@@ -1438,6 +1438,18 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         recommendation_types = item.pop("_recommendation_types")
         excerpts = item.pop("_source_excerpts")
 
+        if item.get("source_section") == "other_diagnostics" and item.get("name") == "Глютеновая нагрузка (провокационный тест)":
+            indications = [
+                re.sub(r"\s*•?\s*пациентов излишнему дискомфорту.*$", "", value, flags=re.IGNORECASE).strip()
+                for value in indications
+            ]
+            indications = [value for value in indications if value]
+            purposes = [
+                "Окончательная верификация диагноза целиакии"
+                for value in purposes
+                if "верификации диагноза" in value.lower()
+            ] or purposes
+
         item["indications"] = (
             " • ".join(indications)
             if indications else "В тексте рекомендации отдельные показания не выделены."

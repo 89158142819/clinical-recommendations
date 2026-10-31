@@ -1,5 +1,5 @@
 
-name: Тест извлечения разделов v2
+name: Проверка структуры клинической рекомендации v2
 
 on:
   workflow_dispatch:
@@ -8,28 +8,152 @@ permissions:
   contents: read
 
 jobs:
-  extract:
+  inspect:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Получение файлов проекта
       - name: Получить файлы проекта
         uses: actions/checkout@v4
 
+      # 2. Настройка Python
       - name: Установить Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Установить библиотеки
-        run: pip install -r requirements.txt
+      # 3. Установка зависимостей
+      - name: Установить зависимости
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Скачать тестовую рекомендацию
-        run: python download_one.py
+      # 4. Загрузка тестовой клинической рекомендации
+      - name: Скачать клиническую рекомендацию 749_2
+        run: |
+          python download_one.py
 
-      - name: Извлечь разделы новой версией
-        run: python extract_sections_v2.py
+      # 5. Извлечение структурных разделов
+      - name: Извлечь разделы клинической рекомендации
+        run: |
+          python extract_sections_v2.py
 
-      - name: Сохранить результаты
+      # 6. Проверка полноты главы 3 «Лечение»
+      - name: Проверить полноту раздела Лечение
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+
+          path = "output/749_2_sections_v2.json"
+
+          with open(path, "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          treatment = data.get("sections", {}).get("treatment", "")
+
+          if not treatment:
+              print("ОШИБКА: раздел treatment отсутствует или пустой.")
+              sys.exit(1)
+
+          checks = {
+              "Вводный текст главы 3": "Сроки начала лечения",
+              "Консервативное лечение": "3.1.",
+              "Лечение в амбулаторных условиях": "амбулаторных условиях",
+              "Лечение в стационарных условиях": "стационарных условиях",
+              "Хирургическое лечение": "3.2.",
+              "Фраза «Не проводится»": "Не проводится.",
+          }
+
+          print("=" * 60)
+          print("ПРОВЕРКА ПОЛНОТЫ ГЛАВЫ 3 «ЛЕЧЕНИЕ»")
+          print("=" * 60)
+
+          failed = []
+
+          for name, phrase in checks.items():
+              found = phrase.lower() in treatment.lower()
+
+              if found:
+                  print(f"OK — {name}")
+              else:
+                  print(f"НЕТ — {name}")
+                  failed.append(name)
+
+          rehabilitation_heading = (
+              "Медицинская реабилитация и санаторно-курортное лечение"
+          )
+
+          if rehabilitation_heading.lower() in treatment.lower():
+              print("ОШИБКА — в лечение попал заголовок главы 4")
+              failed.append("Граница главы 3")
+          else:
+              print("OK — заголовок главы 4 не попал в лечение")
+
+          print("=" * 60)
+          print(f"Длина главы 3: {len(treatment)} символов")
+
+          print("\nНАЧАЛО ГЛАВЫ 3:")
+          print("-" * 60)
+          print(treatment[:1500])
+
+          print("\nКОНЕЦ ГЛАВЫ 3:")
+          print("-" * 60)
+          print(treatment[-1500:])
+
+          print("=" * 60)
+
+          if failed:
+              print("ИТОГ: ПРОВЕРКА НЕ ПРОЙДЕНА")
+              print("Требуют проверки:")
+              for item in failed:
+                  print(f"- {item}")
+              sys.exit(1)
+
+          print("ИТОГ: ВСЕ КОНТРОЛЬНЫЕ ФРАГМЕНТЫ НАЙДЕНЫ")
+          PY
+
+      # 7. Проверка отчёта качества
+      - name: Проверить структурный отчёт
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+
+          path = "output/749_2_quality_report_v2.json"
+
+          with open(path, "r", encoding="utf-8") as f:
+              report = json.load(f)
+
+          print("=" * 60)
+          print("СТРУКТУРНЫЙ ОТЧЁТ")
+          print("=" * 60)
+
+          print("Статус:", report.get("quality_check"))
+          print("Пропущенные разделы:", report.get("missing_sections"))
+          print("Предупреждения:", report.get("warnings"))
+
+          boundary = report.get("treatment_boundary_check", {})
+
+          print("\nПроверка границы лечения:")
+          print("Начало:", boundary.get("treatment_start"))
+          print("Конец:", boundary.get("treatment_end"))
+          print("Начало реабилитации:", boundary.get("rehabilitation_start"))
+          print("Граница подтверждена:", boundary.get("passed"))
+
+          if report.get("quality_check") != "passed":
+              print("\nОШИБКА: структурная проверка не пройдена.")
+              sys.exit(1)
+
+          if not boundary.get("passed"):
+              print("\nОШИБКА: граница главы 3 не подтверждена.")
+              sys.exit(1)
+
+          print("\nИТОГ: СТРУКТУРНАЯ ПРОВЕРКА ПРОЙДЕНА")
+          PY
+
+      # 8. Сохранение результатов тестирования
+      - name: Сохранить результаты тестирования
         uses: actions/upload-artifact@v4
         with:
           name: extraction-v2-749-2

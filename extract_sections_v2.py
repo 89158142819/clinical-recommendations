@@ -1220,7 +1220,9 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             block, flags=re.IGNORECASE
         )
         purpose_match = re.search(
-            r"\bс\s+(?:(?:диагностической|лечебной|профилактической)\s+)?целью\b",
+            r"\bс\s+(?:(?:диагностической|лечебной|профилактической)\s+)?целью\b|"
+            r"\bдля\s+[^.;]{0,70}\b(?:скрининга|диагностики|подтверждения|"
+            r"исключения|верификации|оценки|выявления)\b",
             block, flags=re.IGNORECASE
         )
 
@@ -1276,7 +1278,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         lower_name = name.lower()
         if "тканевой трансглютаминазе" in lower_name and "igg" in lower_name and "деамидированным пептидам" in lower_name:
             name = "Антитела к тканевой трансглютаминазе IgG и деамидированным пептидам глиадина IgG"
-        elif "тканевой трансглютаминазе" in lower_name and ("iga" in lower_name or "класса а" in lower_name):
+        elif ("тканевой трансглютаминазе" in lower_name or "тканевой транглютаминазе" in lower_name) and ("iga" in lower_name or "класса а" in lower_name):
             name = "Антитела к тканевой трансглютаминазе IgA (anti-tTG IgA)"
         elif "антител" in lower_name and "эндомизию" in lower_name:
             name = "Антитела к эндомизию IgA (EMA)"
@@ -1323,15 +1325,23 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         if not indication:
             indication = "В тексте рекомендации отдельные показания не выделены."
 
-        if purpose and purpose.lower().startswith("с целью "):
-            purpose = purpose[8:]
-        elif purpose and purpose.lower().startswith("с диагностической целью"):
+        if purpose and purpose.lower().startswith("с диагностической целью"):
             purpose = "Диагностика заболевания"
+        elif purpose and purpose.lower().startswith("с целью "):
+            purpose = purpose[8:]
         elif purpose and purpose.lower().startswith("для патолого"):
             purpose = "Морфологическое подтверждение диагноза"
         elif purpose and purpose.lower().startswith("для подтверждения диагноза"):
             purpose = "Подтверждение диагноза"
         elif purpose and purpose.lower().startswith("для установления диагноза"):
+            purpose = "Установление диагноза"
+        elif purpose and purpose.lower().startswith("для скрининга"):
+            purpose = "Скрининг заболевания"
+        elif purpose and purpose.lower().startswith("скрининга"):
+            purpose = "Скрининг заболевания"
+        elif purpose and purpose.lower().startswith("исключения "):
+            purpose = "Исключение " + purpose[len("исключения "):]
+        elif purpose and purpose.lower().startswith("установления диагноза"):
             purpose = "Установление диагноза"
 
         purpose = clean_diagnostic_value(purpose)

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-31T13:18:27.170787+00:00",
+  "updated_at": "2026-10-31T13:40:52.102296+00:00",
   "total_processed": 20,
   "results": {
     "750_2": {
@@ -131,14 +131,23 @@
     "1089_1": {
       "id": "1089_1",
       "title": "Врожденные портосистемные шунты у детей",
-      "status": "failed",
-      "started_at": "2026-10-31T13:18:09.972403+00:00",
-      "finished_at": "2026-10-31T13:18:14.291611+00:00",
-      "error": "В JSON отсутствуют разделы: ['other_diagnostics']",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-10-31T13:40:48.483424+00:00",
+      "finished_at": "2026-10-31T13:40:52.100263+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v6",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "pages_count": 33,
+      "text_length": 68196,
+      "pdf_file": "output/1089_1.pdf",
+      "input_file": "output/1089_1.json",
+      "sections_file": "output/1089_1_sections_v2.json",
+      "report_file": "output/1089_1_quality_report_v2.json"
     },
     "269_2": {
       "id": "269_2",

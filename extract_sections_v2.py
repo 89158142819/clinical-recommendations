@@ -11,7 +11,7 @@ from pathlib import Path
 
 DEFAULT_INPUT = Path("output/749_2.json")
 
-EXTRACTION_METHOD = "universal_structural_headings_v6"
+EXTRACTION_METHOD = "universal_structural_headings_v7"
 
 OPTIONAL_SECTION_KEYS = {
     "other_diagnostics",
@@ -1156,6 +1156,128 @@ def build_quality_report(
     }
 
 
+
+DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v1"
+
+def clean_diagnostic_value(value):
+    value = re.sub(r"\s+", " ", value or "")
+    return value.strip(" \t\r\n:;,.–—-")
+
+
+def extract_diagnostic_recommendations(section_text, section_kind):
+    if not isinstance(section_text, str) or not section_text.strip():
+        return []
+
+    bullet_re = re.compile(r"(?m)^[ \t]*[•●▪]\s*")
+    bullets = list(bullet_re.finditer(section_text))
+    results = []
+
+    for index, match in enumerate(bullets):
+        end = bullets[index + 1].start() if index + 1 < len(bullets) else len(section_text)
+        block = section_text[match.end():end]
+        block = re.sub(r"\s*\[Страница\s+\d+\]\s*", " ", block)
+        block = clean_diagnostic_value(block)
+
+        if not re.match(r"(?i)^(?:не\s+)?рекомендуется\b|^рекомендовано\b", block):
+            continue
+
+        if re.match(r"(?i)^не\s+рекомендуется\b", block):
+            kind = "not_recommended"
+            block = re.sub(r"(?i)^не\s+рекомендуется\s*", "", block)
+        elif re.match(r"(?i)^рекомендуется\s+рассмотреть\b", block):
+            kind = "consider"
+            block = re.sub(r"(?i)^рекомендуется\s+рассмотреть\s*", "", block)
+        else:
+            kind = "recommended"
+            block = re.sub(r"(?i)^(?:рекомендуется|рекомендовано)\s*", "", block)
+
+        block = re.split(
+            r"\bУровень\s+достоверности\s+доказательств\b|\bКомментарии?\s*:",
+            block, maxsplit=1, flags=re.IGNORECASE
+        )[0]
+        block = clean_diagnostic_value(block)
+        if len(block) < 20:
+            continue
+
+        patient = re.search(
+            r"\b(?:пациентам|пациентов|пациенту|пациента|детям|взрослым|лицам|родственникам)\b",
+            block, flags=re.IGNORECASE
+        )
+        purpose_match = re.search(r"\bс\s+целью\b", block, flags=re.IGNORECASE)
+        condition = re.search(r"\bпри\s+", block, flags=re.IGNORECASE)
+
+        name_end = patient.start() if patient else (
+            purpose_match.start() if purpose_match else (
+                condition.start() if condition else min(len(block), 220)
+            )
+        )
+        name = clean_diagnostic_value(block[:name_end])
+        name = re.sub(
+            r"^(?:выполнение|проведение|определение|исследование|измерение|оценка)\s+",
+            "", name, flags=re.IGNORECASE
+        )
+        if len(name) > 240:
+            name = name[:237].rsplit(" ", 1)[0] + "…"
+        if not name:
+            continue
+
+        indication_start = patient.start() if patient else (
+            condition.start() if condition else None
+        )
+        indication_end = purpose_match.start() if purpose_match else len(block)
+        indication = (
+            clean_diagnostic_value(block[indication_start:indication_end])
+            if indication_start is not None else ""
+        )
+
+        purpose = ""
+        if purpose_match:
+            tail = block[purpose_match.end():]
+            purpose = clean_diagnostic_value(re.split(r"[.;](?:\s|$)", tail, maxsplit=1)[0])
+            if purpose:
+                purpose = "Для " + purpose[0].lower() + purpose[1:]
+
+        results.append({
+            "name": name,
+            "indications": indication or "В тексте рекомендации отдельные показания не выделены.",
+            "purpose": purpose or "Отдельная цель исследования в формулировке рекомендации не указана.",
+            "recommendation_type": kind,
+            "source_excerpt": block[:1200],
+            "source_section": section_kind,
+        })
+
+    unique = []
+    seen = set()
+    for item in results:
+        key = (item["name"].lower(), item["indications"].lower(), item["recommendation_type"])
+        if key not in seen:
+            seen.add(key)
+            unique.append(item)
+    return unique
+
+
+def build_diagnostic_summary(extracted):
+    laboratory = extract_diagnostic_recommendations(
+        extracted.get("laboratory_diagnostics", {}).get("text", ""),
+        "laboratory_diagnostics"
+    )
+    instrumental = extract_diagnostic_recommendations(
+        extracted.get("instrumental_diagnostics", {}).get("text", ""),
+        "instrumental_diagnostics"
+    )
+    return {
+        "method": DIAGNOSTIC_EXTRACTION_METHOD,
+        "status": "draft" if laboratory or instrumental else "not_extracted",
+        "laboratory": laboratory,
+        "instrumental": instrumental,
+        "counts": {
+            "laboratory": len(laboratory),
+            "instrumental": len(instrumental)
+        },
+        "note": "Автоматически выделенные формулировки рекомендаций. Требуется сверка с исходным документом."
+    }
+
+
 # ============================================================
 # Основная функция
 # ============================================================
@@ -1287,6 +1409,8 @@ def main():
             )["text"]
             for section in SECTIONS
         },
+
+        "diagnostic_summary": build_diagnostic_summary(extracted),
 
         "section_positions": {
 

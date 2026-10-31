@@ -11,16 +11,11 @@ from pathlib import Path
 
 DEFAULT_INPUT = Path("output/749_2.json")
 
-EXTRACTION_METHOD = "universal_structural_headings_v4"
+EXTRACTION_METHOD = "universal_structural_headings_v5"
 
 
 # ============================================================
 # Структура клинической рекомендации
-#
-# Важно:
-# 1. Порядок разделов соответствует универсальной структуре КР.
-# 2. Внутренние подразделы лечения не определяют границы главы 3.
-# 3. Альтернативные названия используются только для поиска.
 # ============================================================
 
 SECTIONS = [
@@ -164,7 +159,6 @@ def build_phrase_pattern(phrase):
     for part in parts:
         escaped = re.escape(part)
 
-        # Дефис может быть записан с пробелами или без них.
         escaped = escaped.replace(
             r"\-",
             r"\s*[-–—]\s*"
@@ -182,14 +176,6 @@ def build_phrase_pattern(phrase):
 def find_heading_candidates(text, section):
     """
     Ищет заголовки только в начале строки.
-
-    Для нумерованных заголовков:
-    - допускает отсутствие пробела после номера;
-    - проверяет точный номер;
-    - не путает 2 и 2.1;
-    - допускает переносы внутри названия.
-
-    Возвращает все найденные совпадения с позициями.
     """
 
     candidates = []
@@ -226,29 +212,31 @@ def find_heading_candidates(text, section):
 
         for match in re.finditer(pattern, text):
 
-            start = match.start()
-
             candidates.append({
                 "key": section["key"],
                 "number": number,
                 "alias": alias,
-                "start": start,
+                "start": match.start(),
                 "matched_text": match.group(0),
             })
 
-    # Удаляем дубликаты, найденные по разным aliases
-    # на одной позиции.
+    # Удаляем дубликаты на одной позиции.
     unique = {}
 
     for candidate in candidates:
+
         position = candidate["start"]
 
         if position not in unique:
             unique[position] = candidate
         else:
-            # При совпадении сохраняем более длинный вариант.
-            old_length = len(unique[position]["matched_text"])
-            new_length = len(candidate["matched_text"])
+            old_length = len(
+                unique[position]["matched_text"]
+            )
+
+            new_length = len(
+                candidate["matched_text"]
+            )
 
             if new_length > old_length:
                 unique[position] = candidate
@@ -260,6 +248,63 @@ def find_heading_candidates(text, section):
 
 
 # ============================================================
+# Поиск следующей крупной главы
+# ============================================================
+
+def find_next_major_chapter(text, chapter_number, after_position):
+    """
+    Ищет заголовок следующей крупной главы.
+
+    Например:
+    5. Профилактика и диспансерное наблюдение
+
+    Учитывает:
+    - начало заголовка с новой строки;
+    - точку или закрывающую скобку после номера;
+    - наличие пробела или его отсутствие;
+    - заглавную русскую букву после номера.
+
+    Не принимает за главу 5 подразделы:
+    5.1
+    5.1.1
+    5.2
+
+    Ищет только после указанной позиции, чтобы не выбрать
+    заголовок из оглавления.
+    """
+
+    number = re.escape(str(chapter_number))
+
+    pattern = (
+        r"(?im)^[ \t]*"
+        + number
+        + r"\s*[.)]\s*"
+        + r"(?=[А-ЯЁ])"
+        + r"[^\n]{3,250}"
+    )
+
+    candidates = []
+
+    for match in re.finditer(pattern, text):
+
+        if match.start() <= after_position:
+            continue
+
+        candidates.append({
+            "start": match.start(),
+            "matched_text": match.group(0).strip(),
+        })
+
+    if not candidates:
+        return None, []
+
+    # Берём первое совпадение после начала главы 4.
+    candidates.sort(key=lambda item: item["start"])
+
+    return candidates[0], candidates
+
+
+# ============================================================
 # Выбор заголовков основного текста
 # ============================================================
 
@@ -267,18 +312,8 @@ def select_headings(all_candidates):
     """
     Выбирает последовательность заголовков.
 
-    Поскольку оглавление обычно расположено раньше основного
-    текста, при выборе используется обратный проход:
-
-    - сначала ищется последнее совпадение главы 4;
-    - затем последнее совпадение главы 3 перед главой 4;
-    - затем предыдущие разделы по порядку.
-
-    Это позволяет не использовать оглавление вместо
-    основного текста, если соответствующие заголовки
-    присутствуют в основном тексте.
-
-    Если заголовок отсутствует, он не подменяется догадкой.
+    Обратный проход позволяет использовать последние
+    подходящие совпадения, а не заголовки оглавления.
     """
 
     selected = {}
@@ -322,21 +357,22 @@ def select_headings(all_candidates):
 
 def extract_sections(text):
     """
-    Извлекает разделы по найденным структурным заголовкам.
+    Извлекает 15 основных разделов.
 
-    Каждый раздел заканчивается непосредственно перед
-    следующим найденным структурным заголовком.
+    Особые правила:
 
-    Глава 3 «Лечение» заканчивается исключительно
-    перед фактическим заголовком главы 4.
+    Глава 3 заканчивается перед заголовком главы 4.
 
-    Подразделы 3.1, 3.1.1, 3.1.2 и 3.2
-    не используются для определения границ лечения.
+    Глава 4 заканчивается перед заголовком главы 5.
+
+    Внутренние подразделы глав 3 и 4 не используются
+    для определения границ крупных разделов.
     """
 
     all_candidates = {}
 
     for section in SECTIONS:
+
         all_candidates[section["key"]] = (
             find_heading_candidates(text, section)
         )
@@ -358,8 +394,11 @@ def extract_sections(text):
         start = matched_headings[key]["start"]
 
         if index + 1 < len(ordered_found):
+
             next_key = ordered_found[index + 1]["key"]
+
             end = matched_headings[next_key]["start"]
+
         else:
             end = len(text)
 
@@ -369,7 +408,50 @@ def extract_sections(text):
             "text": text[start:end].strip(),
         }
 
-    return extracted, matched_headings, all_candidates
+    # --------------------------------------------------------
+    # Дополнительная граница главы 4.
+    # --------------------------------------------------------
+
+    chapter5_heading = None
+    chapter5_candidates = []
+
+    if "rehabilitation" in extracted:
+
+        rehabilitation_start = (
+            extracted["rehabilitation"]["start"]
+        )
+
+        chapter5_heading, chapter5_candidates = (
+            find_next_major_chapter(
+                text=text,
+                chapter_number=5,
+                after_position=rehabilitation_start
+            )
+        )
+
+        if chapter5_heading:
+
+            rehabilitation_end = (
+                chapter5_heading["start"]
+            )
+
+            extracted["rehabilitation"]["end"] = (
+                rehabilitation_end
+            )
+
+            extracted["rehabilitation"]["text"] = (
+                text[
+                    rehabilitation_start:rehabilitation_end
+                ].strip()
+            )
+
+    return (
+        extracted,
+        matched_headings,
+        all_candidates,
+        chapter5_heading,
+        chapter5_candidates,
+    )
 
 
 # ============================================================
@@ -380,7 +462,6 @@ def check_heading_order(matched_headings):
 
     warnings = []
 
-    previous_key = None
     previous_start = -1
 
     for section in SECTIONS:
@@ -390,21 +471,23 @@ def check_heading_order(matched_headings):
         if key not in matched_headings:
             continue
 
-        current_start = matched_headings[key]["start"]
+        current_start = (
+            matched_headings[key]["start"]
+        )
 
         if current_start <= previous_start:
+
             warnings.append(
                 f"Нарушен порядок заголовков: {key}"
             )
 
-        previous_key = key
         previous_start = current_start
 
     return warnings
 
 
 # ============================================================
-# Контроль главы 3 «Лечение»
+# Контроль границы главы 3 «Лечение»
 # ============================================================
 
 def check_treatment_boundary(extracted, matched_headings):
@@ -412,41 +495,101 @@ def check_treatment_boundary(extracted, matched_headings):
     warnings = []
 
     if "treatment" not in matched_headings:
+
         warnings.append(
-            "Не найден заголовок главы 3. "
-            "Границы лечения не определены."
+            "Не найден заголовок главы 3."
         )
+
         return warnings
 
     if "rehabilitation" not in matched_headings:
+
         warnings.append(
-            "Не найден заголовок главы 4. "
-            "Граница главы 3 требует ручной проверки."
+            "Не найден заголовок главы 4."
         )
+
         return warnings
 
     treatment = extracted.get("treatment")
+
     rehabilitation = matched_headings["rehabilitation"]
 
     if treatment is None:
+
         warnings.append(
             "Не удалось извлечь текст главы 3."
         )
+
         return warnings
 
     if treatment["end"] != rehabilitation["start"]:
+
         warnings.append(
             "Конец главы 3 не совпадает с началом главы 4."
         )
 
     if treatment["start"] >= rehabilitation["start"]:
+
         warnings.append(
             "Некорректный порядок границ главы 3 и главы 4."
         )
 
     if not treatment["text"].strip():
+
         warnings.append(
             "Текст главы 3 пустой."
+        )
+
+    return warnings
+
+
+# ============================================================
+# Контроль границы главы 4 «Реабилитация»
+# ============================================================
+
+def check_rehabilitation_boundary(
+    extracted,
+    matched_headings,
+    chapter5_heading
+):
+
+    warnings = []
+
+    if "rehabilitation" not in extracted:
+
+        warnings.append(
+            "Не удалось извлечь текст главы 4."
+        )
+
+        return warnings
+
+    if chapter5_heading is None:
+
+        warnings.append(
+            "Не найден заголовок главы 5 после главы 4. "
+            "Граница реабилитации не подтверждена."
+        )
+
+        return warnings
+
+    rehabilitation = extracted["rehabilitation"]
+
+    if rehabilitation["end"] != chapter5_heading["start"]:
+
+        warnings.append(
+            "Конец главы 4 не совпадает с началом главы 5."
+        )
+
+    if rehabilitation["start"] >= chapter5_heading["start"]:
+
+        warnings.append(
+            "Некорректный порядок границ глав 4 и 5."
+        )
+
+    if not rehabilitation["text"].strip():
+
+        warnings.append(
+            "Текст главы 4 пустой."
         )
 
     return warnings
@@ -460,7 +603,9 @@ def build_quality_report(
     text,
     extracted,
     matched_headings,
-    all_candidates
+    all_candidates,
+    chapter5_heading,
+    chapter5_candidates
 ):
 
     warnings = []
@@ -472,6 +617,7 @@ def build_quality_report(
         key = section["key"]
 
         if key not in matched_headings:
+
             missing_sections.append(key)
 
             warnings.append(
@@ -489,48 +635,107 @@ def build_quality_report(
         )
     )
 
-    # Контроль пустых извлечённых разделов.
+    warnings.extend(
+        check_rehabilitation_boundary(
+            extracted,
+            matched_headings,
+            chapter5_heading
+        )
+    )
+
+    # Проверка пустых разделов.
     for key, section_data in extracted.items():
 
         if not section_data["text"].strip():
+
             warnings.append(
                 f"Раздел {key} найден, но его текст пустой."
             )
 
-    # Для главы 3 проверяем, что границы определены
-    # строго по заголовкам 3 и 4.
+    # --------------------------------------------------------
+    # Проверка границы главы 3.
+    # --------------------------------------------------------
+
     treatment_boundary_ok = False
 
     if (
         "treatment" in extracted
         and "rehabilitation" in matched_headings
     ):
+
         treatment_boundary_ok = (
             extracted["treatment"]["end"]
             == matched_headings["rehabilitation"]["start"]
         )
 
-    # Дополнительная проверка: в тексте лечения
-    # должен присутствовать хотя бы один содержательный
-    # фрагмент после заголовка.
+    # --------------------------------------------------------
+    # Проверка границы главы 4.
+    # --------------------------------------------------------
+
+    rehabilitation_boundary_ok = False
+
+    if (
+        "rehabilitation" in extracted
+        and chapter5_heading is not None
+    ):
+
+        rehabilitation_boundary_ok = (
+            extracted["rehabilitation"]["end"]
+            == chapter5_heading["start"]
+        )
+
+    # --------------------------------------------------------
+    # Контроль объёма лечения.
+    # --------------------------------------------------------
+
     if "treatment" in extracted:
 
         treatment_text = extracted["treatment"]["text"]
 
         if len(treatment_text) < 100:
+
             warnings.append(
                 "Подозрительно короткий текст главы 3. "
                 "Требуется ручная проверка."
             )
 
-    # Если обязательные заголовки найдены и предупреждений
-    # нет, результат может получить passed.
-    # Наличие заголовков само по себе не доказывает
-    # медицинскую полноту документа.
-    if not missing_sections and not warnings and treatment_boundary_ok:
+    # --------------------------------------------------------
+    # Контроль объёма реабилитации.
+    # --------------------------------------------------------
+
+    if "rehabilitation" in extracted:
+
+        rehabilitation_text = (
+            extracted["rehabilitation"]["text"]
+        )
+
+        if len(rehabilitation_text) < 100:
+
+            warnings.append(
+                "Подозрительно короткий текст главы 4. "
+                "Требуется ручная проверка."
+            )
+
+    # --------------------------------------------------------
+    # Итоговый статус.
+    # --------------------------------------------------------
+
+    if (
+        not missing_sections
+        and not warnings
+        and treatment_boundary_ok
+        and rehabilitation_boundary_ok
+    ):
+
         quality_check = "passed"
+
     else:
+
         quality_check = "review_required"
+
+    # --------------------------------------------------------
+    # Отчёт по найденным заголовкам.
+    # --------------------------------------------------------
 
     matched_report = {}
 
@@ -541,37 +746,90 @@ def build_quality_report(
             "alias": heading["alias"],
             "start": heading["start"],
             "matched_text": heading["matched_text"],
-            "candidate_count": len(all_candidates.get(key, [])),
+            "candidate_count": len(
+                all_candidates.get(key, [])
+            ),
+        }
+
+    # --------------------------------------------------------
+    # Отчёт по главе 5.
+    # --------------------------------------------------------
+
+    chapter5_report = None
+
+    if chapter5_heading is not None:
+
+        chapter5_report = {
+            "start": chapter5_heading["start"],
+            "matched_text": chapter5_heading["matched_text"],
+            "candidate_count": len(chapter5_candidates),
         }
 
     return {
+
         "quality_check": quality_check,
+
         "extraction_method": EXTRACTION_METHOD,
+
         "text_length": len(text),
+
         "missing_sections": missing_sections,
+
         "warnings": warnings,
+
         "matched_headings": matched_report,
+
         "treatment_boundary_check": {
+
             "passed": treatment_boundary_ok,
+
             "treatment_start": (
                 extracted["treatment"]["start"]
                 if "treatment" in extracted
                 else None
             ),
+
             "treatment_end": (
                 extracted["treatment"]["end"]
                 if "treatment" in extracted
                 else None
             ),
+
             "rehabilitation_start": (
                 matched_headings["rehabilitation"]["start"]
                 if "rehabilitation" in matched_headings
                 else None
             ),
         },
+
+        "rehabilitation_boundary_check": {
+
+            "passed": rehabilitation_boundary_ok,
+
+            "rehabilitation_start": (
+                extracted["rehabilitation"]["start"]
+                if "rehabilitation" in extracted
+                else None
+            ),
+
+            "rehabilitation_end": (
+                extracted["rehabilitation"]["end"]
+                if "rehabilitation" in extracted
+                else None
+            ),
+
+            "chapter5_start": (
+                chapter5_heading["start"]
+                if chapter5_heading
+                else None
+            ),
+
+            "chapter5_heading": chapter5_report,
+        },
+
         "note": (
             "Проверка подтверждает обнаружение структурных "
-            "заголовков и определение границ разделов. "
+            "заголовков и определение границ глав 3 и 4. "
             "Медицинская полнота, сохранность текста и "
             "соответствие исходному PDF требуют отдельной проверки."
         ),
@@ -585,7 +843,9 @@ def build_quality_report(
 def main():
 
     parser = argparse.ArgumentParser(
-        description="Извлечение разделов клинической рекомендации"
+        description=(
+            "Извлечение разделов клинической рекомендации"
+        )
     )
 
     parser.add_argument(
@@ -611,70 +871,111 @@ def main():
     input_path = Path(args.input)
 
     if not input_path.exists():
+
         raise FileNotFoundError(
             f"Входной файл не найден: {input_path}"
         )
 
-    with input_path.open("r", encoding="utf-8") as file:
+    with input_path.open(
+        "r",
+        encoding="utf-8"
+    ) as file:
+
         source_data = json.load(file)
 
     if "full_text" not in source_data:
+
         raise ValueError(
             "В исходном JSON отсутствует поле full_text."
         )
 
     full_text = source_data["full_text"]
 
-    if not isinstance(full_text, str) or not full_text.strip():
+    if (
+        not isinstance(full_text, str)
+        or not full_text.strip()
+    ):
+
         raise ValueError(
             "Поле full_text пустое или имеет неверный формат."
         )
 
-    document_id = source_data.get("id", input_path.stem)
+    document_id = source_data.get(
+        "id",
+        input_path.stem
+    )
 
     output_path = (
         Path(args.output)
         if args.output
-        else Path(f"output/{document_id}_sections_v2.json")
+        else Path(
+            f"output/{document_id}_sections_v2.json"
+        )
     )
 
     report_path = (
         Path(args.report)
         if args.report
-        else Path(f"output/{document_id}_quality_report_v2.json")
+        else Path(
+            f"output/{document_id}_quality_report_v2.json"
+        )
     )
 
-    # Извлечение.
-    extracted, matched_headings, all_candidates = (
-        extract_sections(full_text)
-    )
+    # --------------------------------------------------------
+    # Извлечение разделов.
+    # --------------------------------------------------------
 
-    # Отчёт качества.
+    (
+        extracted,
+        matched_headings,
+        all_candidates,
+        chapter5_heading,
+        chapter5_candidates,
+    ) = extract_sections(full_text)
+
+    # --------------------------------------------------------
+    # Формирование отчёта качества.
+    # --------------------------------------------------------
+
     quality_report = build_quality_report(
         full_text,
         extracted,
         matched_headings,
-        all_candidates
+        all_candidates,
+        chapter5_heading,
+        chapter5_candidates,
     )
 
-    # Итоговый JSON.
+    # --------------------------------------------------------
+    # Формирование итогового JSON.
+    # --------------------------------------------------------
+
     result = {
+
         "id": document_id,
+
         "title": source_data.get("title"),
+
         "extraction_method": EXTRACTION_METHOD,
+
         "quality_check": quality_report["quality_check"],
+
         "sections": {
             key: value["text"]
             for key, value in extracted.items()
         },
+
         "section_positions": {
+
             key: {
                 "start": value["start"],
                 "end": value["end"],
                 "length": len(value["text"]),
             }
+
             for key, value in extracted.items()
         },
+
         "quality_report": quality_report,
     }
 
@@ -688,7 +989,11 @@ def main():
         exist_ok=True
     )
 
-    with output_path.open("w", encoding="utf-8") as file:
+    with output_path.open(
+        "w",
+        encoding="utf-8"
+    ) as file:
+
         json.dump(
             result,
             file,
@@ -696,7 +1001,11 @@ def main():
             indent=2
         )
 
-    with report_path.open("w", encoding="utf-8") as file:
+    with report_path.open(
+        "w",
+        encoding="utf-8"
+    ) as file:
+
         json.dump(
             quality_report,
             file,
@@ -704,17 +1013,30 @@ def main():
             indent=2
         )
 
+    # --------------------------------------------------------
     # Вывод результатов в GitHub Actions.
-    print("=" * 60)
-    print("РЕЗУЛЬТАТ ИЗВЛЕЧЕНИЯ КЛИНИЧЕСКОЙ РЕКОМЕНДАЦИИ")
-    print("=" * 60)
+    # --------------------------------------------------------
+
+    print("=" * 70)
+
+    print(
+        "РЕЗУЛЬТАТ ИЗВЛЕЧЕНИЯ КЛИНИЧЕСКОЙ РЕКОМЕНДАЦИИ"
+    )
+
+    print("=" * 70)
 
     print(f"Документ: {document_id}")
+
     print(f"Метод: {EXTRACTION_METHOD}")
+
     print(f"Длина исходного текста: {len(full_text)}")
+
     print()
 
-    print(f"Статус: {quality_report['quality_check']}")
+    print(
+        f"Статус: {quality_report['quality_check']}"
+    )
+
     print()
 
     print("НАЙДЕННЫЕ РАЗДЕЛЫ:")
@@ -733,42 +1055,109 @@ def main():
             )
 
         else:
+
             print(f"[НЕТ] {key}")
 
+    # --------------------------------------------------------
+    # Вывод границы главы 3.
+    # --------------------------------------------------------
+
     print()
+
     print("ПРОВЕРКА ГРАНИЦЫ ЛЕЧЕНИЯ:")
 
-    boundary = quality_report["treatment_boundary_check"]
-
-    print(
-        f"Начало лечения: {boundary['treatment_start']}"
+    treatment_boundary = (
+        quality_report["treatment_boundary_check"]
     )
 
     print(
-        f"Конец лечения: {boundary['treatment_end']}"
+        "Начало лечения:",
+        treatment_boundary["treatment_start"]
     )
 
     print(
-        f"Начало реабилитации: "
-        f"{boundary['rehabilitation_start']}"
+        "Конец лечения:",
+        treatment_boundary["treatment_end"]
     )
 
     print(
-        f"Граница подтверждена: {boundary['passed']}"
+        "Начало реабилитации:",
+        treatment_boundary["rehabilitation_start"]
     )
+
+    print(
+        "Граница подтверждена:",
+        treatment_boundary["passed"]
+    )
+
+    # --------------------------------------------------------
+    # Вывод границы главы 4.
+    # --------------------------------------------------------
+
+    print()
+
+    print("ПРОВЕРКА ГРАНИЦЫ РЕАБИЛИТАЦИИ:")
+
+    rehabilitation_boundary = (
+        quality_report["rehabilitation_boundary_check"]
+    )
+
+    print(
+        "Начало реабилитации:",
+        rehabilitation_boundary["rehabilitation_start"]
+    )
+
+    print(
+        "Конец реабилитации:",
+        rehabilitation_boundary["rehabilitation_end"]
+    )
+
+    print(
+        "Начало главы 5:",
+        rehabilitation_boundary["chapter5_start"]
+    )
+
+    if chapter5_heading:
+
+        print(
+            "Заголовок главы 5:",
+            chapter5_heading["matched_text"]
+        )
+
+    else:
+
+        print("Заголовок главы 5: НЕ НАЙДЕН")
+
+    print(
+        "Граница подтверждена:",
+        rehabilitation_boundary["passed"]
+    )
+
+    # --------------------------------------------------------
+    # Предупреждения.
+    # --------------------------------------------------------
 
     if quality_report["warnings"]:
 
         print()
+
         print("ПРЕДУПРЕЖДЕНИЯ:")
 
         for warning in quality_report["warnings"]:
+
             print(f"- {warning}")
 
+    # --------------------------------------------------------
+    # Итог.
+    # --------------------------------------------------------
+
     print()
+
     print(f"Файл разделов: {output_path}")
+
     print(f"Отчёт качества: {report_path}")
-    print("=" * 60)
+
+    print("=" * 70)
 
 
 if __name__ == "__main__":

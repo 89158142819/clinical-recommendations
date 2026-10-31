@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-31T18:41:16.555551+00:00",
-  "total_processed": 350,
+  "updated_at": "2026-10-31T18:45:38.175989+00:00",
+  "total_processed": 400,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -14330,6 +14330,2170 @@
       "input_file": "output/134_2.json",
       "sections_file": "output/134_2_sections_v2.json",
       "report_file": "output/134_2_quality_report_v2.json"
+    },
+    "75_2": {
+      "id": "75_2",
+      "title": "Опухоли слюнных желез у детей",
+      "status": "passed",
+      "started_at": "2026-10-31T18:41:19.641102+00:00",
+      "finished_at": "2026-10-31T18:41:23.291450+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 62,
+      "pages_with_text": 61,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 87210,
+      "pdf_file": "output/75_2.pdf",
+      "input_file": "output/75_2.json",
+      "sections_file": "output/75_2_sections_v2.json",
+      "report_file": "output/75_2_quality_report_v2.json"
+    },
+    "69_2": {
+      "id": "69_2",
+      "title": "Экстракраниальные герминогенные опухоли",
+      "status": "passed",
+      "started_at": "2026-10-31T18:41:23.301609+00:00",
+      "finished_at": "2026-10-31T18:41:27.914986+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 72,
+      "pages_with_text": 71,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 146089,
+      "pdf_file": "output/69_2.pdf",
+      "input_file": "output/69_2.json",
+      "sections_file": "output/69_2_sections_v2.json",
+      "report_file": "output/69_2_quality_report_v2.json"
+    },
+    "138_2": {
+      "id": "138_2",
+      "title": "Нодальные Т-клеточные лимфомы",
+      "status": "passed",
+      "started_at": "2026-10-31T18:41:27.925465+00:00",
+      "finished_at": "2026-10-31T18:41:33.515885+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 85,
+      "pages_with_text": 85,
+      "empty_pages": [],
+      "text_length": 192273,
+      "pdf_file": "output/138_2.pdf",
+      "input_file": "output/138_2.json",
+      "sections_file": "output/138_2_sections_v2.json",
+      "report_file": "output/138_2_quality_report_v2.json"
+    },
+    "78_2": {
+      "id": "78_2",
+      "title": "Нейробластома",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:41:33.526093+00:00",
+      "finished_at": "2026-10-31T18:41:43.182351+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "definition",
+        "etiology_pathogenesis",
+        "epidemiology",
+        "icd10",
+        "classification",
+        "clinical_picture",
+        "diagnostics",
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics",
+        "rehabilitation"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: definition",
+        "Не найден заголовок раздела: etiology_pathogenesis",
+        "Не найден заголовок раздела: epidemiology",
+        "Не найден заголовок раздела: icd10",
+        "Не найден заголовок раздела: classification",
+        "Не найден заголовок раздела: clinical_picture",
+        "Не найден заголовок раздела: diagnostics",
+        "Не найден заголовок раздела: complaints_anamnesis",
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics",
+        "Не найден заголовок раздела: rehabilitation",
+        "Не найден заголовок главы 4.",
+        "Не удалось извлечь текст главы 4."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "rehabilitation"
+        ],
+        "missing_sections": [
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "rehabilitation"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: definition",
+          "Не найден заголовок раздела: etiology_pathogenesis",
+          "Не найден заголовок раздела: epidemiology",
+          "Не найден заголовок раздела: icd10",
+          "Не найден заголовок раздела: classification",
+          "Не найден заголовок раздела: clinical_picture",
+          "Не найден заголовок раздела: diagnostics",
+          "Не найден заголовок раздела: complaints_anamnesis",
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics",
+          "Не найден заголовок раздела: rehabilitation",
+          "Не найден заголовок главы 4.",
+          "Не удалось извлечь текст главы 4."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 228,
+      "pages_with_text": 227,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 429580,
+      "pdf_file": "output/78_2.pdf",
+      "input_file": "output/78_2.json",
+      "sections_file": "output/78_2_sections_v2.json",
+      "report_file": "output/78_2_quality_report_v2.json"
+    },
+    "3_2": {
+      "id": "3_2",
+      "title": "Рак полости носа и придаточных пазух",
+      "status": "passed",
+      "started_at": "2026-10-31T18:41:43.193081+00:00",
+      "finished_at": "2026-10-31T18:41:47.621225+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 68,
+      "pages_with_text": 67,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 107478,
+      "pdf_file": "output/3_2.pdf",
+      "input_file": "output/3_2.json",
+      "sections_file": "output/3_2_sections_v2.json",
+      "report_file": "output/3_2_quality_report_v2.json"
+    },
+    "355_5": {
+      "id": "355_5",
+      "title": "Рак поджелудочной железы",
+      "status": "passed",
+      "started_at": "2026-10-31T18:41:47.631554+00:00",
+      "finished_at": "2026-10-31T18:41:52.741176+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 79,
+      "pages_with_text": 78,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 175303,
+      "pdf_file": "output/355_5.pdf",
+      "input_file": "output/355_5.json",
+      "sections_file": "output/355_5_sections_v2.json",
+      "report_file": "output/355_5_quality_report_v2.json"
+    },
+    "460_4": {
+      "id": "460_4",
+      "title": "Рак тела матки и саркомы матки",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:41:52.751457+00:00",
+      "finished_at": "2026-10-31T18:41:57.752018+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "icd10"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: icd10"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "icd10"
+        ],
+        "missing_sections": [
+          "icd10"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: icd10"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 80,
+      "pages_with_text": 79,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 161370,
+      "pdf_file": "output/460_4.pdf",
+      "input_file": "output/460_4.json",
+      "sections_file": "output/460_4_sections_v2.json",
+      "report_file": "output/460_4_quality_report_v2.json"
+    },
+    "144_2": {
+      "id": "144_2",
+      "title": "Множественная миелома",
+      "status": "passed",
+      "started_at": "2026-10-31T18:41:57.762416+00:00",
+      "finished_at": "2026-10-31T18:42:04.604018+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 89,
+      "pages_with_text": 89,
+      "empty_pages": [],
+      "text_length": 174000,
+      "pdf_file": "output/144_2.pdf",
+      "input_file": "output/144_2.json",
+      "sections_file": "output/144_2_sections_v2.json",
+      "report_file": "output/144_2_quality_report_v2.json"
+    },
+    "141_2": {
+      "id": "141_2",
+      "title": "Миелодиспластический синдром. Миелодиспластические/ миелопролиферативные новообразования",
+      "status": "passed",
+      "started_at": "2026-10-31T18:42:04.614442+00:00",
+      "finished_at": "2026-10-31T18:42:10.708782+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 106,
+      "pages_with_text": 106,
+      "empty_pages": [],
+      "text_length": 225686,
+      "pdf_file": "output/141_2.pdf",
+      "input_file": "output/141_2.json",
+      "sections_file": "output/141_2_sections_v2.json",
+      "report_file": "output/141_2_quality_report_v2.json"
+    },
+    "696_2": {
+      "id": "696_2",
+      "title": "Апластическая анемия",
+      "status": "passed",
+      "started_at": "2026-10-31T18:42:10.719143+00:00",
+      "finished_at": "2026-10-31T18:42:17.894288+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 110,
+      "pages_with_text": 110,
+      "empty_pages": [],
+      "text_length": 205789,
+      "pdf_file": "output/696_2.pdf",
+      "input_file": "output/696_2.json",
+      "sections_file": "output/696_2_sections_v2.json",
+      "report_file": "output/696_2_quality_report_v2.json"
+    },
+    "139_2": {
+      "id": "139_2",
+      "title": "Лимфома Ходжкина",
+      "status": "passed",
+      "started_at": "2026-10-31T18:42:17.904798+00:00",
+      "finished_at": "2026-10-31T18:42:24.635943+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 141,
+      "pages_with_text": 141,
+      "empty_pages": [],
+      "text_length": 260111,
+      "pdf_file": "output/139_2.pdf",
+      "input_file": "output/139_2.json",
+      "sections_file": "output/139_2_sections_v2.json",
+      "report_file": "output/139_2_quality_report_v2.json"
+    },
+    "652_2": {
+      "id": "652_2",
+      "title": "Перелом дна глазницы",
+      "status": "passed",
+      "started_at": "2026-10-31T18:42:24.646561+00:00",
+      "finished_at": "2026-10-31T18:42:28.799871+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 40,
+      "pages_with_text": 40,
+      "empty_pages": [],
+      "text_length": 69960,
+      "pdf_file": "output/652_2.pdf",
+      "input_file": "output/652_2.json",
+      "sections_file": "output/652_2_sections_v2.json",
+      "report_file": "output/652_2_quality_report_v2.json"
+    },
+    "904_1": {
+      "id": "904_1",
+      "title": "Переломы бедренной кости (кроме проксимального отдела бедренной кости)",
+      "status": "passed",
+      "started_at": "2026-10-31T18:42:28.810357+00:00",
+      "finished_at": "2026-10-31T18:42:34.792720+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 81,
+      "pages_with_text": 81,
+      "empty_pages": [],
+      "text_length": 171829,
+      "pdf_file": "output/904_1.pdf",
+      "input_file": "output/904_1.json",
+      "sections_file": "output/904_1_sections_v2.json",
+      "report_file": "output/904_1_quality_report_v2.json"
+    },
+    "74_2": {
+      "id": "74_2",
+      "title": "Рак щитовидной железы",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:42:34.803162+00:00",
+      "finished_at": "2026-10-31T18:42:39.623841+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 99,
+      "pages_with_text": 94,
+      "empty_pages": [
+        1,
+        84,
+        87,
+        94,
+        98
+      ],
+      "text_length": 161825,
+      "pdf_file": "output/74_2.pdf",
+      "input_file": "output/74_2.json",
+      "sections_file": "output/74_2_sections_v2.json",
+      "report_file": "output/74_2_quality_report_v2.json"
+    },
+    "903_1": {
+      "id": "903_1",
+      "title": "Острый панкреатит",
+      "status": "passed",
+      "started_at": "2026-10-31T18:42:39.634267+00:00",
+      "finished_at": "2026-10-31T18:42:43.062426+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 54,
+      "pages_with_text": 54,
+      "empty_pages": [],
+      "text_length": 126237,
+      "pdf_file": "output/903_1.pdf",
+      "input_file": "output/903_1.json",
+      "sections_file": "output/903_1_sections_v2.json",
+      "report_file": "output/903_1_quality_report_v2.json"
+    },
+    "537_3": {
+      "id": "537_3",
+      "title": "Рак шейки матки",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:42:43.073003+00:00",
+      "finished_at": "2026-10-31T18:42:47.840179+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "etiology_pathogenesis",
+        "clinical_picture"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: etiology_pathogenesis",
+        "Не найден заголовок раздела: clinical_picture"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "etiology_pathogenesis",
+          "clinical_picture"
+        ],
+        "missing_sections": [
+          "etiology_pathogenesis",
+          "clinical_picture"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: etiology_pathogenesis",
+          "Не найден заголовок раздела: clinical_picture"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 78,
+      "pages_with_text": 77,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 157360,
+      "pdf_file": "output/537_3.pdf",
+      "input_file": "output/537_3.json",
+      "sections_file": "output/537_3_sections_v2.json",
+      "report_file": "output/537_3_quality_report_v2.json"
+    },
+    "632_2": {
+      "id": "632_2",
+      "title": "Перелом верхней челюсти",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:42:47.850776+00:00",
+      "finished_at": "2026-10-31T18:42:52.645819+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "terms",
+        "definition",
+        "etiology_pathogenesis",
+        "epidemiology",
+        "icd10",
+        "classification",
+        "clinical_picture",
+        "diagnostics",
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics",
+        "treatment",
+        "rehabilitation"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: terms",
+        "Не найден заголовок раздела: definition",
+        "Не найден заголовок раздела: etiology_pathogenesis",
+        "Не найден заголовок раздела: epidemiology",
+        "Не найден заголовок раздела: icd10",
+        "Не найден заголовок раздела: classification",
+        "Не найден заголовок раздела: clinical_picture",
+        "Не найден заголовок раздела: diagnostics",
+        "Не найден заголовок раздела: complaints_anamnesis",
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics",
+        "Не найден заголовок раздела: treatment",
+        "Не найден заголовок раздела: rehabilitation",
+        "Не найден заголовок главы 3.",
+        "Не удалось извлечь текст главы 4."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "terms",
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "missing_sections": [
+          "terms",
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: terms",
+          "Не найден заголовок раздела: definition",
+          "Не найден заголовок раздела: etiology_pathogenesis",
+          "Не найден заголовок раздела: epidemiology",
+          "Не найден заголовок раздела: icd10",
+          "Не найден заголовок раздела: classification",
+          "Не найден заголовок раздела: clinical_picture",
+          "Не найден заголовок раздела: diagnostics",
+          "Не найден заголовок раздела: complaints_anamnesis",
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics",
+          "Не найден заголовок раздела: treatment",
+          "Не найден заголовок раздела: rehabilitation",
+          "Не найден заголовок главы 3.",
+          "Не удалось извлечь текст главы 4."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 47,
+      "pages_with_text": 0,
+      "empty_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "text_length": 741,
+      "pdf_file": "output/632_2.pdf",
+      "input_file": "output/632_2.json",
+      "sections_file": "output/632_2_sections_v2.json",
+      "report_file": "output/632_2_quality_report_v2.json"
+    },
+    "164_2": {
+      "id": "164_2",
+      "title": "Злокачественные новообразования полости рта",
+      "status": "passed",
+      "started_at": "2026-10-31T18:42:52.656726+00:00",
+      "finished_at": "2026-10-31T18:42:57.913119+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 92,
+      "pages_with_text": 91,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 190607,
+      "pdf_file": "output/164_2.pdf",
+      "input_file": "output/164_2.json",
+      "sections_file": "output/164_2_sections_v2.json",
+      "report_file": "output/164_2_quality_report_v2.json"
+    },
+    "633_2": {
+      "id": "633_2",
+      "title": "Перелом скуловой кости",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:42:57.923594+00:00",
+      "finished_at": "2026-10-31T18:43:03.071887+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "terms",
+        "definition",
+        "etiology_pathogenesis",
+        "epidemiology",
+        "icd10",
+        "classification",
+        "clinical_picture",
+        "diagnostics",
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics",
+        "treatment",
+        "rehabilitation"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: terms",
+        "Не найден заголовок раздела: definition",
+        "Не найден заголовок раздела: etiology_pathogenesis",
+        "Не найден заголовок раздела: epidemiology",
+        "Не найден заголовок раздела: icd10",
+        "Не найден заголовок раздела: classification",
+        "Не найден заголовок раздела: clinical_picture",
+        "Не найден заголовок раздела: diagnostics",
+        "Не найден заголовок раздела: complaints_anamnesis",
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics",
+        "Не найден заголовок раздела: treatment",
+        "Не найден заголовок раздела: rehabilitation",
+        "Не найден заголовок главы 3.",
+        "Не удалось извлечь текст главы 4."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "terms",
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "missing_sections": [
+          "terms",
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: terms",
+          "Не найден заголовок раздела: definition",
+          "Не найден заголовок раздела: etiology_pathogenesis",
+          "Не найден заголовок раздела: epidemiology",
+          "Не найден заголовок раздела: icd10",
+          "Не найден заголовок раздела: classification",
+          "Не найден заголовок раздела: clinical_picture",
+          "Не найден заголовок раздела: diagnostics",
+          "Не найден заголовок раздела: complaints_anamnesis",
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics",
+          "Не найден заголовок раздела: treatment",
+          "Не найден заголовок раздела: rehabilitation",
+          "Не найден заголовок главы 3.",
+          "Не удалось извлечь текст главы 4."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 40,
+      "pages_with_text": 0,
+      "empty_pages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40
+      ],
+      "text_length": 629,
+      "pdf_file": "output/633_2.pdf",
+      "input_file": "output/633_2.json",
+      "sections_file": "output/633_2_sections_v2.json",
+      "report_file": "output/633_2_quality_report_v2.json"
+    },
+    "70_2": {
+      "id": "70_2",
+      "title": "Злокачественные новообразования костей и суставных хрящей: остеосаркома, саркома Юинга",
+      "status": "passed",
+      "started_at": "2026-10-31T18:43:03.082705+00:00",
+      "finished_at": "2026-10-31T18:43:10.113024+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 140,
+      "pages_with_text": 139,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 280479,
+      "pdf_file": "output/70_2.pdf",
+      "input_file": "output/70_2.json",
+      "sections_file": "output/70_2_sections_v2.json",
+      "report_file": "output/70_2_quality_report_v2.json"
+    },
+    "66_4": {
+      "id": "66_4",
+      "title": "Рак носоглотки",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:43:10.123805+00:00",
+      "finished_at": "2026-10-31T18:43:14.883886+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "definition",
+        "etiology_pathogenesis",
+        "epidemiology",
+        "diagnostics",
+        "treatment",
+        "rehabilitation"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: definition",
+        "Не найден заголовок раздела: etiology_pathogenesis",
+        "Не найден заголовок раздела: epidemiology",
+        "Не найден заголовок раздела: diagnostics",
+        "Не найден заголовок раздела: treatment",
+        "Не найден заголовок раздела: rehabilitation",
+        "Не найден заголовок главы 3.",
+        "Не удалось извлечь текст главы 4."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "missing_sections": [
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: definition",
+          "Не найден заголовок раздела: etiology_pathogenesis",
+          "Не найден заголовок раздела: epidemiology",
+          "Не найден заголовок раздела: diagnostics",
+          "Не найден заголовок раздела: treatment",
+          "Не найден заголовок раздела: rehabilitation",
+          "Не найден заголовок главы 3.",
+          "Не удалось извлечь текст главы 4."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 72,
+      "pages_with_text": 71,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 171705,
+      "pdf_file": "output/66_4.pdf",
+      "input_file": "output/66_4.json",
+      "sections_file": "output/66_4_sections_v2.json",
+      "report_file": "output/66_4_quality_report_v2.json"
+    },
+    "391_3": {
+      "id": "391_3",
+      "title": "Язвенный колит",
+      "status": "passed",
+      "started_at": "2026-10-31T18:43:14.895085+00:00",
+      "finished_at": "2026-10-31T18:43:20.529593+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 104,
+      "pages_with_text": 104,
+      "empty_pages": [],
+      "text_length": 220120,
+      "pdf_file": "output/391_3.pdf",
+      "input_file": "output/391_3.json",
+      "sections_file": "output/391_3_sections_v2.json",
+      "report_file": "output/391_3_quality_report_v2.json"
+    },
+    "495_2": {
+      "id": "495_2",
+      "title": "Рак желчевыводящей системы",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:43:20.540631+00:00",
+      "finished_at": "2026-10-31T18:43:28.148456+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: instrumental_diagnostics"
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: instrumental_diagnostics"
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 80,
+      "pages_with_text": 79,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 156001,
+      "pdf_file": "output/495_2.pdf",
+      "input_file": "output/495_2.json",
+      "sections_file": "output/495_2_sections_v2.json",
+      "report_file": "output/495_2_quality_report_v2.json"
+    },
+    "360_3": {
+      "id": "360_3",
+      "title": "Острый бронхиолит",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:43:28.159811+00:00",
+      "finished_at": "2026-10-31T18:43:32.197227+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "etiology_pathogenesis"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: etiology_pathogenesis"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "etiology_pathogenesis"
+        ],
+        "missing_sections": [
+          "etiology_pathogenesis"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: etiology_pathogenesis"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 45,
+      "pages_with_text": 45,
+      "empty_pages": [],
+      "text_length": 84249,
+      "pdf_file": "output/360_3.pdf",
+      "input_file": "output/360_3.json",
+      "sections_file": "output/360_3_sections_v2.json",
+      "report_file": "output/360_3_quality_report_v2.json"
+    },
+    "352_3": {
+      "id": "352_3",
+      "title": "Острый обструктивный ларингит [круп], эпиглоттит, постинтубационный отек гортани",
+      "status": "passed",
+      "started_at": "2026-10-31T18:43:32.208624+00:00",
+      "finished_at": "2026-10-31T18:43:36.644501+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 54,
+      "pages_with_text": 54,
+      "empty_pages": [],
+      "text_length": 105369,
+      "pdf_file": "output/352_3.pdf",
+      "input_file": "output/352_3.json",
+      "sections_file": "output/352_3_sections_v2.json",
+      "report_file": "output/352_3_quality_report_v2.json"
+    },
+    "277_2": {
+      "id": "277_2",
+      "title": "Язвенная болезнь",
+      "status": "passed",
+      "started_at": "2026-10-31T18:43:36.655273+00:00",
+      "finished_at": "2026-10-31T18:43:41.747339+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 107,
+      "pages_with_text": 107,
+      "empty_pages": [],
+      "text_length": 230298,
+      "pdf_file": "output/277_2.pdf",
+      "input_file": "output/277_2.json",
+      "sections_file": "output/277_2_sections_v2.json",
+      "report_file": "output/277_2_quality_report_v2.json"
+    },
+    "902_1": {
+      "id": "902_1",
+      "title": "Раны мягких тканей челюстно-лицевой области",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:43:41.758396+00:00",
+      "finished_at": "2026-10-31T18:43:47.246193+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 55,
+      "pages_with_text": 54,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 108292,
+      "pdf_file": "output/902_1.pdf",
+      "input_file": "output/902_1.json",
+      "sections_file": "output/902_1_sections_v2.json",
+      "report_file": "output/902_1_quality_report_v2.json"
+    },
+    "901_1": {
+      "id": "901_1",
+      "title": "Лечение острой травмы зубов у пациентов детского возраста",
+      "status": "passed",
+      "started_at": "2026-10-31T18:43:47.257356+00:00",
+      "finished_at": "2026-10-31T18:43:51.691032+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 67,
+      "pages_with_text": 66,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 113827,
+      "pdf_file": "output/901_1.pdf",
+      "input_file": "output/901_1.json",
+      "sections_file": "output/901_1_sections_v2.json",
+      "report_file": "output/901_1_quality_report_v2.json"
+    },
+    "496_2": {
+      "id": "496_2",
+      "title": "Острые лимфобластные лейкозы",
+      "status": "passed",
+      "started_at": "2026-10-31T18:43:51.702201+00:00",
+      "finished_at": "2026-10-31T18:43:59.503248+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 161,
+      "pages_with_text": 160,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 342637,
+      "pdf_file": "output/496_2.pdf",
+      "input_file": "output/496_2.json",
+      "sections_file": "output/496_2_sections_v2.json",
+      "report_file": "output/496_2_quality_report_v2.json"
+    },
+    "900_1": {
+      "id": "900_1",
+      "title": "Хронический вирусный гепатит B",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:43:59.514381+00:00",
+      "finished_at": "2026-10-31T18:44:06.159617+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 99,
+      "pages_with_text": 99,
+      "empty_pages": [],
+      "text_length": 200861,
+      "pdf_file": "output/900_1.pdf",
+      "input_file": "output/900_1.json",
+      "sections_file": "output/900_1_sections_v2.json",
+      "report_file": "output/900_1_quality_report_v2.json"
+    },
+    "250_3": {
+      "id": "250_3",
+      "title": "Ревматоидный артрит",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:44:06.170975+00:00",
+      "finished_at": "2026-10-31T18:44:12.104178+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 120,
+      "pages_with_text": 120,
+      "empty_pages": [],
+      "text_length": 233875,
+      "pdf_file": "output/250_3.pdf",
+      "input_file": "output/250_3.json",
+      "sections_file": "output/250_3_sections_v2.json",
+      "report_file": "output/250_3_quality_report_v2.json"
+    },
+    "9_3": {
+      "id": "9_3",
+      "title": "Острый пиелонефрит",
+      "status": "passed",
+      "started_at": "2026-10-31T18:44:12.115477+00:00",
+      "finished_at": "2026-10-31T18:44:15.407694+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 35,
+      "pages_with_text": 34,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 68303,
+      "pdf_file": "output/9_3.pdf",
+      "input_file": "output/9_3.json",
+      "sections_file": "output/9_3_sections_v2.json",
+      "report_file": "output/9_3_quality_report_v2.json"
+    },
+    "655_2": {
+      "id": "655_2",
+      "title": "Хронический бронхит",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:44:15.418882+00:00",
+      "finished_at": "2026-10-31T18:44:19.205888+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "clinical_picture",
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: clinical_picture",
+        "Не найден заголовок раздела: instrumental_diagnostics"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "clinical_picture",
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "clinical_picture",
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: clinical_picture",
+          "Не найден заголовок раздела: instrumental_diagnostics"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 52,
+      "pages_with_text": 52,
+      "empty_pages": [],
+      "text_length": 106921,
+      "pdf_file": "output/655_2.pdf",
+      "input_file": "output/655_2.json",
+      "sections_file": "output/655_2_sections_v2.json",
+      "report_file": "output/655_2_quality_report_v2.json"
+    },
+    "601_2": {
+      "id": "601_2",
+      "title": "Психические и поведенческие расстройства, вызванные употреблением табака (никотина). Синдром зависимости от табака, синдром отмены табака у взрослых",
+      "status": "passed",
+      "started_at": "2026-10-31T18:44:19.217206+00:00",
+      "finished_at": "2026-10-31T18:44:22.910916+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 51,
+      "pages_with_text": 50,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 98071,
+      "pdf_file": "output/601_2.pdf",
+      "input_file": "output/601_2.json",
+      "sections_file": "output/601_2_sections_v2.json",
+      "report_file": "output/601_2_quality_report_v2.json"
+    },
+    "551_3": {
+      "id": "551_3",
+      "title": "Гастроинтестинальные стромальные опухоли",
+      "status": "passed",
+      "started_at": "2026-10-31T18:44:22.922019+00:00",
+      "finished_at": "2026-10-31T18:44:27.354637+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 70,
+      "pages_with_text": 69,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 134187,
+      "pdf_file": "output/551_3.pdf",
+      "input_file": "output/551_3.json",
+      "sections_file": "output/551_3_sections_v2.json",
+      "report_file": "output/551_3_quality_report_v2.json"
+    },
+    "534_3": {
+      "id": "534_3",
+      "title": "Вторичное злокачественное новообразование головного мозга и мозговых оболочек",
+      "status": "passed",
+      "started_at": "2026-10-31T18:44:27.366208+00:00",
+      "finished_at": "2026-10-31T18:44:31.321806+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 34,
+      "pages_with_text": 33,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 106743,
+      "pdf_file": "output/534_3.pdf",
+      "input_file": "output/534_3.json",
+      "sections_file": "output/534_3_sections_v2.json",
+      "report_file": "output/534_3_quality_report_v2.json"
+    },
+    "899_1": {
+      "id": "899_1",
+      "title": "Психические и поведенческие расстройства, вызванные употреблением алкоголя Синдром зависимости от алкоголя",
+      "status": "passed",
+      "started_at": "2026-10-31T18:44:31.333044+00:00",
+      "finished_at": "2026-10-31T18:44:35.738457+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 75,
+      "pages_with_text": 74,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 159995,
+      "pdf_file": "output/899_1.pdf",
+      "input_file": "output/899_1.json",
+      "sections_file": "output/899_1_sections_v2.json",
+      "report_file": "output/899_1_quality_report_v2.json"
+    },
+    "898_1": {
+      "id": "898_1",
+      "title": "Сепсис (у взрослых)",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:44:35.749758+00:00",
+      "finished_at": "2026-10-31T18:44:42.263353+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "terms",
+        "definition",
+        "etiology_pathogenesis",
+        "epidemiology",
+        "icd10",
+        "classification",
+        "clinical_picture",
+        "diagnostics",
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics",
+        "treatment",
+        "rehabilitation"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: terms",
+        "Не найден заголовок раздела: definition",
+        "Не найден заголовок раздела: etiology_pathogenesis",
+        "Не найден заголовок раздела: epidemiology",
+        "Не найден заголовок раздела: icd10",
+        "Не найден заголовок раздела: classification",
+        "Не найден заголовок раздела: clinical_picture",
+        "Не найден заголовок раздела: diagnostics",
+        "Не найден заголовок раздела: complaints_anamnesis",
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics",
+        "Не найден заголовок раздела: treatment",
+        "Не найден заголовок раздела: rehabilitation",
+        "Не найден заголовок главы 3.",
+        "Не удалось извлечь текст главы 4."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "terms",
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "missing_sections": [
+          "terms",
+          "definition",
+          "etiology_pathogenesis",
+          "epidemiology",
+          "icd10",
+          "classification",
+          "clinical_picture",
+          "diagnostics",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "treatment",
+          "rehabilitation"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: terms",
+          "Не найден заголовок раздела: definition",
+          "Не найден заголовок раздела: etiology_pathogenesis",
+          "Не найден заголовок раздела: epidemiology",
+          "Не найден заголовок раздела: icd10",
+          "Не найден заголовок раздела: classification",
+          "Не найден заголовок раздела: clinical_picture",
+          "Не найден заголовок раздела: diagnostics",
+          "Не найден заголовок раздела: complaints_anamnesis",
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics",
+          "Не найден заголовок раздела: treatment",
+          "Не найден заголовок раздела: rehabilitation",
+          "Не найден заголовок главы 3.",
+          "Не удалось извлечь текст главы 4."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 159,
+      "pages_with_text": 158,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 379056,
+      "pdf_file": "output/898_1.pdf",
+      "input_file": "output/898_1.json",
+      "sections_file": "output/898_1_sections_v2.json",
+      "report_file": "output/898_1_quality_report_v2.json"
+    },
+    "590_2": {
+      "id": "590_2",
+      "title": "Психические и поведенческие расстройства, вызванные употреблением психоактивных веществ Абстинентное состояние (синдром отмены) с делирием",
+      "status": "passed",
+      "started_at": "2026-10-31T18:44:42.275104+00:00",
+      "finished_at": "2026-10-31T18:44:46.498917+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 59,
+      "pages_with_text": 58,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 118496,
+      "pdf_file": "output/590_2.pdf",
+      "input_file": "output/590_2.json",
+      "sections_file": "output/590_2_sections_v2.json",
+      "report_file": "output/590_2_quality_report_v2.json"
+    },
+    "897_1": {
+      "id": "897_1",
+      "title": "Острые отравления неопиоидными анальгезирующими, жаропонижающими и противоревматическими средствами",
+      "status": "passed",
+      "started_at": "2026-10-31T18:44:46.510248+00:00",
+      "finished_at": "2026-10-31T18:44:52.213703+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 84,
+      "pages_with_text": 83,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 176561,
+      "pdf_file": "output/897_1.pdf",
+      "input_file": "output/897_1.json",
+      "sections_file": "output/897_1_sections_v2.json",
+      "report_file": "output/897_1_quality_report_v2.json"
+    },
+    "896_1": {
+      "id": "896_1",
+      "title": "Перелом верхней челюсти и скуловой кости",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:44:52.225164+00:00",
+      "finished_at": "2026-10-31T18:44:57.619950+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 62,
+      "pages_with_text": 61,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 120148,
+      "pdf_file": "output/896_1.pdf",
+      "input_file": "output/896_1.json",
+      "sections_file": "output/896_1_sections_v2.json",
+      "report_file": "output/896_1_quality_report_v2.json"
+    },
+    "894_1": {
+      "id": "894_1",
+      "title": "Гломерулярные болезни:  иммуноглобулин А-нефропатия",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:44:57.631461+00:00",
+      "finished_at": "2026-10-31T18:45:02.256631+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "laboratory_diagnostics",
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics"
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics"
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 79,
+      "pages_with_text": 79,
+      "empty_pages": [],
+      "text_length": 156973,
+      "pdf_file": "output/894_1.pdf",
+      "input_file": "output/894_1.json",
+      "sections_file": "output/894_1_sections_v2.json",
+      "report_file": "output/894_1_quality_report_v2.json"
+    },
+    "893_1": {
+      "id": "893_1",
+      "title": "Опухоли невыявленной первичной локализации",
+      "status": "passed",
+      "started_at": "2026-10-31T18:45:02.268194+00:00",
+      "finished_at": "2026-10-31T18:45:07.103199+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 65,
+      "pages_with_text": 64,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 122235,
+      "pdf_file": "output/893_1.pdf",
+      "input_file": "output/893_1.json",
+      "sections_file": "output/893_1_sections_v2.json",
+      "report_file": "output/893_1_quality_report_v2.json"
+    },
+    "883_1": {
+      "id": "883_1",
+      "title": "Другие плазмоклеточные новообразования",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:45:07.114705+00:00",
+      "finished_at": "2026-10-31T18:45:12.445517+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: instrumental_diagnostics"
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: instrumental_diagnostics"
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 116,
+      "pages_with_text": 116,
+      "empty_pages": [],
+      "text_length": 218578,
+      "pdf_file": "output/883_1.pdf",
+      "input_file": "output/883_1.json",
+      "sections_file": "output/883_1_sections_v2.json",
+      "report_file": "output/883_1_quality_report_v2.json"
+    },
+    "682_2": {
+      "id": "682_2",
+      "title": "Болезнь Крона",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:45:12.456959+00:00",
+      "finished_at": "2026-10-31T18:45:18.528892+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "definition"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: definition"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "definition"
+        ],
+        "missing_sections": [
+          "definition"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: definition"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 133,
+      "pages_with_text": 133,
+      "empty_pages": [],
+      "text_length": 295417,
+      "pdf_file": "output/682_2.pdf",
+      "input_file": "output/682_2.json",
+      "sections_file": "output/682_2_sections_v2.json",
+      "report_file": "output/682_2_quality_report_v2.json"
+    },
+    "891_1": {
+      "id": "891_1",
+      "title": "Острый бронхит",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:45:18.540581+00:00",
+      "finished_at": "2026-10-31T18:45:21.867735+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 41,
+      "pages_with_text": 41,
+      "empty_pages": [],
+      "text_length": 79270,
+      "pdf_file": "output/891_1.pdf",
+      "input_file": "output/891_1.json",
+      "sections_file": "output/891_1_sections_v2.json",
+      "report_file": "output/891_1_quality_report_v2.json"
+    },
+    "889_1": {
+      "id": "889_1",
+      "title": "Хронический миелоидный лейкоз",
+      "status": "passed",
+      "started_at": "2026-10-31T18:45:21.879566+00:00",
+      "finished_at": "2026-10-31T18:45:26.970569+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 93,
+      "pages_with_text": 92,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 188614,
+      "pdf_file": "output/889_1.pdf",
+      "input_file": "output/889_1.json",
+      "sections_file": "output/889_1_sections_v2.json",
+      "report_file": "output/889_1_quality_report_v2.json"
+    },
+    "888_1": {
+      "id": "888_1",
+      "title": "Психические и поведенческие расстройства, вызванные употреблением психоактивных веществ [алкоголя, опиоидов, каннабиноидов, седативных и снотворных веществ, кокаина, других стимуляторов (кроме кофеина), летучих растворителей, никотина, галлюциногенов и нескольких психоактивных веществ]. Острая интоксикация",
+      "status": "review_required",
+      "started_at": "2026-10-31T18:45:26.982235+00:00",
+      "finished_at": "2026-10-31T18:45:31.684812+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "laboratory_diagnostics",
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics"
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics"
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 62,
+      "pages_with_text": 62,
+      "empty_pages": [],
+      "text_length": 127959,
+      "pdf_file": "output/888_1.pdf",
+      "input_file": "output/888_1.json",
+      "sections_file": "output/888_1_sections_v2.json",
+      "report_file": "output/888_1_quality_report_v2.json"
+    },
+    "890_1": {
+      "id": "890_1",
+      "title": "Полипозный риносинусит",
+      "status": "passed",
+      "started_at": "2026-10-31T18:45:31.696772+00:00",
+      "finished_at": "2026-10-31T18:45:34.470183+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 37,
+      "pages_with_text": 36,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 69981,
+      "pdf_file": "output/890_1.pdf",
+      "input_file": "output/890_1.json",
+      "sections_file": "output/890_1_sections_v2.json",
+      "report_file": "output/890_1_quality_report_v2.json"
+    },
+    "892_1": {
+      "id": "892_1",
+      "title": "Синдром раздраженного кишечника",
+      "status": "passed",
+      "started_at": "2026-10-31T18:45:34.482030+00:00",
+      "finished_at": "2026-10-31T18:45:38.164095+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 64,
+      "pages_with_text": 63,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 125663,
+      "pdf_file": "output/892_1.pdf",
+      "input_file": "output/892_1.json",
+      "sections_file": "output/892_1_sections_v2.json",
+      "report_file": "output/892_1_quality_report_v2.json"
     }
   }
 }

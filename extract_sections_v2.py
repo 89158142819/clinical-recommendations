@@ -1,4 +1,3 @@
-
 import argparse
 import json
 import re
@@ -284,7 +283,7 @@ def clean_toc_heading_line(line):
     value = line.strip()
 
     value = re.sub(
-        r"^\s*5\s*[.)]\s*",
+        r"^\s*5(?:\s*[.)])?\s*",
         "",
         value
     )
@@ -322,7 +321,9 @@ def find_chapter_title_in_contents(text, before_position):
 
     pattern = (
         r"(?im)^[ \t]*"
-        r"5\s*[.)]\s*"
+        # Номер главы 5 в оглавлении встречается с точкой и без неё.
+        # Обязательный пробел и заглавная буква исключают пункты 5.1/5.1.1.
+        r"5(?:\s*[.)])?\s+"
         r"(?=[А-ЯЁ])"
         r"([^\n]{10,300})"
     )
@@ -443,7 +444,7 @@ def find_next_major_chapter(
 
     pattern = (
         r"^[ \t]*"
-        r"5\s*[.)]\s*"
+        r"5(?:\s*[.)])?\s+"
         r"(?=[А-ЯЁ])"
         r"[^\n]{3,300}"
     )
@@ -467,7 +468,7 @@ def find_next_major_chapter(
 
         # Убираем номер главы перед сравнением.
         heading_without_number = re.sub(
-            r"^\s*5\s*[.)]\s*",
+            r"^\s*5(?:\s*[.)])?\s*",
             "",
             heading_text
         )

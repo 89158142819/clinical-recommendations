@@ -44,39 +44,20 @@ def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
 
 def load_catalog():
-    if not CATALOG_FILE.exists():
-        raise FileNotFoundError(
-            f"Не найден каталог: {CATALOG_FILE}"
-        )
-
-    with CATALOG_FILE.open("r", encoding="utf-8") as file:
-        catalog = json.load(file)
+    with CATALOG_FILE.open("r", encoding="utf-8") as f:
+        catalog = json.load(f)
 
     recommendations = catalog.get("recommendations")
 
     if not isinstance(recommendations, list):
-        raise ValueError(
-            "В catalog.json отсутствует список recommendations"
-        )
+        raise ValueError("Некорректный catalog.json")
 
-    declared_total = catalog.get("total")
-
-    if declared_total is not None:
-        if declared_total != len(recommendations):
-            raise ValueError(
-                f"Несоответствие каталога: total={declared_total}, "
-                f"фактически={len(recommendations)}"
-            )
-
-    logging.info(
-        "Каталог загружен. Рекомендаций: %s",
-        len(recommendations),
-    )
+    if catalog.get("total") != len(recommendations):
+        raise ValueError("Количество записей каталога не совпадает")
 
     return recommendations
 
@@ -89,39 +70,33 @@ def load_registry():
             "results": {},
         }
 
-    with REGISTRY_FILE.open("r", encoding="utf-8") as file:
-        registry = json.load(file)
+    with REGISTRY_FILE.open("r", encoding="utf-8") as f:
+        data = json.load(f)
 
-    if not isinstance(registry, dict):
-        raise ValueError("Некорректный формат реестра")
+    if not isinstance(data.get("results"), dict):
+        raise ValueError("Некорректный реестр")
 
-    if not isinstance(registry.get("results"), dict):
-        raise ValueError("В реестре отсутствует results")
-
-    return registry
+    return data
 
 
 def save_registry(registry):
     registry["updated_at"] = now()
+    registry["total_processed"] = len(registry["results"])
 
-    registry["total_processed"] = len(
-        registry["results"]
-    )
+    temp = REGISTRY_FILE.with_suffix(".tmp")
 
-    temporary_file = REGISTRY_FILE.with_suffix(".tmp")
-
-    with temporary_file.open("w", encoding="utf-8") as file:
+    with temp.open("w", encoding="utf-8") as f:
         json.dump(
             registry,
-            file,
+            f,
             ensure_ascii=False,
             indent=2,
         )
 
-    temporary_file.replace(REGISTRY_FILE)
+    temp.replace(REGISTRY_FILE)
 
 
-def document_paths(document_id):
+def paths_for(document_id):
     return {
         "pdf": OUTPUT_DIR / f"{document_id}.pdf",
         "input": OUTPUT_DIR / f"{document_id}.json",
@@ -130,8 +105,29 @@ def document_paths(document_id):
     }
 
 
+def is_already_processed(document_id, registry):
+    record = registry["results"].get(document_id)
+
+    if not record:
+        return False
+
+    if record.get("status") != "passed":
+        return False
+
+    if record.get("quality_check") != "passed":
+        return False
+
+    if record.get("missing_sections"):
+        return False
+
+    if record.get("warnings"):
+        return False
+
+    return True
+
+
 def download_pdf(document_id):
-    pdf_url = (
+    url = (
         "https://apicr.minzdrav.gov.ru/api.ashx"
         f"?id={document_id}&op=GetClinrecPdf"
     )
@@ -146,54 +142,44 @@ def download_pdf(document_id):
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             logging.info(
-                "Скачивание %s. Попытка %s/%s",
+                "Скачивание %s: попытка %s/%s",
                 document_id,
                 attempt,
                 MAX_ATTEMPTS,
             )
 
             response = requests.get(
-                pdf_url,
+                url,
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
                 headers=headers,
             )
 
             response.raise_for_status()
 
-            content = response.content
-
-            if not content.startswith(b"%PDF"):
+            if not response.content.startswith(b"%PDF"):
                 raise RuntimeError(
-                    "Источник не вернул PDF. "
-                    f"Content-Type: "
-                    f"{response.headers.get('Content-Type')}"
+                    "Получен ответ, не являющийся PDF"
                 )
 
-            return content, pdf_url
+            return response.content, url
 
         except Exception as error:
             last_error = error
 
             logging.warning(
-                "Ошибка скачивания %s: %s",
-                document_id,
+                "Ошибка скачивания: %s",
                 error,
             )
 
             if attempt < MAX_ATTEMPTS:
-                delay = min(10 * attempt, 60)
-                logging.info(
-                    "Повтор через %s секунд",
-                    delay,
-                )
-                time.sleep(delay)
+                time.sleep(min(attempt * 10, 60))
 
     raise RuntimeError(
-        f"Не удалось скачать {document_id}: {last_error}"
+        f"Не удалось скачать документ: {last_error}"
     )
 
 
-def extract_pdf_text(pdf_content):
+def extract_text(pdf_content):
     reader = PdfReader(BytesIO(pdf_content))
 
     if reader.is_encrypted:
@@ -202,43 +188,31 @@ def extract_pdf_text(pdf_content):
     pages = []
 
     for number, page in enumerate(reader.pages, start=1):
-        page_text = page.extract_text() or ""
-
         pages.append({
             "page": number,
-            "text": page_text,
+            "text": page.extract_text() or "",
         })
 
     full_text = "\n\n".join(
-        f"[Страница {page['page']}]\n{page['text']}"
-        for page in pages
+        f"[Страница {p['page']}]\n{p['text']}"
+        for p in pages
     )
 
     if not full_text.strip():
-        raise RuntimeError(
-            "Не удалось извлечь текст из PDF"
-        )
+        raise RuntimeError("PDF не содержит извлекаемого текста")
 
-    return reader, pages, full_text
+    return reader, full_text
 
 
-def create_input_json(
-    document,
-    pdf_url,
-    reader,
-    full_text,
-):
+def create_json(document, pdf_url, reader, full_text):
     document_id = str(document["id"])
-    title = str(document["title"])
-
-    source_url = (
-        f"https://cr.minzdrav.gov.ru/view-cr/{document_id}"
-    )
 
     return {
         "id": document_id,
-        "title": title,
-        "source_url": source_url,
+        "title": str(document["title"]),
+        "source_url": (
+            f"https://cr.minzdrav.gov.ru/view-cr/{document_id}"
+        ),
         "pdf_url": pdf_url,
         "pages_count": len(reader.pages),
         "extracted_at": now(),
@@ -251,85 +225,66 @@ def create_input_json(
     }
 
 
-def validate_parser_outputs(document_id):
-    paths = document_paths(document_id)
+def run_parser(input_file):
+    command = [
+        sys.executable,
+        str(PARSER_FILE),
+        "--input",
+        str(input_file),
+    ]
 
-    for key in ("sections", "report"):
-        if not paths[key].exists():
-            raise RuntimeError(
-                f"Парсер не создал файл: {paths[key]}"
-            )
-
-        if paths[key].stat().st_size == 0:
-            raise RuntimeError(
-                f"Создан пустой файл: {paths[key]}"
-            )
-
-    with paths["report"].open(
-        "r",
+    result = subprocess.run(
+        command,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
         encoding="utf-8",
-    ) as file:
-        report = json.load(file)
-
-    quality = report.get("quality_check")
-    missing = report.get("missing_sections", [])
-    warnings = report.get("warnings", [])
-
-    if (
-        quality == "passed"
-        and not missing
-        and not warnings
-    ):
-        return "passed", report
-
-    return "review_required", report
-
-
-def is_already_processed(document_id, registry):
-    record = registry["results"].get(document_id)
-
-    if not record or record.get("status") != "passed":
-        return False
-
-    paths = document_paths(document_id)
-
-    required_files = (
-        paths["pdf"],
-        paths["input"],
-        paths["sections"],
-        paths["report"],
+        errors="replace",
     )
 
-    if not all(path.exists() and path.stat().st_size > 0
-               for path in required_files):
-        return False
+    if result.stdout:
+        print(result.stdout, flush=True)
 
-    try:
-        with paths["report"].open(
-            "r",
-            encoding="utf-8",
-        ) as file:
-            report = json.load(file)
+    if result.stderr:
+        print(result.stderr, file=sys.stderr, flush=True)
 
-        return (
-            report.get("quality_check") == "passed"
-            and not report.get("missing_sections", [])
-            and not report.get("warnings", [])
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Ошибка парсера. Код: {result.returncode}"
         )
 
-    except Exception:
-        return False
+
+def check_results(document_id):
+    paths = paths_for(document_id)
+
+    for key in ("sections", "report"):
+        path = paths[key]
+
+        if not path.exists() or path.stat().st_size == 0:
+            raise RuntimeError(
+                f"Не создан ожидаемый файл: {path.name}"
+            )
+
+    with paths["report"].open("r", encoding="utf-8") as f:
+        report = json.load(f)
+
+    passed = (
+        report.get("quality_check") == "passed"
+        and not report.get("missing_sections", [])
+        and not report.get("warnings", [])
+    )
+
+    return (
+        "passed" if passed else "review_required",
+        report,
+    )
 
 
 def process_document(document, registry):
     document_id = str(document["id"])
     title = str(document["title"])
 
-    paths = document_paths(document_id)
-
-    logging.info("=" * 70)
-    logging.info("ОБРАБОТКА: %s — %s", document_id, title)
-    logging.info("=" * 70)
+    paths = paths_for(document_id)
 
     record = {
         "id": document_id,
@@ -338,114 +293,70 @@ def process_document(document, registry):
         "started_at": now(),
         "finished_at": None,
         "error": None,
-        "pages_count": None,
-        "text_length": None,
+        "quality_check": None,
+        "missing_sections": [],
+        "warnings": [],
     }
 
     registry["results"][document_id] = record
     save_registry(registry)
 
+    logging.info("=" * 70)
+    logging.info("ОБРАБОТКА %s: %s", document_id, title)
+    logging.info("=" * 70)
+
     try:
         pdf_content, pdf_url = download_pdf(document_id)
 
-        OUTPUT_DIR.mkdir(
-            parents=True,
-            exist_ok=True,
-        )
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
         paths["pdf"].write_bytes(pdf_content)
 
-        reader, pages, full_text = extract_pdf_text(
-            pdf_content
-        )
+        reader, full_text = extract_text(pdf_content)
 
-        input_data = create_input_json(
+        input_data = create_json(
             document,
             pdf_url,
             reader,
             full_text,
         )
 
-        with paths["input"].open(
-            "w",
-            encoding="utf-8",
-        ) as file:
+        with paths["input"].open("w", encoding="utf-8") as f:
             json.dump(
                 input_data,
-                file,
+                f,
                 ensure_ascii=False,
                 indent=2,
             )
 
-        logging.info(
-            "PDF страниц: %s",
-            len(reader.pages),
-        )
+        logging.info("Страниц: %s", len(reader.pages))
+        logging.info("Символов: %s", len(full_text))
 
-        logging.info(
-            "Извлечено символов: %s",
-            len(full_text),
-        )
+        run_parser(paths["input"])
 
-        logging.info("Запуск парсера v6")
-
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(PARSER_FILE),
-                "--input",
-                str(paths["input"]),
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-        )
-
-        if result.stdout:
-            print(result.stdout, flush=True)
-
-        if result.stderr:
-            print(result.stderr, file=sys.stderr, flush=True)
-
-        if result.returncode != 0:
-            raise RuntimeError(
-                f"Парсер завершился с кодом "
-                f"{result.returncode}"
-            )
-
-        status, report = validate_parser_outputs(
-            document_id
-        )
+        status, report = check_results(document_id)
 
         record.update({
             "status": status,
             "finished_at": now(),
-            "pages_count": len(reader.pages),
-            "text_length": len(full_text),
             "quality_check": report.get("quality_check"),
             "missing_sections": report.get(
                 "missing_sections", []
             ),
             "warnings": report.get("warnings", []),
+            "pages_count": len(reader.pages),
+            "text_length": len(full_text),
             "pdf_file": str(paths["pdf"].relative_to(ROOT)),
             "input_file": str(paths["input"].relative_to(ROOT)),
             "sections_file": str(paths["sections"].relative_to(ROOT)),
             "report_file": str(paths["report"].relative_to(ROOT)),
         })
 
-        if status == "passed":
-            logging.info(
-                "PASSED: %s — %s",
-                document_id,
-                title,
-            )
-        else:
-            logging.warning(
-                "REVIEW_REQUIRED: %s",
-                document_id,
-            )
+        logging.info(
+            "РЕЗУЛЬТАТ %s: %s",
+            document_id,
+            status,
+        )
 
     except Exception as error:
         record.update({
@@ -455,7 +366,7 @@ def process_document(document, registry):
         })
 
         logging.exception(
-            "Ошибка обработки %s",
+            "Ошибка документа %s",
             document_id,
         )
 
@@ -468,89 +379,51 @@ def process_document(document, registry):
 def main():
     setup_logging()
 
-    parser = argparse.ArgumentParser(
-        description="Массовая загрузка клинических рекомендаций"
-    )
+    parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "--limit",
-        type=int,
-        default=10,
-        help="Количество рекомендаций в партии",
-    )
-
-    parser.add_argument(
-        "--offset",
-        type=int,
-        default=0,
-        help="С какой записи начинать обработку",
-    )
-
-    parser.add_argument(
-        "--ids",
-        nargs="*",
-        help="Обработать конкретные ID",
-    )
-
-    parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Повторно обработать даже успешные документы",
-    )
+    parser.add_argument("--limit", type=int, default=10)
+    parser.add_argument("--offset", type=int, default=0)
+    parser.add_argument("--ids", nargs="*")
+    parser.add_argument("--force", action="store_true")
 
     args = parser.parse_args()
 
     if args.limit < 1 or args.offset < 0:
-        parser.error("Некорректные limit или offset")
+        parser.error("Некорректные параметры партии")
+
+    if not CATALOG_FILE.exists():
+        raise FileNotFoundError("Не найден catalog.json")
 
     if not PARSER_FILE.exists():
-        raise FileNotFoundError(
-            f"Не найден парсер: {PARSER_FILE}"
-        )
+        raise FileNotFoundError("Не найден extract_sections_v2.py")
 
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     recommendations = load_catalog()
     registry = load_registry()
 
     if args.ids:
-        requested_ids = set(args.ids)
+        requested = set(args.ids)
 
         selected = [
             item for item in recommendations
-            if str(item["id"]) in requested_ids
+            if str(item["id"]) in requested
         ]
 
-        found_ids = {
-            str(item["id"])
-            for item in selected
-        }
+        found = {str(item["id"]) for item in selected}
 
-        not_found = requested_ids - found_ids
+        missing = requested - found
 
-        if not_found:
-            logging.warning(
-                "ID отсутствуют в каталоге: %s",
-                sorted(not_found),
-            )
-
+        if missing:
+            logging.warning("Не найдены ID: %s", sorted(missing))
     else:
         selected = recommendations[
             args.offset:args.offset + args.limit
         ]
 
     if not selected:
-        logging.warning("Нет рекомендаций для обработки")
+        logging.warning("Нет документов для обработки")
         return 0
-
-    logging.info("=" * 70)
-    logging.info("МАССОВАЯ ОБРАБОТКА")
-    logging.info("Размер партии: %s", len(selected))
-    logging.info("Всего в каталоге: %s", len(recommendations))
-    logging.info("=" * 70)
 
     counts = {
         "passed": 0,
@@ -558,6 +431,9 @@ def main():
         "failed": 0,
         "skipped": 0,
     }
+
+    logging.info("Всего в каталоге: %s", len(recommendations))
+    logging.info("Размер текущей партии: %s", len(selected))
 
     for index, document in enumerate(selected, start=1):
         document_id = str(document["id"])
@@ -573,19 +449,16 @@ def main():
             and is_already_processed(document_id, registry)
         ):
             logging.info(
-                "ПРОПУСК: %s уже успешно обработан",
+                "ПРОПУСК %s: уже успешно обработан",
                 document_id,
             )
-
             counts["skipped"] += 1
             continue
 
-        status = process_document(
-            document,
-            registry,
-        )
-
+        status = process_document(document, registry)
         counts[status] += 1
+
+    save_registry(registry)
 
     logging.info("\n" + "=" * 70)
     logging.info("ИТОГИ ПАРТИИ")
@@ -595,19 +468,11 @@ def main():
         logging.info("%s: %s", status, count)
 
     logging.info(
-        "Всего обработано или пропущено: %s",
-        sum(counts.values()),
+        "Всего записей в реестре: %s",
+        registry["total_processed"],
     )
 
-    logging.info(
-        "Реестр сохранён: %s",
-        REGISTRY_FILE,
-    )
-
-    if counts["failed"] > 0:
-        logging.error(
-            "В партии есть документы с ошибками"
-        )
+    if counts["failed"]:
         return 1
 
     return 0

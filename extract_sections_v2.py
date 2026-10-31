@@ -85,16 +85,32 @@ SECTIONS = [
     {
         "key": "complaints_anamnesis",
         "number": "2.1",
-        "aliases": ["Жалобы и анамнез"],
+        "numbers": [
+            "2.1",
+            "2.1.1",
+        ],
+        "aliases": [
+            "Жалобы и анамнез",
+        ],
     },
     {
         "key": "physical_examination",
         "number": "2.2",
-        "aliases": ["Физикальное обследование"],
+        "numbers": [
+            "2.2",
+            "2.1.2",
+        ],
+        "aliases": [
+            "Физикальное обследование",
+        ],
     },
     {
         "key": "laboratory_diagnostics",
         "number": "2.3",
+        "numbers": [
+            "2.3",
+            "2.1.3",
+        ],
         "aliases": [
             "Лабораторные диагностические исследования",
             "Лабораторные диагностические обследования",
@@ -104,6 +120,10 @@ SECTIONS = [
     {
         "key": "instrumental_diagnostics",
         "number": "2.4",
+        "numbers": [
+            "2.4",
+            "2.1.3",
+        ],
         "aliases": [
             "Инструментальные диагностические исследования",
             "Инструментальная диагностика",
@@ -112,6 +132,10 @@ SECTIONS = [
     {
         "key": "other_diagnostics",
         "number": "2.5",
+        "numbers": [
+            "2.5",
+            "2.1.4",
+        ],
         "aliases": [
             "Иные диагностические исследования",
             "Иные диагностические методы",
@@ -163,6 +187,56 @@ def build_phrase_pattern(phrase):
 
 
 # ============================================================
+# Формирование шаблонов нумерации
+# ============================================================
+
+def build_number_patterns(section):
+
+    key = section["key"]
+
+    if key == "treatment":
+
+        # Обычная запись главы 3 и ошибочная запись .3.
+        return [
+            (
+                r"^\s*3\s*\.?\s*(?![\d])",
+                "3",
+            ),
+            (
+                r"^\s*\.\s*3\s*\.?\s*(?![\d])",
+                ".3",
+            ),
+            (
+                r"^\s*\.3\s*\.?\s*(?![\d])",
+                ".3",
+            ),
+        ]
+
+    numbers = section.get(
+        "numbers",
+        [section["number"]]
+    )
+
+    result = []
+
+    for number in numbers:
+
+        escaped_number = re.escape(number)
+
+        result.append((
+            (
+                r"^\s*"
+                + escaped_number
+                + r"\s*\.?\s*"
+                + r"(?![\d])"
+            ),
+            number,
+        ))
+
+    return result
+
+
+# ============================================================
 # Поиск кандидатов на заголовки
 # ============================================================
 
@@ -174,35 +248,21 @@ def find_heading_candidates(text, section):
 
     if number is None:
 
-        number_patterns = [""]
-
-    elif section["key"] == "treatment":
-
-        # Обычная запись главы 3 и ошибочная запись .3.
         number_patterns = [
-            r"^\s*3\s*\.?\s*(?![\d])",
-            r"^\s*\. \s*3\s*\.?\s*(?![\d])",
-            r"^\s*\.3\s*\.?\s*(?![\d])",
+            ("", None)
         ]
 
     else:
 
-        escaped_number = re.escape(number)
-
-        number_patterns = [
-            (
-                r"^\s*"
-                + escaped_number
-                + r"\s*\.?\s*"
-                + r"(?![\d])"
-            )
-        ]
+        number_patterns = build_number_patterns(
+            section
+        )
 
     for alias in section["aliases"]:
 
         phrase_pattern = build_phrase_pattern(alias)
 
-        for number_pattern in number_patterns:
+        for number_pattern, matched_number in number_patterns:
 
             if number is None:
 
@@ -223,12 +283,13 @@ def find_heading_candidates(text, section):
 
                 candidates.append({
                     "key": section["key"],
-                    "number": number,
+                    "number": matched_number,
                     "alias": alias,
                     "start": match.start(),
                     "matched_text": match.group(0),
                 })
 
+    # Удаляем дублирующиеся совпадения по одной позиции.
     unique = {}
 
     for candidate in candidates:
@@ -374,6 +435,63 @@ def get_heading_text_from_lines(lines, start_index):
 
 
 # ============================================================
+# Сравнение заголовка главы 5
+# ============================================================
+
+def compare_chapter_titles(toc_title, body_title):
+
+    normalized_toc = normalize_heading_text(
+        toc_title
+    )
+
+    normalized_body = normalize_heading_text(
+        body_title
+    )
+
+    if not normalized_toc or not normalized_body:
+        return False, None
+
+    # Полное совпадение или совпадение по началу.
+    if normalized_body.startswith(normalized_toc):
+
+        return True, "exact"
+
+    if normalized_toc.startswith(normalized_body):
+
+        return True, "exact"
+
+    # Считаем длину общего начального фрагмента.
+    common_length = 0
+
+    for first, second in zip(
+        normalized_toc,
+        normalized_body
+    ):
+
+        if first != second:
+            break
+
+        common_length += 1
+
+    shorter_length = min(
+        len(normalized_toc),
+        len(normalized_body)
+    )
+
+    # Принимаем сокращённое название только при достаточно
+    # длинном общем начале. Это позволяет учитывать ситуацию,
+    # когда в основном тексте продолжение заголовка отличается.
+    if (
+        common_length >= 30
+        and common_length / shorter_length >= 0.35
+    ):
+
+        return True, "common_prefix"
+
+    return False, None
+
+
+# ============================================================
 # Поиск настоящей главы 5
 # ============================================================
 
@@ -393,8 +511,6 @@ def find_next_major_chapter(
 
     if toc_heading is None:
         return None, []
-
-    target_title = toc_heading["normalized_title"]
 
     lines = text.splitlines()
 
@@ -442,45 +558,20 @@ def find_next_major_chapter(
             heading_text
         )
 
-        candidate_normalized = normalize_heading_text(
+        is_match, match_type = compare_chapter_titles(
+            toc_heading["title"],
             heading_without_number
         )
 
-        if not candidate_normalized:
-            continue
-
-        exact_match = candidate_normalized.startswith(
-            target_title
-        )
-
-        partial_match = (
-            len(candidate_normalized) >= 20
-            and len(target_title) >= 20
-            and (
-                candidate_normalized.startswith(
-                    target_title[:min(50, len(target_title))]
-                )
-                or target_title.startswith(
-                    candidate_normalized[
-                        :min(50, len(candidate_normalized))
-                    ]
-                )
-            )
-        )
-
-        if not exact_match and not partial_match:
+        if not is_match:
             continue
 
         candidates.append({
             "start": line_start,
             "matched_text": line.strip(),
             "toc_title": toc_heading["title"],
-            "normalized_title": target_title,
-            "match_type": (
-                "exact"
-                if exact_match
-                else "partial"
-            ),
+            "normalized_title": toc_heading["normalized_title"],
+            "match_type": match_type,
         })
 
     if not candidates:
@@ -548,7 +639,9 @@ def extract_sections(text):
             find_heading_candidates(text, section)
         )
 
-    matched_headings = select_headings(all_candidates)
+    matched_headings = select_headings(
+        all_candidates
+    )
 
     extracted = {}
 
@@ -1050,6 +1143,8 @@ def build_quality_report(
         "note": (
             "Проверка подтверждает обнаружение структурных "
             "заголовков и определение границ глав 3 и 4. "
+            "Для отдельных документов допускается альтернативная "
+            "нумерация диагностических подразделов. "
             "Подраздел 2.5 «Иные диагностические исследования» "
             "считается необязательным. Если он отсутствует, "
             "в итоговом JSON сохраняется пустое значение. "
@@ -1292,6 +1387,7 @@ def main():
 
             print(
                 f"[OK] {key}: "
+                f"номер {heading['number']}, "
                 f"позиция {heading['start']}"
             )
 

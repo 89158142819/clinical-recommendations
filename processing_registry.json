@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-31T13:49:32.904968+00:00",
+  "updated_at": "2026-10-31T14:50:17.208716+00:00",
   "total_processed": 40,
   "results": {
     "750_2": {
@@ -398,14 +398,32 @@
     "172_4": {
       "id": "172_4",
       "title": "Анальная трещина",
-      "status": "failed",
-      "started_at": "2026-10-31T13:44:23.898082+00:00",
-      "finished_at": "2026-10-31T13:44:28.389866+00:00",
-      "error": "Пустые обязательные разделы: ['laboratory_diagnostics']",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-10-31T14:49:56.069754+00:00",
+      "finished_at": "2026-10-31T14:50:00.046752+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v6",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 40,
+      "pages_with_text": 40,
+      "empty_pages": [],
+      "text_length": 78904,
+      "pdf_file": "output/172_4.pdf",
+      "input_file": "output/172_4.json",
+      "sections_file": "output/172_4_sections_v2.json",
+      "report_file": "output/172_4_quality_report_v2.json"
     },
     "1080_1": {
       "id": "1080_1",
@@ -467,14 +485,34 @@
     "1077_1": {
       "id": "1077_1",
       "title": "Транстиретиновая семейная амилоидная полинейропатия",
-      "status": "failed",
-      "started_at": "2026-10-31T13:44:44.139681+00:00",
-      "finished_at": "2026-10-31T13:44:48.424344+00:00",
-      "error": "Пустые обязательные разделы: ['icd10']",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-10-31T14:50:00.048402+00:00",
+      "finished_at": "2026-10-31T14:50:04.333282+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v6",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 48,
+      "pages_with_text": 47,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 114748,
+      "pdf_file": "output/1077_1.pdf",
+      "input_file": "output/1077_1.json",
+      "sections_file": "output/1077_1_sections_v2.json",
+      "report_file": "output/1077_1_quality_report_v2.json"
     },
     "1076_1": {
       "id": "1076_1",
@@ -498,14 +536,34 @@
     "759_2": {
       "id": "759_2",
       "title": "Периодический синдром, ассоциированный с мутацией гена рецептора фактора некроза опухоли (TRAPS) (Другие уточненные нарушения с вовлечением иммунного механизма, не классифицированные в других рубриках)",
-      "status": "failed",
-      "started_at": "2026-10-31T13:44:52.793844+00:00",
-      "finished_at": "2026-10-31T13:45:07.108033+00:00",
-      "error": "Пустые обязательные разделы: ['complaints_anamnesis', 'physical_examination', 'laboratory_diagnostics', 'instrumental_diagnostics']",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-10-31T14:50:04.334673+00:00",
+      "finished_at": "2026-10-31T14:50:13.464521+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v6",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 165,
+      "pages_with_text": 164,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 538479,
+      "pdf_file": "output/759_2.pdf",
+      "input_file": "output/759_2.json",
+      "sections_file": "output/759_2_sections_v2.json",
+      "report_file": "output/759_2_quality_report_v2.json"
     },
     "1075_1": {
       "id": "1075_1",
@@ -629,14 +687,32 @@
     "311_2": {
       "id": "311_2",
       "title": "Мастоидит",
-      "status": "failed",
-      "started_at": "2026-10-31T13:49:04.503574+00:00",
-      "finished_at": "2026-10-31T13:49:09.011669+00:00",
-      "error": "Пустые обязательные разделы: ['treatment']",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-10-31T14:50:13.465917+00:00",
+      "finished_at": "2026-10-31T14:50:17.207387+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v6",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 38,
+      "pages_with_text": 38,
+      "empty_pages": [],
+      "text_length": 65145,
+      "pdf_file": "output/311_2.pdf",
+      "input_file": "output/311_2.json",
+      "sections_file": "output/311_2_sections_v2.json",
+      "report_file": "output/311_2_quality_report_v2.json"
     },
     "1069_1": {
       "id": "1069_1",

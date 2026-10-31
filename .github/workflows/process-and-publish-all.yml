@@ -48,22 +48,7 @@ jobs:
           BATCH_SIZE: ${{ inputs.batch_size }}
           START_OFFSET: ${{ inputs.start_offset }}
           END_OFFSET: ${{ inputs.end_offset }}
-        run: |
-          python - <<'PY'
-          import json, os
-          batch = int(os.environ["BATCH_SIZE"])
-          start = int(os.environ["START_OFFSET"])
-          end = int(os.environ["END_OFFSET"])
-          with open("catalog.json", encoding="utf-8") as f:
-              catalog = json.load(f)
-          total = len(catalog["recommendations"])
-          assert catalog["total"] == total, "Размер каталога не совпадает"
-          assert 1 <= batch <= 100, "Размер партии должен быть от 1 до 100"
-          assert 0 <= start < end <= total, f"Диапазон должен быть в пределах 0–{total}"
-          print(f"Всего документов: {total}")
-          print(f"Диапазон: {start}–{end - 1}")
-          print(f"Размер партии: {batch}")
-          PY
+        run: python validate_processing_inputs.py
 
       - name: Проверить синтаксис парсера и регрессионные примеры
         run: |
@@ -106,25 +91,7 @@ jobs:
 
       - name: Итоговая статистика
         if: always()
-        run: |
-          if [ -f processing_registry.json ]; then
-            python - <<'PY'
-            import json
-            with open("processing_registry.json", encoding="utf-8") as f:
-                registry = json.load(f)
-            results = registry.get("results", {})
-            counts = {}
-            for item in results.values():
-                status = item.get("status", "unknown")
-                counts[status] = counts.get(status, 0) + 1
-            print("Всего записей в реестре:", len(results))
-            for status in ("passed", "review_required", "failed"):
-                print(f"{status}: {counts.get(status, 0)}")
-            with open("site-data/recommendations.json", encoding="utf-8") as f:
-                site = json.load(f)
-            print("Опубликовано на сайте:", site.get("total", 0))
-            PY
-          fi
+        run: python print_processing_stats.py
 
       - name: Сохранить отчёты партии
         if: always()

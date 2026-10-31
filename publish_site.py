@@ -70,6 +70,18 @@ def main():
             errors.append(f"{document_id}: отсутствуют извлечённые разделы")
             continue
 
+        diagnostic_summary = data.get("diagnostic_summary")
+        if (
+            not isinstance(diagnostic_summary, dict)
+            or not isinstance(diagnostic_summary.get("laboratory"), list)
+            or not isinstance(diagnostic_summary.get("instrumental"), list)
+        ):
+            errors.append(
+                f"{document_id}: отсутствует структурированная диагностика. "
+                "Документ необходимо обработать парсером v7."
+            )
+            continue
+
         relative_file = f"docs/{document_id}.json"
         target = SITE_DIR / relative_file
         shutil.copyfile(source, target)

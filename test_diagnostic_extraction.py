@@ -13,6 +13,7 @@ sections = document.get("sections", {})
 extracted = {
     "laboratory_diagnostics": {"text": sections.get("laboratory_diagnostics", "")},
     "instrumental_diagnostics": {"text": sections.get("instrumental_diagnostics", "")},
+    "other_diagnostics": {"text": sections.get("other_diagnostics", "")},
 }
 
 summary = build_diagnostic_summary(extracted)
@@ -32,8 +33,9 @@ print("=" * 65)
 print("Документ:", document.get("title"), document.get("id"))
 print("Лабораторных пунктов:", summary["counts"]["laboratory"])
 print("Инструментальных пунктов:", summary["counts"]["instrumental"])
+print("Иных диагностических пунктов:", summary["counts"]["other"])
 print("Статус:", summary["status"])
-for group in ("laboratory", "instrumental"):
+for group in ("laboratory", "instrumental", "other"):
     print("\n" + group.upper())
     for number, item in enumerate(summary[group], 1):
         print(f"{number}. {item['name']}")

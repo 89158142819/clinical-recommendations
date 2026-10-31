@@ -1,0 +1,240 @@
+
+name: Тест универсальности парсера — ДЦП 1087_1
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Получение файлов проекта
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      # 2. Настройка Python
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 3. Установка зависимостей
+      - name: Установить зависимости
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Загрузка рекомендации 1087_1
+      - name: Скачать клиническую рекомендацию 1087_1
+        run: |
+          python download_one_1087_1.py
+
+      # 5. Проверка исходного JSON
+      - name: Проверить исходный документ
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path = Path("output/1087_1.json")
+
+          if not path.exists():
+              print("ОШИБКА: исходный JSON не создан.")
+              sys.exit(1)
+
+          with path.open("r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          if data.get("id") != "1087_1":
+              print("ОШИБКА: неверный ID документа.")
+              sys.exit(1)
+
+          if not data.get("full_text", "").strip():
+              print("ОШИБКА: исходный текст пустой.")
+              sys.exit(1)
+
+          print("=" * 60)
+          print("ИСХОДНЫЙ ДОКУМЕНТ")
+          print("=" * 60)
+          print("ID:", data.get("id"))
+          print("Название:", data.get("title"))
+          print("Страниц:", data.get("pages_count"))
+          print("Символов:", len(data["full_text"]))
+          print("Статус:", data.get("extraction_status"))
+          print("ИТОГ: ИСХОДНЫЙ ДОКУМЕНТ ПРОВЕРЕН")
+          PY
+
+      # 6. Извлечение структурных разделов
+      - name: Извлечь разделы клинической рекомендации
+        run: |
+          python extract_sections_v2.py \
+            --input output/1087_1.json
+
+      # 7. Проверка полноты извлечённых разделов
+      - name: Проверить извлечённые разделы
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+
+          path = "output/1087_1_sections_v2.json"
+
+          with open(path, "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          sections = data.get("sections", {})
+
+          required_sections = [
+              "terms",
+              "definition",
+              "etiology_pathogenesis",
+              "epidemiology",
+              "icd10",
+              "classification",
+              "clinical_picture",
+              "diagnostics",
+              "complaints_anamnesis",
+              "physical_examination",
+              "laboratory_diagnostics",
+              "instrumental_diagnostics",
+              "other_diagnostics",
+              "treatment",
+              "rehabilitation"
+          ]
+
+          print("=" * 60)
+          print("ПРОВЕРКА ИЗВЛЕЧЁННЫХ РАЗДЕЛОВ")
+          print("=" * 60)
+
+          failed = []
+
+          for key in required_sections:
+              text = sections.get(key, "")
+
+              if text and text.strip():
+                  print(f"OK — {key}: {len(text)} символов")
+              else:
+                  print(f"НЕТ — {key}")
+                  failed.append(key)
+
+          if failed:
+              print("\nОШИБКА: обнаружены отсутствующие разделы:")
+              for item in failed:
+                  print("-", item)
+
+              sys.exit(1)
+
+          print("=" * 60)
+          print("ИТОГ: ВСЕ 15 РАЗДЕЛОВ ИЗВЛЕЧЕНЫ")
+          PY
+
+      # 8. Проверка границы лечения и реабилитации
+      - name: Проверить границу главы 3 и главы 4
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+
+          path = "output/1087_1_sections_v2.json"
+
+          with open(path, "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          positions = data.get("section_positions", {})
+
+          treatment = positions.get("treatment")
+          rehabilitation = positions.get("rehabilitation")
+
+          print("=" * 60)
+          print("ПРОВЕРКА ГРАНИЦЫ ЛЕЧЕНИЯ")
+          print("=" * 60)
+
+          if not treatment or not rehabilitation:
+              print("ОШИБКА: отсутствуют координаты разделов.")
+              sys.exit(1)
+
+          print("Начало лечения:", treatment.get("start"))
+          print("Конец лечения:", treatment.get("end"))
+          print("Начало реабилитации:", rehabilitation.get("start"))
+
+          boundary_ok = (
+              treatment.get("end")
+              == rehabilitation.get("start")
+              and treatment.get("start")
+              < rehabilitation.get("start")
+          )
+
+          if not boundary_ok:
+              print("ОШИБКА: граница лечения не подтверждена.")
+              sys.exit(1)
+
+          print("Граница подтверждена: True")
+
+          print("\nДЛИНА ГЛАВЫ 3:", treatment.get("length"))
+
+          print("=" * 60)
+          print("ИТОГ: ГРАНИЦА ЛЕЧЕНИЯ ПОДТВЕРЖДЕНА")
+          PY
+
+      # 9. Проверка структурного отчёта
+      - name: Проверить структурный отчёт
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+
+          path = "output/1087_1_quality_report_v2.json"
+
+          with open(path, "r", encoding="utf-8") as f:
+              report = json.load(f)
+
+          print("=" * 60)
+          print("СТРУКТУРНЫЙ ОТЧЁТ")
+          print("=" * 60)
+
+          print("Статус:", report.get("quality_check"))
+          print("Пропущенные разделы:", report.get("missing_sections"))
+          print("Предупреждения:", report.get("warnings"))
+
+          boundary = report.get("treatment_boundary_check", {})
+
+          print("\nПроверка границы лечения:")
+          print("Начало:", boundary.get("treatment_start"))
+          print("Конец:", boundary.get("treatment_end"))
+          print("Начало реабилитации:", boundary.get("rehabilitation_start"))
+          print("Граница подтверждена:", boundary.get("passed"))
+
+          if report.get("quality_check") != "passed":
+              print("\nОШИБКА: структурная проверка не пройдена.")
+              sys.exit(1)
+
+          if not boundary.get("passed"):
+              print("\nОШИБКА: граница главы 3 не подтверждена.")
+              sys.exit(1)
+
+          if report.get("missing_sections"):
+              print("\nОШИБКА: имеются пропущенные разделы.")
+              sys.exit(1)
+
+          if report.get("warnings"):
+              print("\nОШИБКА: имеются предупреждения.")
+              sys.exit(1)
+
+          print("\nИТОГ: СТРУКТУРНАЯ ПРОВЕРКА ПРОЙДЕНА")
+          PY
+
+      # 10. Сохранение результатов тестирования
+      - name: Сохранить результаты тестирования
+        uses: actions/upload-artifact@v4
+        with:
+          name: extraction-v2-1087-1
+          path: |
+            output/1087_1.json
+            output/1087_1_sections_v2.json
+            output/1087_1_quality_report_v2.json
+          if-no-files-found: error

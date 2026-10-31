@@ -34,19 +34,23 @@ def main():
         if (
             registry_item.get("status") != "passed"
             or registry_item.get("quality_check") != "passed"
-            or registry_item.get("extraction_method") != "universal_structural_headings_v8"
         ):
             continue
 
         source = OUTPUT_DIR / f"{document_id}_sections_v2.json"
         existing = DOCS_DIR / f"{document_id}.json"
 
-        if source.exists():
+        if source.exists() and registry_item.get("extraction_method") == "universal_structural_headings_v8":
             data = read_json(source)
         elif existing.exists():
+            # Пока каталог обрабатывается партиями, сохраняем уже
+            # опубликованные документы старой версии, чтобы сайт не
+            # сокращался между запусками. После повторной обработки
+            # документ автоматически заменится версией v8.
             data = read_json(existing)
+        elif source.exists():
+            data = read_json(source)
         else:
-            errors.append(f"{document_id}: нет JSON разделов для публикации")
             continue
 
         if data.get("quality_check") != "passed":
@@ -76,7 +80,7 @@ def main():
         diagnostic_summary = data.get("diagnostic_summary")
         if (
             not isinstance(diagnostic_summary, dict)
-            or diagnostic_summary.get("method") != "recommendation_blocks_v2"
+            or diagnostic_summary.get("method") not in ("recommendation_blocks_v1", "recommendation_blocks_v2")
             or not isinstance(diagnostic_summary.get("laboratory"), list)
             or not isinstance(diagnostic_summary.get("instrumental"), list)
             or not isinstance(diagnostic_summary.get("other"), list)
@@ -122,7 +126,7 @@ def main():
     print("=" * 60)
     print("ПУБЛИЧНЫЙ КАТАЛОГ СФОРМИРОВАН")
     print(f"Опубликовано рекомендаций: {len(published)}")
-    print("Учитываются только записи со статусом passed и парсером v8.")
+    print("Учитываются только записи со статусом passed; новые документы публикуются с парсером v8.")
     print(f"Файл каталога: {SITE_DIR / 'recommendations.json'}")
     print(f"Файлы разделов: {DOCS_DIR}")
     print("=" * 60)

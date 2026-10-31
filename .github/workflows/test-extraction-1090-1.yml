@@ -1,3 +1,4 @@
+
 name: Тест извлечения клинической рекомендации 1090_1
 
 on:
@@ -33,13 +34,15 @@ jobs:
 
       - name: Проверить созданные файлы
         run: |
-          echo "Проверка результатов"
-
           test -s output/1090_1.json
           test -s output/1090_1_sections_v2.json
           test -s output/1090_1_quality_report_v2.json
 
           echo "Все ожидаемые файлы созданы"
+
+      - name: Диагностика извлечённых разделов
+        run: |
+          python inspect_sections.py
 
       - name: Сохранить результаты теста
         uses: actions/upload-artifact@v4

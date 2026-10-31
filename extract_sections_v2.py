@@ -1545,9 +1545,31 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                     followup_items.append(item_text)
 
             if followup_items:
+                followup_summaries = []
+                for followup in followup_items:
+                    low_followup = followup.lower()
+                    if "через 1 месяц" in low_followup or "каждые три месяца" in low_followup:
+                        followup_summaries.append(
+                            "При ранней реакции на провокационный тест: определить anti-tTG IgA через 1 месяц после начала лечения, затем каждые 3 месяца при ежедневном приёме глютена в течение 12 месяцев."
+                        )
+                    elif "появлении симптомов" in low_followup:
+                        followup_summaries.append(
+                            "При появлении симптомов во время глютеновой нагрузки — провести обследование раньше; по показаниям выполнить биопсию двенадцатиперстной кишки и гистологическое исследование."
+                        )
+                    elif "через 6 месяцев" in low_followup:
+                        followup_summaries.append(
+                            "При отрицательных серологических и морфологических результатах через 6 месяцев глютеновой нагрузки — перевести ребёнка на общий стол и продолжить наблюдение в течение 2 лет."
+                        )
+                    elif "после 1 года" in low_followup or "после одного года" in low_followup:
+                        followup_summaries.append(
+                            "При отсутствии симптомов и специфических аутоантител после 1 года приёма глютена — разрешить обычную глютенсодержащую диету; контроль аутоантител проводить ежегодно или раз в 2 года, раньше при появлении симптомов."
+                        )
+                    else:
+                        followup_summaries.append(followup)
+
                 results.append({
                     "name": "Контрольная диагностика и наблюдение при глютеновой нагрузке",
-                    "indications": "Детям с подозрением на целиакию во время проведения провокационного теста, а также детям после периода глютеновой нагрузки при оценке результатов обследования.",
+                    "indications": " • ".join(followup_summaries),
                     "purpose": "Своевременное подтверждение или исключение целиакии и определение дальнейшей тактики обследования и питания.",
                     "recommendation_type": "recommended",
                     "source_excerpt": " || ".join(followup_items)[:4000],

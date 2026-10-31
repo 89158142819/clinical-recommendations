@@ -1322,6 +1322,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                 r"\s+и\s+исследование\s+уровня\s+иммуноглобулина\s+а\b.*$",
                 "", indication, flags=re.IGNORECASE
             )
+        indication = re.sub(r"\s+дополнительное$", "", indication, flags=re.IGNORECASE)
         if not indication:
             indication = "В тексте рекомендации отдельные показания не выделены."
 
@@ -1335,16 +1336,14 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             purpose = "Подтверждение диагноза"
         elif purpose and purpose.lower().startswith("для установления диагноза"):
             purpose = "Установление диагноза"
-        elif purpose and purpose.lower().startswith("для скрининга"):
-            purpose = "Скрининг заболевания"
-        elif purpose and purpose.lower().startswith("скрининга"):
-            purpose = "Скрининг заболевания"
-        elif purpose and purpose.lower().startswith("исключения "):
-            purpose = "Исключение " + purpose[len("исключения "):]
-        elif purpose and purpose.lower().startswith("установления диагноза"):
-            purpose = "Установление диагноза"
 
         purpose = clean_diagnostic_value(purpose)
+        if purpose.lower().startswith("скрининга"):
+            purpose = "Скрининг" + purpose[len("скрининга"):]
+        elif purpose.lower().startswith("исключения "):
+            purpose = "Исключение " + purpose[len("исключения "):]
+        elif purpose.lower().startswith("установления диагноза"):
+            purpose = "Установление диагноза"
         if purpose:
             purpose = purpose[0].upper() + purpose[1:]
         else:
@@ -1358,6 +1357,22 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             "source_excerpt": block[:1200],
             "source_section": section_kind,
         })
+
+        # В одной рекомендации может быть сразу несколько исследований.
+        # В целиакии отдельно указано первичное определение общего IgA.
+        if (
+            section_kind == "laboratory_diagnostics"
+            and "anti-ttg iga" in name.lower()
+            and re.search(r"(?i)и\s+исследование\s+уровня\s+иммуноглобулина\s+а\s+в\s+крови", block)
+        ):
+            results.append({
+                "name": "Общий иммуноглобулин A (IgA)",
+                "indications": indication,
+                "purpose": "Исключение дефицита IgA, способного привести к ложноотрицательному результату серологического скрининга",
+                "recommendation_type": kind,
+                "source_excerpt": block[:1200],
+                "source_section": section_kind,
+            })
 
     unique = []
     seen = set()

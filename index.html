@@ -45,6 +45,16 @@
     details { border-top: 1px solid var(--border); padding: 12px 0; }
     summary { cursor: pointer; font-weight: 700; }
     .section-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; margin-top: 12px; }
+    .diagnostic-list { display: grid; gap: 12px; margin-top: 14px; }
+    .diagnostic-item { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: #fbfdff; }
+    .diagnostic-item h4 { margin: 0 0 8px; font-size: 15px; }
+    .diagnostic-item p { margin: 6px 0; font-size: 14px; }
+    .diagnostic-label { color: var(--muted); font-weight: 700; }
+    .diagnostic-status { display: inline-block; font-size: 12px; border-radius: 20px; padding: 3px 8px; background: #edf3f8; color: #34516d; margin-bottom: 7px; }
+    .diagnostic-status.not_recommended { background: #fff0f0; color: #9a3030; }
+    .diagnostic-status.consider { background: #fff7e8; color: #8a5a00; }
+    .source-details { margin-top: 14px; font-size: 13px; color: var(--muted); }
+    .source-details .section-text { margin-top: 10px; }
     footer { text-align: center; color: var(--muted); font-size: 13px; padding: 25px 18px 40px; }
     a { color: var(--blue); }
     @media (max-width: 600px) {
@@ -126,6 +136,42 @@
       return el;
     }
 
+    function renderDiagnosticCards(container, items) {
+      if (!Array.isArray(items) || !items.length) {
+        container.append(make("p", "muted", "В этом подразделе не удалось автоматически выделить отдельные рекомендации. Ниже доступен исходный текст."));
+        return;
+      }
+
+      const list = make("div", "diagnostic-list");
+      items.forEach(item => {
+        const card = make("article", "diagnostic-item");
+        const statusText = item.recommendation_type === "not_recommended"
+          ? "Не рекомендуется"
+          : item.recommendation_type === "consider"
+            ? "Рассмотреть по показаниям"
+            : "Рекомендуется";
+        card.append(make("span", "diagnostic-status " + (item.recommendation_type || ""), statusText));
+        card.append(make("h4", "", item.name || "Исследование"));
+        card.append(make("p", ""));
+        const indication = card.lastChild;
+        indication.append(make("span", "diagnostic-label", "Показания: "));
+        indication.append(document.createTextNode(item.indications || "Не указаны в отдельной формулировке."));
+        const purpose = make("p", "");
+        purpose.append(make("span", "diagnostic-label", "Цель: "));
+        purpose.append(document.createTextNode(item.purpose || "Не указана в отдельной формулировке."));
+        card.append(purpose);
+
+        if (item.source_excerpt) {
+          const source = make("details", "source-details");
+          source.append(make("summary", "", "Фрагмент исходной рекомендации"));
+          source.append(make("div", "section-text", item.source_excerpt));
+          card.append(source);
+        }
+        list.append(card);
+      });
+      container.append(list);
+    }
+
     function renderList() {
       const query = searchInput.value.trim().toLocaleLowerCase("ru");
       const age = ageSelect.value;
@@ -176,7 +222,24 @@
           const summary = make("summary", "", label);
           section.append(summary);
           const content = (data.sections || {})[key] || "";
-          section.append(make("div", "section-text", content.trim() || "Раздел отсутствует в документе."));
+          const summaryKey = key === "laboratory_diagnostics"
+            ? "laboratory"
+            : key === "instrumental_diagnostics"
+              ? "instrumental"
+              : null;
+          const diagnosticItems = summaryKey && data.diagnostic_summary
+            ? data.diagnostic_summary[summaryKey]
+            : null;
+
+          if (summaryKey && data.diagnostic_summary) {
+            renderDiagnosticCards(section, diagnosticItems);
+            const sourceDetails = make("details", "source-details");
+            sourceDetails.append(make("summary", "", "Показать полный исходный текст раздела"));
+            sourceDetails.append(make("div", "section-text", content.trim() || "Раздел отсутствует в документе."));
+            section.append(sourceDetails);
+          } else {
+            section.append(make("div", "section-text", content.trim() || "Раздел отсутствует в документе."));
+          }
           documentView.append(section);
         });
         documentView.scrollIntoView({behavior: "smooth", block: "start"});

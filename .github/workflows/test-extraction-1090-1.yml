@@ -1,0 +1,53 @@
+name: Тест извлечения клинической рекомендации 1090_1
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-extraction:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: |
+          pip install -r requirements.txt
+
+      - name: Скачать клиническую рекомендацию 1090_1
+        run: |
+          python download_one_1090_1.py
+
+      - name: Извлечь разделы
+        run: |
+          python extract_sections_v2.py --input output/1090_1.json
+
+      - name: Проверить созданные файлы
+        run: |
+          echo "Проверка результатов"
+
+          test -s output/1090_1.json
+          test -s output/1090_1_sections_v2.json
+          test -s output/1090_1_quality_report_v2.json
+
+          echo "Все ожидаемые файлы созданы"
+
+      - name: Сохранить результаты теста
+        uses: actions/upload-artifact@v4
+        with:
+          name: extraction-v2-1090-1
+          path: |
+            output/1090_1.pdf
+            output/1090_1.json
+            output/1090_1_sections_v2.json
+            output/1090_1_quality_report_v2.json
+          if-no-files-found: error

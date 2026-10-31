@@ -25,9 +25,11 @@
     "status": "not_extracted",
     "laboratory": [],
     "instrumental": [],
+    "other": [],
     "counts": {
       "laboratory": 0,
-      "instrumental": 0
+      "instrumental": 0,
+      "other": 0
     },
     "note": "Автоматически выделенные формулировки рекомендаций. Требуется сверка с исходным документом."
   },

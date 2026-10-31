@@ -122,9 +122,11 @@
         "source_section": "instrumental_diagnostics"
       }
     ],
+    "other": [],
     "counts": {
       "laboratory": 0,
-      "instrumental": 12
+      "instrumental": 12,
+      "other": 0
     },
     "note": "Автоматически выделенные формулировки рекомендаций. Требуется сверка с исходным документом."
   },

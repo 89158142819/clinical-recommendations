@@ -4,8 +4,9 @@ import time
 import requests
 
 from pathlib import Path
-from pypdf import PdfReader
+from datetime import datetime, timezone
 from io import BytesIO
+from pypdf import PdfReader
 
 
 # ============================================================
@@ -13,23 +14,23 @@ from io import BytesIO
 # ============================================================
 
 DOCUMENT_ID = "1087_1"
+
 TITLE = "Детский церебральный паралич (Церебральный паралич)"
 
-SOURCE_URL = f"https://cr.minzdrav.gov.ru/view-cr/{DOCUMENT_ID}"
+SOURCE_URL = (
+    f"https://cr.minzdrav.gov.ru/view-cr/{DOCUMENT_ID}"
+)
 
 PDF_URL = "https://apicr.minzdrav.gov.ru/api.ashx"
 
 OUTPUT_DIR = Path("output")
 OUTPUT_FILE = OUTPUT_DIR / f"{DOCUMENT_ID}.json"
 
-# Количество попыток скачивания
 MAX_ATTEMPTS = 5
 
-# Тайм-аут подключения и чтения ответа
 CONNECT_TIMEOUT = 30
 READ_TIMEOUT = 300
 
-# Размер блока при потоковой загрузке
 CHUNK_SIZE = 1024 * 1024
 
 
@@ -73,44 +74,37 @@ def download_pdf():
 
                 response.raise_for_status()
 
-                content_type = response.headers.get(
-                    "Content-Type", ""
-                ).lower()
-
                 content = bytearray()
 
                 for chunk in response.iter_content(
                     chunk_size=CHUNK_SIZE
                 ):
-
                     if chunk:
                         content.extend(chunk)
 
                 pdf_bytes = bytes(content)
 
                 if not pdf_bytes:
-                    raise ValueError("Сервер вернул пустой файл")
+                    raise ValueError(
+                        "Сервер вернул пустой файл"
+                    )
 
                 if not pdf_bytes.startswith(b"%PDF-"):
                     raise ValueError(
-                        "Полученный файл не является PDF. "
-                        f"Content-Type: {content_type}"
+                        "Полученный файл не является PDF"
                     )
 
                 print("PDF успешно скачан.")
+
                 print(
-                    f"Размер файла: "
+                    "Размер файла: "
                     f"{len(pdf_bytes) / 1024 / 1024:.2f} МБ"
                 )
-
-                session.close()
 
                 return pdf_bytes
 
         except (
-            requests.exceptions.Timeout,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.HTTPError,
+            requests.exceptions.RequestException,
             ValueError,
         ) as error:
 
@@ -128,11 +122,9 @@ def download_pdf():
 
                 time.sleep(pause)
 
-    session.close()
-
     raise RuntimeError(
-        "Не удалось скачать клиническую рекомендацию "
-        f"{DOCUMENT_ID} после {MAX_ATTEMPTS} попыток. "
+        f"Не удалось скачать рекомендацию {DOCUMENT_ID} "
+        f"после {MAX_ATTEMPTS} попыток. "
         f"Последняя ошибка: {last_error}"
     )
 
@@ -154,13 +146,20 @@ def extract_text(pdf_bytes):
 
     print(f"Количество страниц: {total_pages}")
 
-    for page_number, page in enumerate(reader.pages, start=1):
+    for page_number, page in enumerate(
+        reader.pages,
+        start=1
+    ):
 
-        text = page.extract_text() or ""
+        page_text = page.extract_text() or ""
 
-        pages_text.append(text)
+        # Сохраняем номер страницы, как в исходном загрузчике
+        pages_text.append(
+            f"[Страница {page_number}]\n{page_text}"
+        )
 
         if page_number % 25 == 0:
+
             print(
                 f"Обработано страниц: "
                 f"{page_number}/{total_pages}"
@@ -170,20 +169,24 @@ def extract_text(pdf_bytes):
 
     if not full_text.strip():
         raise ValueError(
-            "Не удалось извлечь текст из PDF"
+            "Не удалось извлечь текст из PDF. "
+            "Поле full_text не будет сохранено пустым."
         )
 
+    print()
     print("Извлечение текста завершено.")
+
+    print(f"Количество страниц: {total_pages}")
     print(f"Длина текста: {len(full_text)} символов")
 
-    return full_text
+    return full_text, total_pages
 
 
 # ============================================================
 # СОХРАНЕНИЕ JSON
 # ============================================================
 
-def save_json(text):
+def save_json(full_text, pages_count):
 
     OUTPUT_DIR.mkdir(
         parents=True,
@@ -192,9 +195,35 @@ def save_json(text):
 
     data = {
         "id": DOCUMENT_ID,
+
         "title": TITLE,
+
         "source_url": SOURCE_URL,
-        "text": text,
+
+        "pdf_url": (
+            f"{PDF_URL}?id={DOCUMENT_ID}&op=GetClinrecPdf"
+        ),
+
+        "pages_count": pages_count,
+
+        "extracted_at": datetime.now(
+            timezone.utc
+        ).isoformat(),
+
+        "extraction_status": "success",
+
+        "sections": {
+            "definition": "",
+            "icd10": "",
+            "laboratory_diagnostics": "",
+            "instrumental_diagnostics": "",
+            "other_diagnostics": "",
+            "treatment": "",
+        },
+
+        # ВАЖНО:
+        # Парсер extract_sections_v2.py читает именно full_text
+        "full_text": full_text,
     }
 
     with open(
@@ -213,6 +242,28 @@ def save_json(text):
     print()
     print("JSON успешно сохранён.")
     print(f"Файл: {OUTPUT_FILE}")
+
+    # Дополнительная проверка сохранённого файла
+    with open(
+        OUTPUT_FILE,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        saved_data = json.load(file)
+
+    saved_text = saved_data.get("full_text", "")
+
+    if not saved_text.strip():
+
+        raise ValueError(
+            "Ошибка: после сохранения поле full_text пустое."
+        )
+
+    print(
+        "Проверка JSON пройдена. "
+        f"Символов в full_text: {len(saved_text)}"
+    )
 
 
 # ============================================================
@@ -233,10 +284,10 @@ def main():
     pdf_bytes = download_pdf()
 
     # 2. Извлечение текста
-    full_text = extract_text(pdf_bytes)
+    full_text, pages_count = extract_text(pdf_bytes)
 
     # 3. Сохранение JSON
-    save_json(full_text)
+    save_json(full_text, pages_count)
 
     print()
     print("=" * 60)

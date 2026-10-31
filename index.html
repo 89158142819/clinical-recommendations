@@ -228,7 +228,9 @@
             ? "laboratory"
             : key === "instrumental_diagnostics"
               ? "instrumental"
-              : null;
+              : key === "other_diagnostics"
+                ? "other"
+                : null;
           const diagnosticItems = summaryKey && data.diagnostic_summary
             ? data.diagnostic_summary[summaryKey]
             : null;

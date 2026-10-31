@@ -1,0 +1,37 @@
+name: Тест структурирования диагностики
+
+on:
+  push:
+    paths:
+      - "extract_sections_v2.py"
+      - "download_batch.py"
+      - "test_diagnostic_extraction.py"
+      - ".github/workflows/test-diagnostic-extraction.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-diagnostics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: pip install -r requirements.txt
+
+      - name: Проверить структурирование на целиакии
+        run: python test_diagnostic_extraction.py
+
+      - name: Сохранить результат теста
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-test-404-2
+          path: diagnostic_test_404_2.json

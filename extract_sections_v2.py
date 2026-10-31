@@ -1524,8 +1524,9 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                 item_text = clean_diagnostic_value(
                     tail[bullet.end():item_end]
                 )
-                if not re.match(
-                    r"(?i)^(?:не\s+)?рекомендуется\b|^рекомендовано\b",
+                if not re.search(
+                    r"(?i)(?:^не\s+рекомендуется\b|^рекомендовано\b|"
+                    r"^рекомендуется\b|\bрекомендуется\b)",
                     item_text
                 ):
                     continue

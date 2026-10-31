@@ -1,151 +1,249 @@
 
 import json
-import re
-from pathlib import Path
-from io import BytesIO
-
+import time
 import requests
+
+from pathlib import Path
 from pypdf import PdfReader
+from io import BytesIO
 
 
 # ============================================================
-# НАСТРОЙКИ РЕКОМЕНДАЦИИ
+# НАСТРОЙКИ
 # ============================================================
 
 DOCUMENT_ID = "1087_1"
 TITLE = "Детский церебральный паралич (Церебральный паралич)"
 
-PDF_URL = (
-    "https://apicr.minzdrav.gov.ru/api.ashx"
-    f"?id={DOCUMENT_ID}&op=GetClinrecPdf"
-)
-
 SOURCE_URL = f"https://cr.minzdrav.gov.ru/view-cr/{DOCUMENT_ID}"
 
+PDF_URL = "https://apicr.minzdrav.gov.ru/api.ashx"
+
+OUTPUT_DIR = Path("output")
+OUTPUT_FILE = OUTPUT_DIR / f"{DOCUMENT_ID}.json"
+
+# Количество попыток скачивания
+MAX_ATTEMPTS = 5
+
+# Тайм-аут подключения и чтения ответа
+CONNECT_TIMEOUT = 30
+READ_TIMEOUT = 300
+
+# Размер блока при потоковой загрузке
+CHUNK_SIZE = 1024 * 1024
+
 
 # ============================================================
-# ЗАГРУЗКА PDF
+# СКАЧИВАНИЕ PDF
 # ============================================================
 
-print("=" * 60)
-print("ЗАГРУЗКА КЛИНИЧЕСКОЙ РЕКОМЕНДАЦИИ")
-print("=" * 60)
+def download_pdf():
 
-print(f"ID: {DOCUMENT_ID}")
-print(f"Название: {TITLE}")
-print(f"Источник: {SOURCE_URL}")
+    session = requests.Session()
 
-response = requests.get(
-    PDF_URL,
-    timeout=60,
-    headers={
-        "User-Agent": "ClinicalRecommendationsCatalog/1.0"
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        ),
+        "Accept": "application/pdf,*/*",
+        "Connection": "keep-alive",
     }
-)
 
-response.raise_for_status()
+    last_error = None
 
-if not response.content.startswith(b"%PDF"):
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+
+        print()
+        print(f"Попытка скачивания: {attempt}/{MAX_ATTEMPTS}")
+
+        try:
+
+            with session.get(
+                PDF_URL,
+                params={
+                    "id": DOCUMENT_ID,
+                    "op": "GetClinrecPdf",
+                },
+                headers=headers,
+                stream=True,
+                timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
+            ) as response:
+
+                response.raise_for_status()
+
+                content_type = response.headers.get(
+                    "Content-Type", ""
+                ).lower()
+
+                content = bytearray()
+
+                for chunk in response.iter_content(
+                    chunk_size=CHUNK_SIZE
+                ):
+
+                    if chunk:
+                        content.extend(chunk)
+
+                pdf_bytes = bytes(content)
+
+                if not pdf_bytes:
+                    raise ValueError("Сервер вернул пустой файл")
+
+                if not pdf_bytes.startswith(b"%PDF-"):
+                    raise ValueError(
+                        "Полученный файл не является PDF. "
+                        f"Content-Type: {content_type}"
+                    )
+
+                print("PDF успешно скачан.")
+                print(
+                    f"Размер файла: "
+                    f"{len(pdf_bytes) / 1024 / 1024:.2f} МБ"
+                )
+
+                session.close()
+
+                return pdf_bytes
+
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError,
+            ValueError,
+        ) as error:
+
+            last_error = error
+
+            print(f"Ошибка скачивания: {error}")
+
+            if attempt < MAX_ATTEMPTS:
+
+                pause = attempt * 15
+
+                print(
+                    f"Повторная попытка через {pause} секунд..."
+                )
+
+                time.sleep(pause)
+
+    session.close()
+
     raise RuntimeError(
-        "Источник не вернул PDF-файл. "
-        f"Получен Content-Type: "
-        f"{response.headers.get('Content-Type')}"
+        "Не удалось скачать клиническую рекомендацию "
+        f"{DOCUMENT_ID} после {MAX_ATTEMPTS} попыток. "
+        f"Последняя ошибка: {last_error}"
     )
 
-print("PDF успешно загружен.")
-
 
 # ============================================================
-# ИЗВЛЕЧЕНИЕ ТЕКСТА
+# ИЗВЛЕЧЕНИЕ ТЕКСТА ИЗ PDF
 # ============================================================
 
-reader = PdfReader(BytesIO(response.content))
+def extract_text(pdf_bytes):
 
-pages = []
+    print()
+    print("Извлечение текста из PDF...")
 
-for number, page in enumerate(reader.pages, start=1):
-    text = page.extract_text() or ""
+    reader = PdfReader(BytesIO(pdf_bytes))
 
-    pages.append({
-        "page": number,
-        "text": text
-    })
+    pages_text = []
 
-full_text = "\n\n".join(
-    f"[Страница {p['page']}]\n{p['text']}"
-    for p in pages
-)
+    total_pages = len(reader.pages)
 
-if not full_text.strip():
-    raise RuntimeError(
-        "Текст не удалось извлечь. "
-        "Возможно, PDF состоит из изображений."
-    )
+    print(f"Количество страниц: {total_pages}")
 
+    for page_number, page in enumerate(reader.pages, start=1):
 
-# ============================================================
-# ПОДГОТОВКА РЕЗУЛЬТАТА
-# ============================================================
+        text = page.extract_text() or ""
 
-def clean(text):
-    return re.sub(r"\s+", " ", text).strip()
+        pages_text.append(text)
 
+        if page_number % 25 == 0:
+            print(
+                f"Обработано страниц: "
+                f"{page_number}/{total_pages}"
+            )
 
-result = {
-    "id": DOCUMENT_ID,
-    "title": TITLE,
-    "source_url": SOURCE_URL,
-    "pdf_url": PDF_URL,
-    "pages_count": len(reader.pages),
-    "extracted_at": None,
-    "extraction_status": "text_extracted",
-    "sections": {
-        "definition": "",
-        "icd10": "",
-        "laboratory_diagnostics": "",
-        "instrumental_diagnostics": "",
-        "other_diagnostics": "",
-        "treatment": ""
-    },
-    "full_text": full_text
-}
+    full_text = "\n\n".join(pages_text)
+
+    if not full_text.strip():
+        raise ValueError(
+            "Не удалось извлечь текст из PDF"
+        )
+
+    print("Извлечение текста завершено.")
+    print(f"Длина текста: {len(full_text)} символов")
+
+    return full_text
 
 
 # ============================================================
 # СОХРАНЕНИЕ JSON
 # ============================================================
 
-output_dir = Path("output")
-output_dir.mkdir(exist_ok=True)
+def save_json(text):
 
-output_file = output_dir / f"{DOCUMENT_ID}.json"
+    OUTPUT_DIR.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
-output_file.write_text(
-    json.dumps(
-        result,
-        ensure_ascii=False,
-        indent=2
-    ),
-    encoding="utf-8"
-)
+    data = {
+        "id": DOCUMENT_ID,
+        "title": TITLE,
+        "source_url": SOURCE_URL,
+        "text": text,
+    }
+
+    with open(
+        OUTPUT_FILE,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        json.dump(
+            data,
+            file,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    print()
+    print("JSON успешно сохранён.")
+    print(f"Файл: {OUTPUT_FILE}")
 
 
 # ============================================================
-# ИТОГОВЫЙ ОТЧЁТ
+# ОСНОВНОЙ ЗАПУСК
 # ============================================================
 
-print()
-print("=" * 60)
-print("РЕЗУЛЬТАТ ЗАГРУЗКИ")
-print("=" * 60)
+def main():
 
-print(f"ID рекомендации: {DOCUMENT_ID}")
-print(f"Название: {TITLE}")
-print(f"Количество страниц: {len(reader.pages)}")
-print(f"Извлечено символов: {len(full_text)}")
-print(f"Статус: {result['extraction_status']}")
-print(f"Результат сохранён: {output_file}")
+    print("=" * 60)
+    print("ЗАГРУЗКА КЛИНИЧЕСКОЙ РЕКОМЕНДАЦИИ")
+    print("=" * 60)
 
-print("=" * 60)
-print("ЗАГРУЗКА ЗАВЕРШЕНА УСПЕШНО")
-print("=" * 60)
+    print(f"ID: {DOCUMENT_ID}")
+    print(f"Название: {TITLE}")
+    print(f"Источник: {SOURCE_URL}")
+
+    # 1. Скачивание PDF
+    pdf_bytes = download_pdf()
+
+    # 2. Извлечение текста
+    full_text = extract_text(pdf_bytes)
+
+    # 3. Сохранение JSON
+    save_json(full_text)
+
+    print()
+    print("=" * 60)
+    print("ЗАГРУЗКА УСПЕШНО ЗАВЕРШЕНА")
+    print("=" * 60)
+
+
+if __name__ == "__main__":
+
+    main()

@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-31T19:02:55.511934+00:00",
-  "total_processed": 600,
+  "updated_at": "2026-10-31T19:06:32.680917+00:00",
+  "total_processed": 650,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -24628,6 +24628,1719 @@
       "input_file": "output/796_1.json",
       "sections_file": "output/796_1_sections_v2.json",
       "report_file": "output/796_1_quality_report_v2.json"
+    },
+    "467_3": {
+      "id": "467_3",
+      "title": "Базальноклеточный рак кожи",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:02:58.338578+00:00",
+      "finished_at": "2026-10-31T19:03:06.235657+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 103,
+      "pages_with_text": 103,
+      "empty_pages": [],
+      "text_length": 231442,
+      "pdf_file": "output/467_3.pdf",
+      "input_file": "output/467_3.json",
+      "sections_file": "output/467_3_sections_v2.json",
+      "report_file": "output/467_3_quality_report_v2.json"
+    },
+    "155_2": {
+      "id": "155_2",
+      "title": "Стабильная ишемическая болезнь сердца",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:06.252545+00:00",
+      "finished_at": "2026-10-31T19:03:15.402236+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 155,
+      "pages_with_text": 154,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 343711,
+      "pdf_file": "output/155_2.pdf",
+      "input_file": "output/155_2.json",
+      "sections_file": "output/155_2_sections_v2.json",
+      "report_file": "output/155_2_quality_report_v2.json"
+    },
+    "159_2": {
+      "id": "159_2",
+      "title": "Легочная гипертензия, в том числе хроническая тромбоэмболическая легочная гипертензия",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:03:15.419117+00:00",
+      "finished_at": "2026-10-31T19:03:24.275212+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "clinical_picture"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: clinical_picture"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "clinical_picture"
+        ],
+        "missing_sections": [
+          "clinical_picture"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: clinical_picture"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 188,
+      "pages_with_text": 187,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 394685,
+      "pdf_file": "output/159_2.pdf",
+      "input_file": "output/159_2.json",
+      "sections_file": "output/159_2_sections_v2.json",
+      "report_file": "output/159_2_quality_report_v2.json"
+    },
+    "62_3": {
+      "id": "62_3",
+      "title": "Артериальная гипертензия у взрослых",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:03:24.292231+00:00",
+      "finished_at": "2026-10-31T19:03:33.215507+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: complaints_anamnesis",
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics"
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: complaints_anamnesis",
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics"
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 220,
+      "pages_with_text": 219,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 457353,
+      "pdf_file": "output/62_3.pdf",
+      "input_file": "output/62_3.json",
+      "sections_file": "output/62_3_sections_v2.json",
+      "report_file": "output/62_3_quality_report_v2.json"
+    },
+    "47_3": {
+      "id": "47_3",
+      "title": "Атрезия легочной артерии с дефектом межжелудочковой перегородки (АЛА с ДМЖП)",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:33.232315+00:00",
+      "finished_at": "2026-10-31T19:03:35.938004+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 57,
+      "pages_with_text": 56,
+      "empty_pages": [
+        54
+      ],
+      "text_length": 86867,
+      "pdf_file": "output/47_3.pdf",
+      "input_file": "output/47_3.json",
+      "sections_file": "output/47_3_sections_v2.json",
+      "report_file": "output/47_3_quality_report_v2.json"
+    },
+    "697_2": {
+      "id": "697_2",
+      "title": "Ботулизм у детей",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:35.955328+00:00",
+      "finished_at": "2026-10-31T19:03:38.651891+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 46,
+      "pages_with_text": 45,
+      "empty_pages": [
+        40
+      ],
+      "text_length": 67629,
+      "pdf_file": "output/697_2.pdf",
+      "input_file": "output/697_2.json",
+      "sections_file": "output/697_2_sections_v2.json",
+      "report_file": "output/697_2_quality_report_v2.json"
+    },
+    "178_2": {
+      "id": "178_2",
+      "title": "Геморрой",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:38.669196+00:00",
+      "finished_at": "2026-10-31T19:03:42.304620+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 62,
+      "pages_with_text": 61,
+      "empty_pages": [
+        59
+      ],
+      "text_length": 103170,
+      "pdf_file": "output/178_2.pdf",
+      "input_file": "output/178_2.json",
+      "sections_file": "output/178_2_sections_v2.json",
+      "report_file": "output/178_2_quality_report_v2.json"
+    },
+    "388_3": {
+      "id": "388_3",
+      "title": "Язвенная болезнь желудка и/или двенадцатиперстной кишки",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:42.321883+00:00",
+      "finished_at": "2026-10-31T19:03:46.440489+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 70,
+      "pages_with_text": 70,
+      "empty_pages": [],
+      "text_length": 124551,
+      "pdf_file": "output/388_3.pdf",
+      "input_file": "output/388_3.json",
+      "sections_file": "output/388_3_sections_v2.json",
+      "report_file": "output/388_3_quality_report_v2.json"
+    },
+    "191_2": {
+      "id": "191_2",
+      "title": "Свищ заднего прохода и прямой кишки",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:46.457472+00:00",
+      "finished_at": "2026-10-31T19:03:49.314195+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 54,
+      "pages_with_text": 54,
+      "empty_pages": [],
+      "text_length": 90345,
+      "pdf_file": "output/191_2.pdf",
+      "input_file": "output/191_2.json",
+      "sections_file": "output/191_2_sections_v2.json",
+      "report_file": "output/191_2_quality_report_v2.json"
+    },
+    "179_3": {
+      "id": "179_3",
+      "title": "Дивертикулярная болезнь",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:49.331313+00:00",
+      "finished_at": "2026-10-31T19:03:52.801075+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 55,
+      "pages_with_text": 55,
+      "empty_pages": [],
+      "text_length": 101867,
+      "pdf_file": "output/179_3.pdf",
+      "input_file": "output/179_3.json",
+      "sections_file": "output/179_3_sections_v2.json",
+      "report_file": "output/179_3_quality_report_v2.json"
+    },
+    "173_2": {
+      "id": "173_2",
+      "title": "Полип анального канала",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:52.818237+00:00",
+      "finished_at": "2026-10-31T19:03:54.850509+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 36,
+      "pages_with_text": 36,
+      "empty_pages": [],
+      "text_length": 39472,
+      "pdf_file": "output/173_2.pdf",
+      "input_file": "output/173_2.json",
+      "sections_file": "output/173_2_sections_v2.json",
+      "report_file": "output/173_2_quality_report_v2.json"
+    },
+    "177_5": {
+      "id": "177_5",
+      "title": "Выпадение прямой кишки",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:54.867967+00:00",
+      "finished_at": "2026-10-31T19:03:58.002450+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 56,
+      "pages_with_text": 56,
+      "empty_pages": [],
+      "text_length": 87448,
+      "pdf_file": "output/177_5.pdf",
+      "input_file": "output/177_5.json",
+      "sections_file": "output/177_5_sections_v2.json",
+      "report_file": "output/177_5_quality_report_v2.json"
+    },
+    "331_2": {
+      "id": "331_2",
+      "title": "Преждевременные роды",
+      "status": "passed",
+      "started_at": "2026-10-31T19:03:58.019558+00:00",
+      "finished_at": "2026-10-31T19:04:01.025542+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 66,
+      "pages_with_text": 66,
+      "empty_pages": [],
+      "text_length": 121784,
+      "pdf_file": "output/331_2.pdf",
+      "input_file": "output/331_2.json",
+      "sections_file": "output/331_2_sections_v2.json",
+      "report_file": "output/331_2_quality_report_v2.json"
+    },
+    "289_2": {
+      "id": "289_2",
+      "title": "Внутрипеченочный холестаз при беременности",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:01.042732+00:00",
+      "finished_at": "2026-10-31T19:04:04.193773+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 49,
+      "pages_with_text": 48,
+      "empty_pages": [
+        25
+      ],
+      "text_length": 73620,
+      "pdf_file": "output/289_2.pdf",
+      "input_file": "output/289_2.json",
+      "sections_file": "output/289_2_sections_v2.json",
+      "report_file": "output/289_2_quality_report_v2.json"
+    },
+    "213_3": {
+      "id": "213_3",
+      "title": "Дерматит контактный",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:04:04.210758+00:00",
+      "finished_at": "2026-10-31T19:04:07.046536+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "complaints_anamnesis"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: complaints_anamnesis"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "complaints_anamnesis"
+        ],
+        "missing_sections": [
+          "complaints_anamnesis"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: complaints_anamnesis"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 46,
+      "pages_with_text": 45,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 84767,
+      "pdf_file": "output/213_3.pdf",
+      "input_file": "output/213_3.json",
+      "sections_file": "output/213_3_sections_v2.json",
+      "report_file": "output/213_3_quality_report_v2.json"
+    },
+    "265_3": {
+      "id": "265_3",
+      "title": "Атопический дерматит",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:07.064012+00:00",
+      "finished_at": "2026-10-31T19:04:11.908364+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 100,
+      "pages_with_text": 99,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 209001,
+      "pdf_file": "output/265_3.pdf",
+      "input_file": "output/265_3.json",
+      "sections_file": "output/265_3_sections_v2.json",
+      "report_file": "output/265_3_quality_report_v2.json"
+    },
+    "34_3": {
+      "id": "34_3",
+      "title": "Тотальный аномальный дренаж легочных вен",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:11.925639+00:00",
+      "finished_at": "2026-10-31T19:04:14.426341+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 48,
+      "pages_with_text": 48,
+      "empty_pages": [],
+      "text_length": 67485,
+      "pdf_file": "output/34_3.pdf",
+      "input_file": "output/34_3.json",
+      "sections_file": "output/34_3_sections_v2.json",
+      "report_file": "output/34_3_quality_report_v2.json"
+    },
+    "702_2": {
+      "id": "702_2",
+      "title": "Врожденный надклапанный стеноз аорты",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:14.444063+00:00",
+      "finished_at": "2026-10-31T19:04:16.890972+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 46,
+      "pages_with_text": 46,
+      "empty_pages": [],
+      "text_length": 66500,
+      "pdf_file": "output/702_2.pdf",
+      "input_file": "output/702_2.json",
+      "sections_file": "output/702_2_sections_v2.json",
+      "report_file": "output/702_2_quality_report_v2.json"
+    },
+    "259_2": {
+      "id": "259_2",
+      "title": "Эндометриоз",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:16.944172+00:00",
+      "finished_at": "2026-10-31T19:04:20.014400+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 62,
+      "pages_with_text": 59,
+      "empty_pages": [
+        55,
+        60,
+        62
+      ],
+      "text_length": 91642,
+      "pdf_file": "output/259_2.pdf",
+      "input_file": "output/259_2.json",
+      "sections_file": "output/259_2_sections_v2.json",
+      "report_file": "output/259_2_quality_report_v2.json"
+    },
+    "597_3": {
+      "id": "597_3",
+      "title": "Цервикальная интраэпителиальная неоплазия, эрозия и эктропион шейки матки",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:20.031974+00:00",
+      "finished_at": "2026-10-31T19:04:23.158498+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 60,
+      "pages_with_text": 59,
+      "empty_pages": [
+        58
+      ],
+      "text_length": 91691,
+      "pdf_file": "output/597_3.pdf",
+      "input_file": "output/597_3.json",
+      "sections_file": "output/597_3_sections_v2.json",
+      "report_file": "output/597_3_quality_report_v2.json"
+    },
+    "257_2": {
+      "id": "257_2",
+      "title": "Миома матки",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:23.175965+00:00",
+      "finished_at": "2026-10-31T19:04:26.145975+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 46,
+      "pages_with_text": 46,
+      "empty_pages": [],
+      "text_length": 68780,
+      "pdf_file": "output/257_2.pdf",
+      "input_file": "output/257_2.json",
+      "sections_file": "output/257_2_sections_v2.json",
+      "report_file": "output/257_2_quality_report_v2.json"
+    },
+    "598_3": {
+      "id": "598_3",
+      "title": "Доброкачественная дисплазия молочной железы",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:26.163788+00:00",
+      "finished_at": "2026-10-31T19:04:29.621484+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 79,
+      "pages_with_text": 79,
+      "empty_pages": [],
+      "text_length": 138635,
+      "pdf_file": "output/598_3.pdf",
+      "input_file": "output/598_3.json",
+      "sections_file": "output/598_3_sections_v2.json",
+      "report_file": "output/598_3_quality_report_v2.json"
+    },
+    "645_2": {
+      "id": "645_2",
+      "title": "Аномальные маточные кровотечения",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:29.639216+00:00",
+      "finished_at": "2026-10-31T19:04:32.275276+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 48,
+      "pages_with_text": 48,
+      "empty_pages": [],
+      "text_length": 67910,
+      "pdf_file": "output/645_2.pdf",
+      "input_file": "output/645_2.json",
+      "sections_file": "output/645_2_sections_v2.json",
+      "report_file": "output/645_2_quality_report_v2.json"
+    },
+    "644_2": {
+      "id": "644_2",
+      "title": "Аменорея и олигоменорея",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:32.292678+00:00",
+      "finished_at": "2026-10-31T19:04:35.316057+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 62,
+      "pages_with_text": 62,
+      "empty_pages": [],
+      "text_length": 110378,
+      "pdf_file": "output/644_2.pdf",
+      "input_file": "output/644_2.json",
+      "sections_file": "output/644_2_sections_v2.json",
+      "report_file": "output/644_2_quality_report_v2.json"
+    },
+    "795_1": {
+      "id": "795_1",
+      "title": "Трансплантация легкого  (легких), трансплантация  легочно – сердечного комплекса, наличие трансплантированного легкого, наличие трансплантированного  легочно – сердечного комплекса , отмирание и отторжение трансплантата легкого, отмирание и отторжение  легочно – сердечного трансплантата",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:35.333176+00:00",
+      "finished_at": "2026-10-31T19:04:45.935274+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 131,
+      "pages_with_text": 131,
+      "empty_pages": [],
+      "text_length": 293020,
+      "pdf_file": "output/795_1.pdf",
+      "input_file": "output/795_1.json",
+      "sections_file": "output/795_1_sections_v2.json",
+      "report_file": "output/795_1_quality_report_v2.json"
+    },
+    "643_2": {
+      "id": "643_2",
+      "title": "Воспалительные болезни женских тазовых органов",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:45.952986+00:00",
+      "finished_at": "2026-10-31T19:04:48.647120+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 49,
+      "pages_with_text": 49,
+      "empty_pages": [],
+      "text_length": 73385,
+      "pdf_file": "output/643_2.pdf",
+      "input_file": "output/643_2.json",
+      "sections_file": "output/643_2_sections_v2.json",
+      "report_file": "output/643_2_quality_report_v2.json"
+    },
+    "595_3": {
+      "id": "595_3",
+      "title": "Затрудненные роды [дистоция] вследствие предлежания плечика. Дистоция плечиков",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:48.664883+00:00",
+      "finished_at": "2026-10-31T19:04:51.426621+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 51,
+      "pages_with_text": 51,
+      "empty_pages": [],
+      "text_length": 61567,
+      "pdf_file": "output/595_3.pdf",
+      "input_file": "output/595_3.json",
+      "sections_file": "output/595_3_sections_v2.json",
+      "report_file": "output/595_3_quality_report_v2.json"
+    },
+    "626_2": {
+      "id": "626_2",
+      "title": "Тазовое предлежание плода",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:51.444979+00:00",
+      "finished_at": "2026-10-31T19:04:54.690878+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 60,
+      "pages_with_text": 60,
+      "empty_pages": [],
+      "text_length": 89134,
+      "pdf_file": "output/626_2.pdf",
+      "input_file": "output/626_2.json",
+      "sections_file": "output/626_2_sections_v2.json",
+      "report_file": "output/626_2_quality_report_v2.json"
+    },
+    "456_3": {
+      "id": "456_3",
+      "title": "Паническое расстройство",
+      "status": "passed",
+      "started_at": "2026-10-31T19:04:54.708341+00:00",
+      "finished_at": "2026-10-31T19:05:00.904290+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 140,
+      "pages_with_text": 139,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 264386,
+      "pdf_file": "output/456_3.pdf",
+      "input_file": "output/456_3.json",
+      "sections_file": "output/456_3_sections_v2.json",
+      "report_file": "output/456_3_quality_report_v2.json"
+    },
+    "457_3": {
+      "id": "457_3",
+      "title": "Генерализованное тревожное расстройство",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:00.921989+00:00",
+      "finished_at": "2026-10-31T19:05:07.011820+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 121,
+      "pages_with_text": 120,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 247190,
+      "pdf_file": "output/457_3.pdf",
+      "input_file": "output/457_3.json",
+      "sections_file": "output/457_3_sections_v2.json",
+      "report_file": "output/457_3_quality_report_v2.json"
+    },
+    "531_4": {
+      "id": "531_4",
+      "title": "Гипотиреоз",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:05:07.029159+00:00",
+      "finished_at": "2026-10-31T19:05:09.757658+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "etiology_pathogenesis",
+        "epidemiology"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: etiology_pathogenesis",
+        "Не найден заголовок раздела: epidemiology"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "etiology_pathogenesis",
+          "epidemiology"
+        ],
+        "missing_sections": [
+          "etiology_pathogenesis",
+          "epidemiology"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: etiology_pathogenesis",
+          "Не найден заголовок раздела: epidemiology"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 35,
+      "pages_with_text": 35,
+      "empty_pages": [],
+      "text_length": 67693,
+      "pdf_file": "output/531_4.pdf",
+      "input_file": "output/531_4.json",
+      "sections_file": "output/531_4_sections_v2.json",
+      "report_file": "output/531_4_quality_report_v2.json"
+    },
+    "674_3": {
+      "id": "674_3",
+      "title": "Шизофрения",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:09.775213+00:00",
+      "finished_at": "2026-10-31T19:05:14.616343+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 99,
+      "pages_with_text": 98,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 212853,
+      "pdf_file": "output/674_3.pdf",
+      "input_file": "output/674_3.json",
+      "sections_file": "output/674_3_sections_v2.json",
+      "report_file": "output/674_3_quality_report_v2.json"
+    },
+    "629_2": {
+      "id": "629_2",
+      "title": "Конъюнктивиты",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:05:14.634139+00:00",
+      "finished_at": "2026-10-31T19:05:17.528319+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "classification",
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: classification",
+        "Не найден заголовок раздела: complaints_anamnesis",
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics",
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "classification",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "classification",
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: classification",
+          "Не найден заголовок раздела: complaints_anamnesis",
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics",
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 35,
+      "pages_with_text": 35,
+      "empty_pages": [],
+      "text_length": 62005,
+      "pdf_file": "output/629_2.pdf",
+      "input_file": "output/629_2.json",
+      "sections_file": "output/629_2_sections_v2.json",
+      "report_file": "output/629_2_quality_report_v2.json"
+    },
+    "700_3": {
+      "id": "700_3",
+      "title": "Сальмонеллез у взрослых",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:17.597720+00:00",
+      "finished_at": "2026-10-31T19:05:21.311181+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 53,
+      "pages_with_text": 52,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 101012,
+      "pdf_file": "output/700_3.pdf",
+      "input_file": "output/700_3.json",
+      "sections_file": "output/700_3_sections_v2.json",
+      "report_file": "output/700_3_quality_report_v2.json"
+    },
+    "635_2": {
+      "id": "635_2",
+      "title": "Послеоперационный рубец на матке, требующий предоставления медицинской помощи матери во время беременности, родов и в послеродовом периоде",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:21.328718+00:00",
+      "finished_at": "2026-10-31T19:05:24.437041+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 37,
+      "pages_with_text": 37,
+      "empty_pages": [],
+      "text_length": 69058,
+      "pdf_file": "output/635_2.pdf",
+      "input_file": "output/635_2.json",
+      "sections_file": "output/635_2_sections_v2.json",
+      "report_file": "output/635_2_quality_report_v2.json"
+    },
+    "637_2": {
+      "id": "637_2",
+      "title": "Преэклампсия. Эклампсия. Отеки, протеинурия и гипертензивные расстройства во время беременности, в родах и послеродовом периоде.",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:05:24.454519+00:00",
+      "finished_at": "2026-10-31T19:05:29.128271+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 74,
+      "pages_with_text": 74,
+      "empty_pages": [],
+      "text_length": 162662,
+      "pdf_file": "output/637_2.pdf",
+      "input_file": "output/637_2.json",
+      "sections_file": "output/637_2_sections_v2.json",
+      "report_file": "output/637_2_quality_report_v2.json"
+    },
+    "596_3": {
+      "id": "596_3",
+      "title": "Резус-изоиммунизация. Гемолитическая болезнь плода",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:05:29.146267+00:00",
+      "finished_at": "2026-10-31T19:05:32.083385+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "terms",
+        "epidemiology"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: terms",
+        "Не найден заголовок раздела: epidemiology"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "terms",
+          "epidemiology"
+        ],
+        "missing_sections": [
+          "terms",
+          "epidemiology"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: terms",
+          "Не найден заголовок раздела: epidemiology"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 33,
+      "pages_with_text": 33,
+      "empty_pages": [],
+      "text_length": 59891,
+      "pdf_file": "output/596_3.pdf",
+      "input_file": "output/596_3.json",
+      "sections_file": "output/596_3_sections_v2.json",
+      "report_file": "output/596_3_quality_report_v2.json"
+    },
+    "640_2": {
+      "id": "640_2",
+      "title": "Подготовка шейки матки к родам и родовозбуждение",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:05:32.101597+00:00",
+      "finished_at": "2026-10-31T19:05:35.832401+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics",
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics",
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 51,
+      "pages_with_text": 51,
+      "empty_pages": [],
+      "text_length": 107774,
+      "pdf_file": "output/640_2.pdf",
+      "input_file": "output/640_2.json",
+      "sections_file": "output/640_2_sections_v2.json",
+      "report_file": "output/640_2_quality_report_v2.json"
+    },
+    "636_2": {
+      "id": "636_2",
+      "title": "Нормальные роды (роды одноплодные, самопроизвольное родоразрешение в затылочном предлежании)",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:35.850142+00:00",
+      "finished_at": "2026-10-31T19:05:39.640546+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 55,
+      "pages_with_text": 55,
+      "empty_pages": [],
+      "text_length": 121499,
+      "pdf_file": "output/636_2.pdf",
+      "input_file": "output/636_2.json",
+      "sections_file": "output/636_2_sections_v2.json",
+      "report_file": "output/636_2_quality_report_v2.json"
+    },
+    "639_2": {
+      "id": "639_2",
+      "title": "Роды одноплодные, родоразрешение путем кесарева сечения",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:39.659028+00:00",
+      "finished_at": "2026-10-31T19:05:44.901810+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 94,
+      "pages_with_text": 94,
+      "empty_pages": [],
+      "text_length": 201203,
+      "pdf_file": "output/639_2.pdf",
+      "input_file": "output/639_2.json",
+      "sections_file": "output/639_2_sections_v2.json",
+      "report_file": "output/639_2_quality_report_v2.json"
+    },
+    "638_2": {
+      "id": "638_2",
+      "title": "Многоплодная беременность",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:44.919955+00:00",
+      "finished_at": "2026-10-31T19:05:49.528399+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 78,
+      "pages_with_text": 78,
+      "empty_pages": [],
+      "text_length": 171144,
+      "pdf_file": "output/638_2.pdf",
+      "input_file": "output/638_2.json",
+      "sections_file": "output/638_2_sections_v2.json",
+      "report_file": "output/638_2_quality_report_v2.json"
+    },
+    "671_2": {
+      "id": "671_2",
+      "title": "Истмико-цервикальная недостаточность",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:49.546179+00:00",
+      "finished_at": "2026-10-31T19:05:52.759069+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 39,
+      "pages_with_text": 39,
+      "empty_pages": [],
+      "text_length": 85433,
+      "pdf_file": "output/671_2.pdf",
+      "input_file": "output/671_2.json",
+      "sections_file": "output/671_2_sections_v2.json",
+      "report_file": "output/671_2_quality_report_v2.json"
+    },
+    "562_3": {
+      "id": "562_3",
+      "title": "Псориаз артропатический. Псориатический артрит",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:52.777069+00:00",
+      "finished_at": "2026-10-31T19:05:56.308681+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 75,
+      "pages_with_text": 75,
+      "empty_pages": [],
+      "text_length": 148285,
+      "pdf_file": "output/562_3.pdf",
+      "input_file": "output/562_3.json",
+      "sections_file": "output/562_3_sections_v2.json",
+      "report_file": "output/562_3_quality_report_v2.json"
+    },
+    "687_3": {
+      "id": "687_3",
+      "title": "Ожоги термические и химические. Ожоги солнечные. Ожоги дыхательных путей.",
+      "status": "passed",
+      "started_at": "2026-10-31T19:05:56.326731+00:00",
+      "finished_at": "2026-10-31T19:06:04.201530+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 185,
+      "pages_with_text": 183,
+      "empty_pages": [
+        1,
+        185
+      ],
+      "text_length": 422237,
+      "pdf_file": "output/687_3.pdf",
+      "input_file": "output/687_3.json",
+      "sections_file": "output/687_3_sections_v2.json",
+      "report_file": "output/687_3_quality_report_v2.json"
+    },
+    "678_2": {
+      "id": "678_2",
+      "title": "Отморожение. Гипотермия. Другие эффекты воздействия низкой температуры.",
+      "status": "review_required",
+      "started_at": "2026-10-31T19:06:04.219532+00:00",
+      "finished_at": "2026-10-31T19:06:10.612344+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [
+        "physical_examination"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: physical_examination"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "physical_examination"
+        ],
+        "missing_sections": [
+          "physical_examination"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: physical_examination"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 133,
+      "pages_with_text": 131,
+      "empty_pages": [
+        1,
+        133
+      ],
+      "text_length": 299513,
+      "pdf_file": "output/678_2.pdf",
+      "input_file": "output/678_2.json",
+      "sections_file": "output/678_2_sections_v2.json",
+      "report_file": "output/678_2_quality_report_v2.json"
+    },
+    "301_3": {
+      "id": "301_3",
+      "title": "Депрессивный эпизод, Рекуррентное депрессивное расстройство",
+      "status": "passed",
+      "started_at": "2026-10-31T19:06:10.630509+00:00",
+      "finished_at": "2026-10-31T19:06:17.182530+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 125,
+      "pages_with_text": 124,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 255354,
+      "pdf_file": "output/301_3.pdf",
+      "input_file": "output/301_3.json",
+      "sections_file": "output/301_3_sections_v2.json",
+      "report_file": "output/301_3_quality_report_v2.json"
+    },
+    "594_3": {
+      "id": "594_3",
+      "title": "Расстройства аутистического спектра",
+      "status": "passed",
+      "started_at": "2026-10-31T19:06:17.200702+00:00",
+      "finished_at": "2026-10-31T19:06:21.453633+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 98,
+      "pages_with_text": 98,
+      "empty_pages": [],
+      "text_length": 203468,
+      "pdf_file": "output/594_3.pdf",
+      "input_file": "output/594_3.json",
+      "sections_file": "output/594_3_sections_v2.json",
+      "report_file": "output/594_3_quality_report_v2.json"
+    },
+    "397_3": {
+      "id": "397_3",
+      "title": "Специфические расстройства личности",
+      "status": "passed",
+      "started_at": "2026-10-31T19:06:21.471529+00:00",
+      "finished_at": "2026-10-31T19:06:24.090840+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 61,
+      "pages_with_text": 61,
+      "empty_pages": [],
+      "text_length": 91692,
+      "pdf_file": "output/397_3.pdf",
+      "input_file": "output/397_3.json",
+      "sections_file": "output/397_3_sections_v2.json",
+      "report_file": "output/397_3_quality_report_v2.json"
+    },
+    "409_3": {
+      "id": "409_3",
+      "title": "Наследственная тирозинемия 1 типа",
+      "status": "passed",
+      "started_at": "2026-10-31T19:06:24.109051+00:00",
+      "finished_at": "2026-10-31T19:06:27.215043+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 69,
+      "pages_with_text": 69,
+      "empty_pages": [],
+      "text_length": 125011,
+      "pdf_file": "output/409_3.pdf",
+      "input_file": "output/409_3.json",
+      "sections_file": "output/409_3_sections_v2.json",
+      "report_file": "output/409_3_quality_report_v2.json"
+    },
+    "694_2": {
+      "id": "694_2",
+      "title": "Нарушения митохондриального β-окисления жирных кислот",
+      "status": "passed",
+      "started_at": "2026-10-31T19:06:27.233525+00:00",
+      "finished_at": "2026-10-31T19:06:32.662333+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v8",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 131,
+      "pages_with_text": 130,
+      "empty_pages": [
+        109
+      ],
+      "text_length": 234621,
+      "pdf_file": "output/694_2.pdf",
+      "input_file": "output/694_2.json",
+      "sections_file": "output/694_2_sections_v2.json",
+      "report_file": "output/694_2_quality_report_v2.json"
     }
   }
 }

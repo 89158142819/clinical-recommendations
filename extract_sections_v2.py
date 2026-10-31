@@ -11,7 +11,7 @@ from pathlib import Path
 
 DEFAULT_INPUT = Path("output/749_2.json")
 
-EXTRACTION_METHOD = "universal_structural_headings_v7"
+EXTRACTION_METHOD = "universal_structural_headings_v8"
 
 OPTIONAL_SECTION_KEYS = {
     "other_diagnostics",
@@ -1157,7 +1157,7 @@ def build_quality_report(
 
 
 
-DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v1"
+DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v2"
 
 def clean_diagnostic_value(value):
     value = re.sub(r"\s+", " ", value or "")
@@ -1168,8 +1168,15 @@ def extract_diagnostic_recommendations(section_text, section_kind):
     if not isinstance(section_text, str) or not section_text.strip():
         return []
 
+    # В КР рекомендации могут быть оформлены маркерами списка,
+    # отдельными строками или обычными абзацами с формулировкой
+    # «Рекомендуется» / «Рекомендовано».
     bullet_re = re.compile(r"(?m)^[ \t]*[•●▪]\s*")
     bullets = list(bullet_re.finditer(section_text))
+    recommendation_line_re = re.compile(
+        r"(?im)^[ \t]*(?:[•●▪]\s*)?.*\b(?:не\s+рекомендуется|рекомендуется|рекомендовано)\b.*$"
+    )
+    recommendation_blocks = list(recommendation_line_re.finditer(section_text))
     results = []
 
     research_re = re.compile(
@@ -1180,24 +1187,32 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         r"морфологическ|консультац|направить)"
     )
 
-    for index, match in enumerate(bullets):
-        end = bullets[index + 1].start() if index + 1 < len(bullets) else len(section_text)
-        block = section_text[match.end():end]
-        block = re.sub(r"\s*\[Страница\s+\d+\]\s*", " ", block)
-        block = clean_diagnostic_value(block)
+    for index, match in enumerate(recommendation_blocks):
+        end = (
+            recommendation_blocks[index + 1].start()
+            if index + 1 < len(recommendation_blocks)
+            else len(section_text)
+        )
+        raw_block = section_text[match.start():end]
+        raw_block = re.sub(r"\s*\[Страница\s+\d+\]\s*", " ", raw_block)
+        raw_block = clean_diagnostic_value(raw_block)
 
-        if not re.match(r"(?i)^(?:не\s+)?рекомендуется\b|^рекомендовано\b", block):
+        recommendation_match = re.search(
+            r"(?i)\b(не\s+рекомендуется|рекомендуется\s+рассмотреть|рекомендуется|рекомендовано)\b",
+            raw_block
+        )
+        if not recommendation_match:
             continue
 
-        if re.match(r"(?i)^не\s+рекомендуется\b", block):
+        lead_in = clean_diagnostic_value(raw_block[:recommendation_match.start()])
+        block = clean_diagnostic_value(raw_block[recommendation_match.end():])
+
+        if recommendation_match.group(1).lower().startswith("не "):
             kind = "not_recommended"
-            block = re.sub(r"(?i)^не\s+рекомендуется\s*", "", block)
-        elif re.match(r"(?i)^рекомендуется\s+рассмотреть\b", block):
+        elif "рассмотреть" in recommendation_match.group(1).lower():
             kind = "consider"
-            block = re.sub(r"(?i)^рекомендуется\s+рассмотреть\s*", "", block)
         else:
             kind = "recommended"
-            block = re.sub(r"(?i)^(?:рекомендуется|рекомендовано)\s*", "", block)
 
         block = re.split(
             r"\bУровень\s+достоверности\s+доказательств\b|\bКомментарии?\s*:",
@@ -1210,7 +1225,9 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             continue
 
         patient = re.search(
-            r"\b(?:пациентам|пациентов|пациенту|пациента|детям|взрослым|лицам|родственникам)\b",
+            r"\b(?:пациентам|пациентов|пациенту|пациента|детям|взрослым|лицам|родственникам)\b|"
+            r"\bв\s+тех\s+случаях\b|\bпри\s+(?:подозрении|наличии|планировании|невозможности|отсутствии|появлении)\b|"
+            r"\bесли\s+пациент\b|\bу\s+пациентов\b",
             block, flags=re.IGNORECASE
         )
         action = re.search(
@@ -1335,6 +1352,10 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             clean_diagnostic_value(block[indication_start:indication_end])
             if indication_start is not None else ""
         )
+        if lead_in:
+            indication = clean_diagnostic_value(
+                (lead_in + " " + indication).strip()
+            )
 
         purpose = ""
         if purpose_match:
@@ -1391,7 +1412,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             "indications": indication,
             "purpose": purpose,
             "recommendation_type": kind,
-            "source_excerpt": block[:1200],
+            "source_excerpt": clean_diagnostic_value((lead_in + " " + block).strip())[:1200],
             "source_section": section_kind,
         })
 

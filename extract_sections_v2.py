@@ -1406,6 +1406,98 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                 "source_section": section_kind,
             })
 
+    # В разделе иных методов часть рекомендаций оформлена как
+    # комплексное обследование с вложенным перечнем процедур. Эти строки
+    # не начинаются словом «Рекомендуется», но являются частью рекомендации.
+    if section_kind == "other_diagnostics":
+        bullet_matches = list(bullet_re.finditer(section_text))
+        for parent_index, parent_match in enumerate(bullet_matches):
+            parent_end = (
+                bullet_matches[parent_index + 1].start()
+                if parent_index + 1 < len(bullet_matches)
+                else len(section_text)
+            )
+            parent_text = clean_diagnostic_value(
+                section_text[parent_match.end():parent_end]
+            )
+            if not (
+                re.match(r"(?i)^рекомендуется\b|^рекомендовано\b", parent_text)
+                and re.search(r"(?i)комплексн\w*\s+лабораторно[- ]инструментальн\w*\s+исследован", parent_text)
+            ):
+                continue
+
+            indication_match = re.search(
+                r"(?i)(пациентам\s+с\s+подтвержденным\s+диагнозом.*?обследования)",
+                parent_text
+            )
+            inherited_indication = (
+                clean_diagnostic_value(indication_match.group(1))
+                if indication_match else
+                "Пациентам с подтвержденным диагнозом целиакии при первичном обследовании."
+            )
+
+            for child_index in range(parent_index + 1, len(bullet_matches)):
+                child_match = bullet_matches[child_index]
+                child_text_end = (
+                    bullet_matches[child_index + 1].start()
+                    if child_index + 1 < len(bullet_matches)
+                    else len(section_text)
+                )
+                child_text = clean_diagnostic_value(
+                    section_text[child_match.end():child_text_end]
+                )
+
+                # Следующая самостоятельная рекомендация завершает список
+                # компонентов комплексного обследования.
+                if re.match(
+                    r"(?i)^(?:не\s+)?рекомендуется\b|^рекомендовано\b|^рекомендовано\b",
+                    child_text
+                ):
+                    break
+
+                child_text = re.split(
+                    r"\bУровень\s+достоверности\s+доказательств\b",
+                    child_text, maxsplit=1, flags=re.IGNORECASE
+                )[0]
+                child_text = clean_diagnostic_value(child_text)
+                if len(child_text) < 8:
+                    continue
+
+                low = child_text.lower()
+                if "клинический осмотр" in low:
+                    child_name = "Клинический осмотр и антропометрические измерения"
+                elif "общий (клинический) анализ крови" in low:
+                    child_name = "Общий (клинический) анализ крови развернутый"
+                elif "анализ крови биохимический" in low:
+                    child_name = "Биохимический анализ крови (общетерапевтический профиль)"
+                elif "тиреоидного профиля" in low:
+                    child_name = "Исследование гормонов и антител тиреоидного профиля"
+                elif "копрологическое исследование" in low:
+                    child_name = "Копрологическое исследование"
+                elif "ультразвуковое исследование органов брюшной полости" in low:
+                    child_name = "УЗИ органов брюшной полости (комплексное)"
+                elif "ультразвуковое исследование щитовидной железы" in low:
+                    child_name = "УЗИ щитовидной и паращитовидных желез"
+                elif "ультразвуковое исследование матки и придатков" in low:
+                    child_name = "УЗИ органов малого таза (девочкам старше 12 лет)"
+                elif "рентгеноденситометрия" in low:
+                    child_name = "Рентгеноденситометрия поясничного отдела позвоночника"
+                elif "консультации специалистов" in low:
+                    child_name = "Консультации профильных специалистов по показаниям"
+                else:
+                    # Не отбрасываем незнакомый вложенный пункт:
+                    # сохраняем его исходную формулировку как название.
+                    child_name = child_text.split(":", 1)[0].strip().rstrip(".")
+
+                results.append({
+                    "name": child_name,
+                    "indications": inherited_indication,
+                    "purpose": "Выявление дефицитных состояний и исключение часто ассоциированных аутоиммунных и эндокринных заболеваний.",
+                    "recommendation_type": "recommended",
+                    "source_excerpt": child_text[:1200],
+                    "source_section": section_kind,
+                })
+
     # Объединяем одинаковые исследования независимо от показаний.
     # Разные клинические ситуации сохраняются внутри одной карточки.
     grouped = {}

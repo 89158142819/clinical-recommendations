@@ -1,0 +1,133 @@
+name: Полная обработка и публикация клинических рекомендаций
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch_size:
+        description: "Размер партии (рекомендуется 50)"
+        required: true
+        default: "50"
+        type: string
+      start_offset:
+        description: "С какой позиции каталога начать (0–777)"
+        required: true
+        default: "0"
+        type: string
+      end_offset:
+        description: "До какой позиции обрабатывать (обычно 778)"
+        required: true
+        default: "778"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clinical-recommendations-full-processing
+  cancel-in-progress: false
+
+jobs:
+  process-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: pip install -r requirements.txt
+
+      - name: Проверить параметры и каталог
+        env:
+          BATCH_SIZE: ${{ inputs.batch_size }}
+          START_OFFSET: ${{ inputs.start_offset }}
+          END_OFFSET: ${{ inputs.end_offset }}
+        run: |
+          python - <<'PY'
+          import json, os
+          batch = int(os.environ["BATCH_SIZE"])
+          start = int(os.environ["START_OFFSET"])
+          end = int(os.environ["END_OFFSET"])
+          with open("catalog.json", encoding="utf-8") as f:
+              catalog = json.load(f)
+          total = len(catalog["recommendations"])
+          assert catalog["total"] == total, "Размер каталога не совпадает"
+          assert 1 <= batch <= 100, "Размер партии должен быть от 1 до 100"
+          assert 0 <= start < end <= total, f"Диапазон должен быть в пределах 0–{total}"
+          print(f"Всего документов: {total}")
+          print(f"Диапазон: {start}–{end - 1}")
+          print(f"Размер партии: {batch}")
+          PY
+
+      - name: Обработать каталог партиями и публиковать успешные результаты
+        env:
+          BATCH_SIZE: ${{ inputs.batch_size }}
+          START_OFFSET: ${{ inputs.start_offset }}
+          END_OFFSET: ${{ inputs.end_offset }}
+        run: |
+          set -e
+          batch_size="$BATCH_SIZE"
+          start="$START_OFFSET"
+          end="$END_OFFSET"
+
+          for ((offset=start; offset<end; offset+=batch_size)); do
+            echo "============================================================"
+            echo "ОБРАБОТКА ПАРТИИ: offset=$offset, limit=$batch_size"
+            echo "============================================================"
+
+            python download_batch.py --limit "$batch_size" --offset "$offset" --force
+
+            echo "Формирование каталога из всех документов, прошедших проверки"
+            python publish_site.py
+
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add processing_registry.json site-data
+            git diff --cached --check
+
+            if git diff --cached --quiet; then
+              echo "Изменений для сохранения в этой партии нет"
+            else
+              git commit -m "Process and publish recommendations batch offset $offset"
+              git push
+            fi
+          done
+
+      - name: Итоговая статистика
+        if: always()
+        run: |
+          if [ -f processing_registry.json ]; then
+            python - <<'PY'
+            import json
+            with open("processing_registry.json", encoding="utf-8") as f:
+                registry = json.load(f)
+            results = registry.get("results", {})
+            counts = {}
+            for item in results.values():
+                status = item.get("status", "unknown")
+                counts[status] = counts.get(status, 0) + 1
+            print("Всего записей в реестре:", len(results))
+            for status in ("passed", "review_required", "failed"):
+                print(f"{status}: {counts.get(status, 0)}")
+            with open("site-data/recommendations.json", encoding="utf-8") as f:
+                site = json.load(f)
+            print("Опубликовано на сайте:", site.get("total", 0))
+            PY
+          fi
+
+      - name: Сохранить отчёты партии
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-processing-reports
+          path: |
+            processing_registry.json
+            output/*_quality_report_v2.json
+          if-no-files-found: warn
+          retention-days: 90

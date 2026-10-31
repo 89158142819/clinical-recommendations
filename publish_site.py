@@ -75,10 +75,11 @@ def main():
             not isinstance(diagnostic_summary, dict)
             or not isinstance(diagnostic_summary.get("laboratory"), list)
             or not isinstance(diagnostic_summary.get("instrumental"), list)
+            or not isinstance(diagnostic_summary.get("other"), list)
         ):
             errors.append(
                 f"{document_id}: отсутствует структурированная диагностика. "
-                "Документ необходимо обработать парсером v7."
+                "Документ необходимо обработать актуальной версией парсера."
             )
             continue
 

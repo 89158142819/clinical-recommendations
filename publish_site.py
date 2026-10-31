@@ -9,18 +9,6 @@ OUTPUT_DIR = BASE_DIR / "output"
 SITE_DIR = BASE_DIR / "site-data"
 DOCS_DIR = SITE_DIR / "docs"
 
-PUBLISH_IDS = [
-    "1067_1", "1066_1", "1065_1", "1064_1", "762_2",
-    "507_4", "535_3", "937_2", "1062_1", "760_2",
-    "761_2", "771_2", "1060_1", "1061_1", "1058_1",
-    "593_4", "1059_1", "1057_1", "260_3", "123_6",
-    "1056_1", "1053_1", "404_2", "318_3", "773_2",
-    "1048_1", "1047_1", "511_2", "1045_1", "1046_1",
-    "1043_1", "1044_1", "1042_1", "1040_1", "1041_1",
-    "1037_1", "1033_1", "1036_1", "1035_1", "1034_1",
-    "1032_1",
-]
-
 def read_json(path):
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
@@ -30,21 +18,36 @@ def main():
     registry = read_json(BASE_DIR / "processing_registry.json")
     metadata = {str(x["id"]): x for x in catalog["recommendations"]}
 
-    if DOCS_DIR.exists():
-        shutil.rmtree(DOCS_DIR)
+    # Не удаляем уже опубликованные документы: каталог пополняется
+    # партиями. В публичный список попадают только документы, прошедшие
+    # структурную проверку актуальным парсером v8 и имеющие новую
+    # структурированную диагностику.
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
     published = []
     errors = []
 
-    for document_id in PUBLISH_IDS:
-        source = OUTPUT_DIR / f"{document_id}_sections_v2.json"
-        if not source.exists():
-            errors.append(f"{document_id}: отсутствует {source}")
+    for item in catalog["recommendations"]:
+        document_id = str(item["id"])
+        registry_item = registry.get("results", {}).get(document_id, {})
+
+        if (
+            registry_item.get("status") != "passed"
+            or registry_item.get("quality_check") != "passed"
+            or registry_item.get("extraction_method") != "universal_structural_headings_v8"
+        ):
             continue
 
-        data = read_json(source)
-        registry_item = registry.get("results", {}).get(document_id, {})
+        source = OUTPUT_DIR / f"{document_id}_sections_v2.json"
+        existing = DOCS_DIR / f"{document_id}.json"
+
+        if source.exists():
+            data = read_json(source)
+        elif existing.exists():
+            data = read_json(existing)
+        else:
+            errors.append(f"{document_id}: нет JSON разделов для публикации")
+            continue
 
         if data.get("quality_check") != "passed":
             errors.append(
@@ -73,19 +76,21 @@ def main():
         diagnostic_summary = data.get("diagnostic_summary")
         if (
             not isinstance(diagnostic_summary, dict)
+            or diagnostic_summary.get("method") != "recommendation_blocks_v2"
             or not isinstance(diagnostic_summary.get("laboratory"), list)
             or not isinstance(diagnostic_summary.get("instrumental"), list)
             or not isinstance(diagnostic_summary.get("other"), list)
         ):
             errors.append(
-                f"{document_id}: отсутствует структурированная диагностика. "
-                "Документ необходимо обработать актуальной версией парсера."
+                f"{document_id}: отсутствует структурированная диагностика v2. "
+                "Документ необходимо повторно обработать."
             )
             continue
 
         relative_file = f"docs/{document_id}.json"
         target = SITE_DIR / relative_file
-        shutil.copyfile(source, target)
+        if source.exists():
+            shutil.copyfile(source, target)
 
         published.append({
             **item,
@@ -117,6 +122,7 @@ def main():
     print("=" * 60)
     print("ПУБЛИЧНЫЙ КАТАЛОГ СФОРМИРОВАН")
     print(f"Опубликовано рекомендаций: {len(published)}")
+    print("Учитываются только записи со статусом passed и парсером v8.")
     print(f"Файл каталога: {SITE_DIR / 'recommendations.json'}")
     print(f"Файлы разделов: {DOCS_DIR}")
     print("=" * 60)

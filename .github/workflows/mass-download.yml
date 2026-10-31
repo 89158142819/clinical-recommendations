@@ -16,6 +16,12 @@ on:
         default: "0"
         type: string
 
+      document_ids:
+        description: "Конкретные ID через пробел (например: 759_2 1077_1)"
+        required: false
+        default: ""
+        type: string
+
 permissions:
   contents: write
 
@@ -57,10 +63,29 @@ jobs:
 
       - name: Массовая обработка партии
         id: processing
+        env:
+          BATCH_SIZE: ${{ inputs.batch_size }}
+          OFFSET: ${{ inputs.offset }}
+          DOCUMENT_IDS: ${{ inputs.document_ids }}
         run: |
-          python download_batch.py \
-            --limit "${{ inputs.batch_size }}" \
-            --offset "${{ inputs.offset }}"
+          if [ -n "${DOCUMENT_IDS//[[:space:]]/}" ]; then
+            echo "Режим: обработка конкретных документов"
+
+            read -r -a IDS <<< "$DOCUMENT_IDS"
+
+            echo "Количество ID: ${#IDS[@]}"
+            printf 'ID: %s\n' "${IDS[@]}"
+
+            python download_batch.py --ids "${IDS[@]}"
+          else
+            echo "Режим: обработка партии каталога"
+            echo "Размер партии: $BATCH_SIZE"
+            echo "Начальная позиция: $OFFSET"
+
+            python download_batch.py \
+              --limit "$BATCH_SIZE" \
+              --offset "$OFFSET"
+          fi
 
       - name: Сохранить результаты партии
         if: always()

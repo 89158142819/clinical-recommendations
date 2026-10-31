@@ -1374,13 +1374,74 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                 "source_section": section_kind,
             })
 
-    unique = []
-    seen = set()
+    # Объединяем одинаковые исследования независимо от показаний.
+    # Разные клинические ситуации сохраняются внутри одной карточки.
+    grouped = {}
+    order = []
+
     for item in results:
-        key = (item["name"].lower(), item["indications"].lower(), item["recommendation_type"])
-        if key not in seen:
-            seen.add(key)
-            unique.append(item)
+        key = re.sub(r"\s+", " ", item["name"].strip().lower())
+        key = key.replace("ё", "е")
+
+        if key not in grouped:
+            grouped[key] = dict(item)
+            grouped[key]["_indications"] = []
+            grouped[key]["_purposes"] = []
+            grouped[key]["_recommendation_types"] = []
+            grouped[key]["_source_excerpts"] = []
+            order.append(key)
+
+        target = grouped[key]
+
+        for value in (
+            item.get("indications", ""),
+            item.get("purpose", ""),
+        ):
+            if value and value not in (
+                "В тексте рекомендации отдельные показания не выделены.",
+                "Отдельная цель исследования в формулировке рекомендации не указана."
+            ):
+                bucket = "_indications" if value == item.get("indications") else "_purposes"
+                if value not in target[bucket]:
+                    target[bucket].append(value)
+
+        recommendation_type = item.get("recommendation_type")
+        if recommendation_type and recommendation_type not in target["_recommendation_types"]:
+            target["_recommendation_types"].append(recommendation_type)
+
+        excerpt = item.get("source_excerpt", "")
+        if excerpt and excerpt not in target["_source_excerpts"]:
+            target["_source_excerpts"].append(excerpt)
+
+    unique = []
+    for key in order:
+        item = grouped[key]
+        indications = item.pop("_indications")
+        purposes = item.pop("_purposes")
+        recommendation_types = item.pop("_recommendation_types")
+        excerpts = item.pop("_source_excerpts")
+
+        item["indications"] = (
+            " • ".join(indications)
+            if indications else "В тексте рекомендации отдельные показания не выделены."
+        )
+        item["purpose"] = (
+            " • ".join(purposes)
+            if purposes else "Отдельная цель исследования в формулировке рекомендации не указана."
+        )
+
+        if len(recommendation_types) == 1:
+            item["recommendation_type"] = recommendation_types[0]
+        elif "not_recommended" in recommendation_types:
+            item["recommendation_type"] = "mixed"
+        elif "consider" in recommendation_types:
+            item["recommendation_type"] = "consider"
+        else:
+            item["recommendation_type"] = "recommended"
+
+        item["source_excerpt"] = " || ".join(excerpts)[:4000]
+        unique.append(item)
+
     return unique
 
 def build_diagnostic_summary(extracted):

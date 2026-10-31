@@ -1279,8 +1279,25 @@ def extract_diagnostic_recommendations(section_text, section_kind):
 
         if section_kind == "other_diagnostics":
             source_lower = block.lower()
-            # Не дублируем лабораторные и инструментальные методы,
-            # которые уже отображаются в соседних подразделах.
+            # Пропускаем все рекомендации с диагностическими методами,
+            # а не только три заранее заданных названия.
+            diagnostic_action = re.search(
+                r"(?i)антител|иммуноглобулин|анализ|исследован|определени|"
+                r"биопси|эндоскоп|гастроэнтеролог|консультац|обследован|"
+                r"ультразву|узи\b|рентген|денситометр|генетическ|"
+                r"hla[- ]?dq|гистологическ|патолого-анатомическ|"
+                r"копролог|гормон|томограф|скрининг",
+                source_lower
+            )
+            non_diagnostic_action = re.search(
+                r"(?i)разрешить\s+.*диет|перевести\s+на\s+общий\s+стол|"
+                r"продолжить\s+динамическое\s+наблюдение|"
+                r"избегать\s+неоправданных\s+диетологических",
+                source_lower
+            )
+            if not diagnostic_action or non_diagnostic_action:
+                continue
+
             if "hla-dq2" in source_lower or "hla -dq2" in source_lower or "hla dq2" in source_lower:
                 name = "Генетическое исследование HLA-DQ2/DQ8"
             elif "нагрузк" in source_lower and "глютен" in source_lower:
@@ -1289,8 +1306,6 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                 "направить" in source_lower or "консультац" in source_lower
             ):
                 name = "Консультация врача-гастроэнтеролога"
-            else:
-                continue
 
         lower_name = name.lower()
         if "тканевой трансглютаминазе" in lower_name and "igg" in lower_name and "деамидированным пептидам" in lower_name:

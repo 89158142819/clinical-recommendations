@@ -1177,7 +1177,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         r"эндоскоп|биопси|ультразву|узи\b|рентген|томограф|денситометр|"
         r"генетическ|hла|hla|пцр|копролог|гормон|электрокарди|"
         r"эхокарди|спирометр|скопи|маммограф|функци|пункци|"
-        r"морфологическ)"
+        r"морфологическ|консультац|направить)"
     )
 
     for index, match in enumerate(bullets):
@@ -1216,7 +1216,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         action = re.search(
             r"\b(?:выполнить|выполнение|провести|проведение|"
             r"определить|определение|исследовать|исследование|"
-            r"измерить|измерение|оценить|оценка)\b",
+            r"измерить|измерение|оценить|оценка|направить)\b",
             block, flags=re.IGNORECASE
         )
         purpose_match = re.search(
@@ -1275,6 +1275,23 @@ def extract_diagnostic_recommendations(section_text, section_kind):
 
         # Часто встречающиеся лабораторные и инструментальные методы
         # приводим к коротким и понятным названиям.
+        lower_name = name.lower()
+
+        if section_kind == "other_diagnostics":
+            source_lower = block.lower()
+            # Не дублируем лабораторные и инструментальные методы,
+            # которые уже отображаются в соседних подразделах.
+            if "hla-dq2" in source_lower or "hla -dq2" in source_lower or "hla dq2" in source_lower:
+                name = "Генетическое исследование HLA-DQ2/DQ8"
+            elif "нагрузк" in source_lower and "глютен" in source_lower:
+                name = "Глютеновая нагрузка (провокационный тест)"
+            elif "гастроэнтеролог" in source_lower and (
+                "направить" in source_lower or "консультац" in source_lower
+            ):
+                name = "Консультация врача-гастроэнтеролога"
+            else:
+                continue
+
         lower_name = name.lower()
         if "тканевой трансглютаминазе" in lower_name and "igg" in lower_name and "деамидированным пептидам" in lower_name:
             name = "Антитела к тканевой трансглютаминазе IgG и деамидированным пептидам глиадина IgG"

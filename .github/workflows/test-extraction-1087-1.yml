@@ -226,20 +226,45 @@ jobs:
           print("\nИТОГ: СТРУКТУРНАЯ ПРОВЕРКА ПРОЙДЕНА")
           PY
 
-      # 10. Диагностика содержимого лечения и реабилитации
-      - name: Диагностика содержимого разделов
+      # 10. Диагностика содержимого разделов и границы главы 4
+      - name: Диагностика содержимого разделов и границы главы 4
         run: |
           python - <<'PY'
           import json
           import re
           import sys
 
-          path = "output/1087_1_sections_v2.json"
-
-          with open(path, "r", encoding="utf-8") as f:
+          # Загружаем извлечённые разделы
+          with open(
+              "output/1087_1_sections_v2.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
               data = json.load(f)
 
           sections = data.get("sections", {})
+
+          # Загружаем исходный текст
+          with open(
+              "output/1087_1.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              source_data = json.load(f)
+
+          full_text = source_data.get("full_text", "")
+
+          # Загружаем структурный отчёт
+          with open(
+              "output/1087_1_quality_report_v2.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              report = json.load(f)
+
+          # --------------------------------------------------
+          # 1. Диагностика разделов
+          # --------------------------------------------------
 
           for key in ["treatment", "rehabilitation"]:
 
@@ -263,19 +288,139 @@ jobs:
               print(text[-2000:])
 
               print("\nНАЙДЕННЫЕ ПОДРАЗДЕЛЫ:")
+
               headings = re.findall(
                   r"(?m)^\s*\d+\.\d+(?:\.\d+)*[.)]?\s+.{3,150}",
                   text
               )
 
               if headings:
-                  for heading in headings[:30]:
+                  for heading in headings[:40]:
                       print(heading.strip())
               else:
                   print("Нумерованные подразделы не обнаружены.")
 
+          # --------------------------------------------------
+          # 2. Получаем координату границы реабилитации
+          # --------------------------------------------------
+
+          boundary = report.get(
+              "rehabilitation_boundary_check",
+              {}
+          )
+
+          chapter5_start = boundary.get("chapter5_start")
+
           print("\n" + "=" * 70)
-          print("ДИАГНОСТИКА СОДЕРЖИМОГО ЗАВЕРШЕНА")
+          print("ДИАГНОСТИКА ГРАНИЦЫ ГЛАВЫ 4 И ГЛАВЫ 5")
+          print("=" * 70)
+
+          print("Статус проверки:", boundary.get("passed"))
+          print(
+              "Начало реабилитации:",
+              boundary.get("rehabilitation_start")
+          )
+          print(
+              "Конец реабилитации:",
+              boundary.get("rehabilitation_end")
+          )
+          print(
+              "Предполагаемое начало главы 5:",
+              chapter5_start
+          )
+
+          chapter5_heading = boundary.get(
+              "chapter5_heading",
+              {}
+          )
+
+          print(
+              "Найденный заголовок:",
+              chapter5_heading.get("matched_text")
+          )
+
+          print(
+              "Количество совпадений:",
+              chapter5_heading.get("candidate_count")
+          )
+
+          if chapter5_start is None:
+              print("ОШИБКА: координата главы 5 отсутствует.")
+              sys.exit(1)
+
+          if not full_text:
+              print("ОШИБКА: исходный текст пустой.")
+              sys.exit(1)
+
+          if not (
+              0 <= chapter5_start <= len(full_text)
+          ):
+              print("ОШИБКА: координата границы вне текста.")
+              sys.exit(1)
+
+          # --------------------------------------------------
+          # 3. Исходный текст до границы
+          # --------------------------------------------------
+
+          print("\n" + "=" * 70)
+          print("ИСХОДНЫЙ ТЕКСТ: 2500 СИМВОЛОВ ДО ГРАНИЦЫ")
+          print("=" * 70)
+
+          start = max(0, chapter5_start - 2500)
+
+          print(full_text[start:chapter5_start])
+
+          # --------------------------------------------------
+          # 4. Исходный текст после границы
+          # --------------------------------------------------
+
+          print("\n" + "=" * 70)
+          print("ИСХОДНЫЙ ТЕКСТ: 5000 СИМВОЛОВ ПОСЛЕ ГРАНИЦЫ")
+          print("=" * 70)
+
+          end = min(
+              len(full_text),
+              chapter5_start + 5000
+          )
+
+          print(full_text[chapter5_start:end])
+
+          # --------------------------------------------------
+          # 5. Все заголовки, начинающиеся с номера 5
+          # --------------------------------------------------
+
+          print("\n" + "=" * 70)
+          print("ВСЕ ЗАГОЛОВКИ, НАЧИНАЮЩИЕСЯ С НОМЕРА 5")
+          print("=" * 70)
+
+          pattern = re.compile(
+              r"(?m)^[ \t]*5\s*[.)]\s*[^\n]{3,250}"
+          )
+
+          matches = list(pattern.finditer(full_text))
+
+          print("Всего совпадений:", len(matches))
+
+          for match in matches:
+
+              position = match.start()
+
+              print(
+                  f"\nПозиция: {position}"
+              )
+
+              print(
+                  "Заголовок:",
+                  match.group(0).strip()
+              )
+
+              print(
+                  "Относительно найденной границы:",
+                  position - chapter5_start
+              )
+
+          print("\n" + "=" * 70)
+          print("ДИАГНОСТИКА ЗАВЕРШЕНА")
           print("=" * 70)
           PY
 

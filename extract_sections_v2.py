@@ -1177,7 +1177,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         r"эндоскоп|биопси|ультразву|узи\b|рентген|томограф|денситометр|"
         r"генетическ|hла|hla|пцр|копролог|гормон|электрокарди|"
         r"эхокарди|спирометр|скопи|маммограф|функци|пункци|"
-        r"морфологическ|патолого-анатомическ)"
+        r"морфологическ)"
     )
 
     for index, match in enumerate(bullets):
@@ -1205,6 +1205,8 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         )[0]
         block = clean_diagnostic_value(block)
         if len(block) < 20 or not research_re.search(block):
+            continue
+        if re.search(r"(?i)\bкритери\w*\b", block) and re.search(r"(?i)\bиспользовать\b", block):
             continue
 
         patient = re.search(
@@ -1236,6 +1238,8 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                 name_start + 1 + name_end_match.start()
                 if name_end_match else len(block)
             )
+            if purpose_match and purpose_match.start() > name_start:
+                name_end = min(name_end, purpose_match.start())
             name = clean_diagnostic_value(block[name_start:name_end])
             indication_start = patient.start()
             indication_end = name_start
@@ -1258,7 +1262,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             )
 
         name = re.sub(
-            r"^(?:выполнение|проведение|выполнить|провести|"
+            r"^(?:селективное|рутинное|повторное|выполнение|проведение|выполнить|провести|"
             r"исследовать|измерить|оценить)\s+",
             "", name, flags=re.IGNORECASE
         )

@@ -1,0 +1,96 @@
+
+name: Массовая загрузка клинических рекомендаций
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch_size:
+        description: "Количество рекомендаций в партии"
+        required: true
+        default: "10"
+        type: string
+
+      offset:
+        description: "Номер первой записи (начиная с 0)"
+        required: true
+        default: "0"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clinical-recommendations-mass-download
+  cancel-in-progress: false
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: |
+          pip install -r requirements.txt
+
+      - name: Проверить каталог и парсер
+        run: |
+          test -s catalog.json
+          test -s extract_sections_v2.py
+          test -s download_batch.py
+
+          python -c "
+          import json
+          with open('catalog.json', encoding='utf-8') as f:
+              data = json.load(f)
+          print('Всего рекомендаций:', data['total'])
+          print('Записей:', len(data['recommendations']))
+          assert data['total'] == len(data['recommendations'])
+          "
+
+      - name: Массовая обработка партии
+        id: processing
+        run: |
+          python download_batch.py \
+            --limit "${{ inputs.batch_size }}" \
+            --offset "${{ inputs.offset }}"
+
+      - name: Сохранить результаты партии
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clinical-recommendations-batch-${{ inputs.offset }}
+          path: |
+            output/
+            processing_registry.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Сохранить реестр обработки в репозитории
+        if: always()
+        run: |
+          if [ -f processing_registry.json ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email \
+              "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git add processing_registry.json
+
+            if git diff --cached --quiet; then
+              echo "Изменений в реестре нет"
+            else
+              git commit -m \
+                "Update clinical recommendations processing registry"
+
+              git push
+            fi
+          else
+            echo "Реестр пока не создан"
+          fi

@@ -1,0 +1,58 @@
+name: Публикация первой партии рекомендаций
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clinical-recommendations-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: |
+          pip install -r requirements.txt
+
+      - name: Повторно обработать проверенные документы
+        run: |
+          python download_batch.py --ids \
+            1067_1 1066_1 1065_1 1064_1 762_2 \
+            507_4 535_3 937_2 1062_1 760_2 \
+            761_2 771_2 1060_1 1061_1 1058_1 \
+            593_4 1059_1 1057_1 260_3 123_6 \
+            1056_1 1053_1 404_2 318_3 773_2 \
+            1048_1 1047_1 511_2 1045_1 1046_1 \
+            1043_1 1044_1 1042_1 1040_1 1041_1 \
+            1037_1 1033_1 1036_1 1035_1 1034_1 \
+            1032_1 --force
+
+      - name: Сформировать публичный каталог
+        run: |
+          python publish_site.py
+
+      - name: Сохранить опубликованные данные
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site-data processing_registry.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Нет изменений для публикации"
+          else
+            git commit -m "Publish first batch of clinical recommendations"
+            git push
+          fi

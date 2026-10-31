@@ -12,6 +12,11 @@ DEFAULT_INPUT = Path("output/749_2.json")
 
 EXTRACTION_METHOD = "universal_structural_headings_v6"
 
+# Разделы, отсутствие которых допускается.
+OPTIONAL_SECTION_KEYS = {
+    "other_diagnostics",
+}
+
 
 # ============================================================
 # Структура клинической рекомендации
@@ -21,9 +26,7 @@ SECTIONS = [
     {
         "key": "terms",
         "number": None,
-        "aliases": [
-            "Термины и определения",
-        ],
+        "aliases": ["Термины и определения"],
     },
     {
         "key": "definition",
@@ -80,16 +83,12 @@ SECTIONS = [
     {
         "key": "complaints_anamnesis",
         "number": "2.1",
-        "aliases": [
-            "Жалобы и анамнез",
-        ],
+        "aliases": ["Жалобы и анамнез"],
     },
     {
         "key": "physical_examination",
         "number": "2.2",
-        "aliases": [
-            "Физикальное обследование",
-        ],
+        "aliases": ["Физикальное обследование"],
     },
     {
         "key": "laboratory_diagnostics",
@@ -137,25 +136,17 @@ SECTIONS = [
 
 
 # ============================================================
-# Формирование регулярного выражения для названия заголовка
+# Формирование регулярного выражения для заголовка
 # ============================================================
 
 def build_phrase_pattern(phrase):
-    """
-    Формирует шаблон для поиска заголовка.
-
-    Учитывает:
-    - переносы строк;
-    - несколько пробелов;
-    - пробелы вокруг дефиса;
-    - разные варианты дефиса.
-    """
 
     parts = re.split(r"\s+", phrase.strip())
 
     pattern_parts = []
 
     for part in parts:
+
         escaped = re.escape(part)
 
         escaped = escaped.replace(
@@ -173,9 +164,6 @@ def build_phrase_pattern(phrase):
 # ============================================================
 
 def find_heading_candidates(text, section):
-    """
-    Ищет заголовки только в начале строки.
-    """
 
     candidates = []
 
@@ -183,7 +171,9 @@ def find_heading_candidates(text, section):
 
     if number is None:
         number_pattern = ""
+
     else:
+
         escaped_number = re.escape(number)
 
         number_pattern = (
@@ -198,11 +188,14 @@ def find_heading_candidates(text, section):
         phrase_pattern = build_phrase_pattern(alias)
 
         if number is None:
+
             pattern = (
                 r"(?im)^[ \t]*"
                 + phrase_pattern
             )
+
         else:
+
             pattern = (
                 r"(?im)"
                 + number_pattern
@@ -219,7 +212,6 @@ def find_heading_candidates(text, section):
                 "matched_text": match.group(0),
             })
 
-    # Удаляем дубликаты на одной позиции.
     unique = {}
 
     for candidate in candidates:
@@ -227,8 +219,11 @@ def find_heading_candidates(text, section):
         position = candidate["start"]
 
         if position not in unique:
+
             unique[position] = candidate
+
         else:
+
             old_length = len(
                 unique[position]["matched_text"]
             )
@@ -251,13 +246,6 @@ def find_heading_candidates(text, section):
 # ============================================================
 
 def normalize_heading_text(value):
-    """
-    Приводит название заголовка к виду,
-    пригодному для сопоставления.
-
-    Удаляет пробелы, знаки препинания и различия
-    в регистрах букв.
-    """
 
     value = value.lower().replace("ё", "е")
 
@@ -273,12 +261,6 @@ def normalize_heading_text(value):
 # ============================================================
 
 def clean_toc_heading_line(line):
-    """
-    Удаляет из строки оглавления:
-    - номер главы;
-    - точки-лидеры;
-    - номер страницы в конце строки.
-    """
 
     value = line.strip()
 
@@ -288,14 +270,12 @@ def clean_toc_heading_line(line):
         value
     )
 
-    # Удаляем точки-лидеры и всё после них.
     value = re.split(
         r"\.{2,}|…{1,}",
         value,
         maxsplit=1
     )[0]
 
-    # Удаляем номер страницы в конце строки.
     value = re.sub(
         r"\s+\d{1,4}\s*$",
         "",
@@ -310,19 +290,9 @@ def clean_toc_heading_line(line):
 # ============================================================
 
 def find_chapter_title_in_contents(text, before_position):
-    """
-    Ищет название главы 5 в оглавлении.
-
-    Использует первое подходящее самостоятельное
-    обозначение главы 5 до начала реабилитации.
-
-    Пункты вида 5.1 и 5.1.1 не подходят.
-    """
 
     pattern = (
         r"(?im)^[ \t]*"
-        # Номер главы 5 в оглавлении встречается с точкой и без неё.
-        # Обязательный пробел и заглавная буква исключают пункты 5.1/5.1.1.
         r"5(?:\s*[.)])?\s+"
         r"(?=[А-ЯЁ])"
         r"([^\n]{10,300})"
@@ -341,11 +311,9 @@ def find_chapter_title_in_contents(text, before_position):
 
         normalized = normalize_heading_text(title)
 
-        # Отбрасываем слишком короткие и сомнительные строки.
         if len(normalized) < 20:
             continue
 
-        # Строка должна содержать несколько слов.
         if len(title.split()) < 3:
             continue
 
@@ -364,12 +332,6 @@ def find_chapter_title_in_contents(text, before_position):
 # ============================================================
 
 def get_heading_text_from_lines(lines, start_index):
-    """
-    Получает текст заголовка из строки и, если необходимо,
-    следующих за ней строк.
-
-    Это позволяет учитывать перенос длинного заголовка.
-    """
 
     collected = []
 
@@ -383,7 +345,6 @@ def get_heading_text_from_lines(lines, start_index):
         if not line:
             break
 
-        # Не захватываем следующий самостоятельный пункт.
         if index > start_index and re.match(
             r"^\d+(?:\.\d+)*\s*[.)]",
             line
@@ -404,21 +365,6 @@ def find_next_major_chapter(
     chapter_number,
     after_position
 ):
-    """
-    Находит настоящую следующую главу по её названию.
-
-    Алгоритм:
-
-    1. Ищет название главы в оглавлении.
-    2. Нормализует найденное название.
-    3. Ищет самостоятельный заголовок с таким же названием
-       после начала главы 4.
-    4. Не принимает за главу 5 обычные пункты списка,
-       даже если они начинаются с цифры 5.
-
-    Если надёжное совпадение не найдено,
-    возвращает None.
-    """
 
     if str(chapter_number) != "5":
         return None, []
@@ -434,12 +380,15 @@ def find_next_major_chapter(
     target_title = toc_heading["normalized_title"]
 
     lines = text.splitlines()
+
     line_positions = []
 
     current_position = 0
 
     for line in lines:
+
         line_positions.append(current_position)
+
         current_position += len(line) + 1
 
     pattern = (
@@ -458,7 +407,11 @@ def find_next_major_chapter(
         if line_start <= after_position:
             continue
 
-        if not re.match(pattern, line, flags=re.IGNORECASE):
+        if not re.match(
+            pattern,
+            line,
+            flags=re.IGNORECASE
+        ):
             continue
 
         heading_text = get_heading_text_from_lines(
@@ -466,7 +419,6 @@ def find_next_major_chapter(
             line_index
         )
 
-        # Убираем номер главы перед сравнением.
         heading_without_number = re.sub(
             r"^\s*5(?:\s*[.)])?\s*",
             "",
@@ -480,15 +432,10 @@ def find_next_major_chapter(
         if not candidate_normalized:
             continue
 
-        # Основное условие: название из оглавления
-        # должно совпасть с началом найденного заголовка.
         exact_match = candidate_normalized.startswith(
             target_title
         )
 
-        # Дополнительная проверка для случаев,
-        # когда заголовок перенесён или сокращён
-        # при извлечении текста из PDF.
         partial_match = (
             len(candidate_normalized) >= 20
             and len(target_title) >= 20
@@ -497,7 +444,9 @@ def find_next_major_chapter(
                     target_title[:min(50, len(target_title))]
                 )
                 or target_title.startswith(
-                    candidate_normalized[:min(50, len(candidate_normalized))]
+                    candidate_normalized[
+                        :min(50, len(candidate_normalized))
+                    ]
                 )
             )
         )
@@ -524,8 +473,6 @@ def find_next_major_chapter(
         key=lambda item: item["start"]
     )
 
-    # Выбираем первое подтверждённое совпадение
-    # после начала главы 4.
     return candidates[0], candidates
 
 
@@ -534,12 +481,6 @@ def find_next_major_chapter(
 # ============================================================
 
 def select_headings(all_candidates):
-    """
-    Выбирает последовательность заголовков.
-
-    Обратный проход позволяет использовать последние
-    подходящие совпадения, а не заголовки оглавления.
-    """
 
     selected = {}
 
@@ -581,14 +522,6 @@ def select_headings(all_candidates):
 # ============================================================
 
 def extract_sections(text):
-    """
-    Извлекает 15 основных разделов.
-
-    Глава 3 заканчивается перед заголовком главы 4.
-
-    Глава 4 заканчивается перед подтверждённым заголовком
-    главы 5, найденным по названию из оглавления.
-    """
 
     all_candidates = {}
 
@@ -621,6 +554,7 @@ def extract_sections(text):
             end = matched_headings[next_key]["start"]
 
         else:
+
             end = len(text)
 
         extracted[key] = {
@@ -630,7 +564,7 @@ def extract_sections(text):
         }
 
     # --------------------------------------------------------
-    # Дополнительная граница главы 4.
+    # Граница главы 4.
     # --------------------------------------------------------
 
     chapter5_heading = None
@@ -650,8 +584,6 @@ def extract_sections(text):
             )
         )
 
-        # Обрезаем главу 4 только при подтверждённом
-        # совпадении названия с оглавлением.
         if chapter5_heading:
 
             rehabilitation_end = (
@@ -667,6 +599,23 @@ def extract_sections(text):
                     rehabilitation_start:rehabilitation_end
                 ].strip()
             )
+
+    # --------------------------------------------------------
+    # Необязательные разделы.
+    #
+    # Если подраздел 2.5 отсутствует, добавляем пустое
+    # значение. Это не считается ошибкой качества.
+    # --------------------------------------------------------
+
+    for optional_key in OPTIONAL_SECTION_KEYS:
+
+        if optional_key not in extracted:
+
+            extracted[optional_key] = {
+                "start": None,
+                "end": None,
+                "text": "",
+            }
 
     return (
         extracted,
@@ -694,9 +643,7 @@ def check_heading_order(matched_headings):
         if key not in matched_headings:
             continue
 
-        current_start = (
-            matched_headings[key]["start"]
-        )
+        current_start = matched_headings[key]["start"]
 
         if current_start <= previous_start:
 
@@ -710,7 +657,7 @@ def check_heading_order(matched_headings):
 
 
 # ============================================================
-# Контроль границы главы 3 «Лечение»
+# Контроль границы главы 3
 # ============================================================
 
 def check_treatment_boundary(extracted, matched_headings):
@@ -767,7 +714,7 @@ def check_treatment_boundary(extracted, matched_headings):
 
 
 # ============================================================
-# Контроль границы главы 4 «Реабилитация»
+# Контроль границы главы 4
 # ============================================================
 
 def check_rehabilitation_boundary(
@@ -842,6 +789,11 @@ def build_quality_report(
 
         if key not in matched_headings:
 
+            # Отсутствие необязательного подраздела
+            # не является ошибкой.
+            if key in OPTIONAL_SECTION_KEYS:
+                continue
+
             missing_sections.append(key)
 
             warnings.append(
@@ -867,8 +819,14 @@ def build_quality_report(
         )
     )
 
+    # --------------------------------------------------------
     # Проверка пустых разделов.
+    # --------------------------------------------------------
+
     for key, section_data in extracted.items():
+
+        if key in OPTIONAL_SECTION_KEYS:
+            continue
 
         if not section_data["text"].strip():
 
@@ -1001,6 +959,16 @@ def build_quality_report(
 
         "missing_sections": missing_sections,
 
+        "optional_sections": {
+            key: {
+                "found": key in matched_headings,
+                "empty": not bool(
+                    extracted.get(key, {}).get("text", "").strip()
+                ),
+            }
+            for key in OPTIONAL_SECTION_KEYS
+        },
+
         "warnings": warnings,
 
         "matched_headings": matched_report,
@@ -1056,6 +1024,9 @@ def build_quality_report(
         "note": (
             "Проверка подтверждает обнаружение структурных "
             "заголовков и определение границ глав 3 и 4. "
+            "Подраздел 2.5 «Иные диагностические исследования» "
+            "считается необязательным. Если он отсутствует, "
+            "в итоговом JSON сохраняется пустое значение. "
             "Граница главы 4 определяется сопоставлением "
             "названия главы 5 из оглавления с основным текстом. "
             "Медицинская полнота, сохранность текста и "
@@ -1188,20 +1159,38 @@ def main():
 
         "quality_check": quality_report["quality_check"],
 
+        # Все 15 ключей сохраняются в JSON.
+        # Необязательный раздел может иметь пустое значение.
         "sections": {
-            key: value["text"]
-            for key, value in extracted.items()
+            section["key"]: extracted.get(
+                section["key"],
+                {"text": ""}
+            )["text"]
+            for section in SECTIONS
         },
 
         "section_positions": {
 
-            key: {
-                "start": value["start"],
-                "end": value["end"],
-                "length": len(value["text"]),
+            section["key"]: {
+                "start": extracted.get(
+                    section["key"],
+                    {}
+                ).get("start"),
+
+                "end": extracted.get(
+                    section["key"],
+                    {}
+                ).get("end"),
+
+                "length": len(
+                    extracted.get(
+                        section["key"],
+                        {"text": ""}
+                    )["text"]
+                ),
             }
 
-            for key, value in extracted.items()
+            for section in SECTIONS
         },
 
         "quality_report": quality_report,
@@ -1242,7 +1231,7 @@ def main():
         )
 
     # --------------------------------------------------------
-    # Вывод результатов в GitHub Actions.
+    # Вывод результатов.
     # --------------------------------------------------------
 
     print("=" * 70)
@@ -1280,6 +1269,12 @@ def main():
             print(
                 f"[OK] {key}: "
                 f"позиция {heading['start']}"
+            )
+
+        elif key in OPTIONAL_SECTION_KEYS:
+
+            print(
+                f"[НЕТ — НЕОБЯЗАТЕЛЬНЫЙ] {key}"
             )
 
         else:

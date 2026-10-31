@@ -171,47 +171,61 @@ def find_heading_candidates(text, section):
     number = section["number"]
 
     if number is None:
-        number_pattern = ""
+
+        number_patterns = [""]
+
+    elif section["key"] == "treatment":
+
+        # Обычная запись главы 3 и ошибочная запись .3.
+        number_patterns = [
+            r"^\s*3\s*\.?\s*(?![\d])",
+            r"^\s*\. \s*3\s*\.?\s*(?![\d])",
+            r"^\s*\.3\s*\.?\s*(?![\d])",
+        ]
 
     else:
 
         escaped_number = re.escape(number)
 
-        number_pattern = (
-            r"^\s*"
-            + escaped_number
-            + r"\s*\.?\s*"
-            + r"(?![\d])"
-        )
+        number_patterns = [
+            (
+                r"^\s*"
+                + escaped_number
+                + r"\s*\.?\s*"
+                + r"(?![\d])"
+            )
+        ]
 
     for alias in section["aliases"]:
 
         phrase_pattern = build_phrase_pattern(alias)
 
-        if number is None:
+        for number_pattern in number_patterns:
 
-            pattern = (
-                r"(?im)^[ \t]*"
-                + phrase_pattern
-            )
+            if number is None:
 
-        else:
+                pattern = (
+                    r"(?im)^[ \t]*"
+                    + phrase_pattern
+                )
 
-            pattern = (
-                r"(?im)"
-                + number_pattern
-                + phrase_pattern
-            )
+            else:
 
-        for match in re.finditer(pattern, text):
+                pattern = (
+                    r"(?im)"
+                    + number_pattern
+                    + phrase_pattern
+                )
 
-            candidates.append({
-                "key": section["key"],
-                "number": number,
-                "alias": alias,
-                "start": match.start(),
-                "matched_text": match.group(0),
-            })
+            for match in re.finditer(pattern, text):
+
+                candidates.append({
+                    "key": section["key"],
+                    "number": number,
+                    "alias": alias,
+                    "start": match.start(),
+                    "matched_text": match.group(0),
+                })
 
     unique = {}
 

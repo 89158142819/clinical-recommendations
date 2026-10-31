@@ -46,6 +46,12 @@ REQUIRED_SECTION_KEYS = [
     "rehabilitation",
 ]
 
+# Эти разделы могут отсутствовать в конкретной
+# клинической рекомендации без ошибки качества.
+OPTIONAL_SECTION_KEYS = {
+    "other_diagnostics",
+}
+
 
 def now():
     return datetime.now(timezone.utc).isoformat()
@@ -309,14 +315,10 @@ def check_results(document_id):
             "В JSON результата отсутствует корректный объект sections"
         )
 
+    # Проверяем наличие всех 15 ключей.
     missing_keys = [
         key for key in REQUIRED_SECTION_KEYS
         if key not in sections
-    ]
-
-    empty_sections = [
-        key for key in REQUIRED_SECTION_KEYS
-        if key in sections and not str(sections[key]).strip()
     ]
 
     if missing_keys:
@@ -324,16 +326,29 @@ def check_results(document_id):
             f"В JSON отсутствуют разделы: {missing_keys}"
         )
 
-    if empty_sections:
+    # Проверяем заполненность обязательных разделов.
+    # other_diagnostics может быть пустым, если его нет
+    # в исходной клинической рекомендации.
+    empty_required_sections = [
+        key for key in REQUIRED_SECTION_KEYS
+        if key not in OPTIONAL_SECTION_KEYS
+        and not str(sections[key]).strip()
+    ]
+
+    if empty_required_sections:
         raise RuntimeError(
-            f"В JSON пустые разделы: {empty_sections}"
+            "Пустые обязательные разделы: "
+            f"{empty_required_sections}"
         )
 
+    # Проверяем качество результата самого парсера.
     if sections_data.get("quality_check") != "passed":
         raise RuntimeError(
             "В JSON разделов quality_check не равен passed"
         )
 
+    # Отсутствие необязательного раздела не считается
+    # предупреждением или ошибкой качества.
     passed = (
         report.get("quality_check") == "passed"
         and not report.get("missing_sections", [])
@@ -419,6 +434,9 @@ def process_document(document, registry):
                 "missing_sections", []
             ),
             "warnings": report.get("warnings", []),
+            "optional_sections_not_found": report.get(
+                "optional_sections_not_found", []
+            ),
             "pages_count": len(reader.pages),
             "text_length": len(full_text),
             "pdf_file": str(paths["pdf"].relative_to(ROOT)),
@@ -432,6 +450,14 @@ def process_document(document, registry):
             document_id,
             status,
         )
+
+        if sections_data_optional_missing := report.get(
+            "optional_sections_not_found", []
+        ):
+            logging.info(
+                "Необязательные разделы не найдены: %s",
+                sections_data_optional_missing,
+            )
 
     except Exception as error:
         record.update({

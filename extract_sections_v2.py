@@ -1453,14 +1453,20 @@ def build_diagnostic_summary(extracted):
         extracted.get("instrumental_diagnostics", {}).get("text", ""),
         "instrumental_diagnostics"
     )
+    other = extract_diagnostic_recommendations(
+        extracted.get("other_diagnostics", {}).get("text", ""),
+        "other_diagnostics"
+    )
     return {
         "method": DIAGNOSTIC_EXTRACTION_METHOD,
-        "status": "draft" if laboratory or instrumental else "not_extracted",
+        "status": "draft" if laboratory or instrumental or other else "not_extracted",
         "laboratory": laboratory,
         "instrumental": instrumental,
+        "other": other,
         "counts": {
             "laboratory": len(laboratory),
-            "instrumental": len(instrumental)
+            "instrumental": len(instrumental),
+            "other": len(other)
         },
         "note": "Автоматически выделенные формулировки рекомендаций. Требуется сверка с исходным документом."
     }

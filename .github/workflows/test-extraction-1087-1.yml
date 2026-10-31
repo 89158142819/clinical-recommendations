@@ -174,9 +174,7 @@ jobs:
               sys.exit(1)
 
           print("Граница подтверждена: True")
-
-          print("\nДЛИНА ГЛАВЫ 3:", treatment.get("length"))
-
+          print("Длина главы 3:", treatment.get("length"))
           print("=" * 60)
           print("ИТОГ: ГРАНИЦА ЛЕЧЕНИЯ ПОДТВЕРЖДЕНА")
           PY
@@ -228,7 +226,60 @@ jobs:
           print("\nИТОГ: СТРУКТУРНАЯ ПРОВЕРКА ПРОЙДЕНА")
           PY
 
-      # 10. Сохранение результатов тестирования
+      # 10. Диагностика содержимого лечения и реабилитации
+      - name: Диагностика содержимого разделов
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          import sys
+
+          path = "output/1087_1_sections_v2.json"
+
+          with open(path, "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          sections = data.get("sections", {})
+
+          for key in ["treatment", "rehabilitation"]:
+
+              text = sections.get(key, "")
+
+              print("\n" + "=" * 70)
+              print("РАЗДЕЛ:", key)
+              print("Длина:", len(text))
+              print("=" * 70)
+
+              if not text.strip():
+                  print("ОШИБКА: раздел пустой.")
+                  sys.exit(1)
+
+              print("\nНАЧАЛО РАЗДЕЛА:")
+              print("-" * 70)
+              print(text[:2000])
+
+              print("\nКОНЕЦ РАЗДЕЛА:")
+              print("-" * 70)
+              print(text[-2000:])
+
+              print("\nНАЙДЕННЫЕ ПОДРАЗДЕЛЫ:")
+              headings = re.findall(
+                  r"(?m)^\s*\d+\.\d+(?:\.\d+)*[.)]?\s+.{3,150}",
+                  text
+              )
+
+              if headings:
+                  for heading in headings[:30]:
+                      print(heading.strip())
+              else:
+                  print("Нумерованные подразделы не обнаружены.")
+
+          print("\n" + "=" * 70)
+          print("ДИАГНОСТИКА СОДЕРЖИМОГО ЗАВЕРШЕНА")
+          print("=" * 70)
+          PY
+
+      # 11. Сохранение результатов тестирования
       - name: Сохранить результаты тестирования
         uses: actions/upload-artifact@v4
         with:

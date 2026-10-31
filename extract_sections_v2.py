@@ -1172,6 +1172,14 @@ def extract_diagnostic_recommendations(section_text, section_kind):
     bullets = list(bullet_re.finditer(section_text))
     results = []
 
+    research_re = re.compile(
+        r"(?i)(антител|иммуноглобулин|анализ|исследован|определени|"
+        r"эндоскоп|биопси|ультразву|узи\b|рентген|томограф|денситометр|"
+        r"генетическ|hла|hla|пцр|копролог|гормон|электрокарди|"
+        r"эхокарди|спирометр|скопи|маммограф|функци|пункци|"
+        r"морфологическ|патолого-анатомическ)"
+    )
+
     for index, match in enumerate(bullets):
         end = bullets[index + 1].start() if index + 1 < len(bullets) else len(section_text)
         block = section_text[match.end():end]
@@ -1196,35 +1204,70 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             block, maxsplit=1, flags=re.IGNORECASE
         )[0]
         block = clean_diagnostic_value(block)
-        if len(block) < 20:
+        if len(block) < 20 or not research_re.search(block):
             continue
 
         patient = re.search(
             r"\b(?:пациентам|пациентов|пациенту|пациента|детям|взрослым|лицам|родственникам)\b",
             block, flags=re.IGNORECASE
         )
-        purpose_match = re.search(r"\bс\s+целью\b", block, flags=re.IGNORECASE)
-        condition = re.search(r"\bпри\s+", block, flags=re.IGNORECASE)
-
-        name_end = patient.start() if patient else (
-            purpose_match.start() if purpose_match else (
-                condition.start() if condition else min(len(block), 220)
-            )
+        action = re.search(
+            r"\b(?:выполнить|выполнение|провести|проведение|"
+            r"определить|определение|исследовать|исследование|"
+            r"измерить|измерение|оценить|оценка)\b",
+            block, flags=re.IGNORECASE
         )
-        name = clean_diagnostic_value(block[:name_end])
+        purpose_match = re.search(
+            r"\bс\s+(?:(?:диагностической|лечебной|профилактической)\s+)?целью\b",
+            block, flags=re.IGNORECASE
+        )
+
+        # Название исследования может стоять как до указания пациентов,
+        # так и после него ("пациентам ... выполнить исследование").
+        if action and patient and action.start() > patient.start():
+            name_start = action.start()
+            name_end_match = re.search(
+                r"\b(?:на\s+фоне|через\s+\d|в\s+динамике|"
+                r"с\s+интервалом|при\s+появлении)\b",
+                block[name_start + 1:],
+                flags=re.IGNORECASE
+            )
+            name_end = (
+                name_start + 1 + name_end_match.start()
+                if name_end_match else len(block)
+            )
+            name = clean_diagnostic_value(block[name_start:name_end])
+            indication_start = patient.start()
+            indication_end = name_start
+        else:
+            if patient:
+                name_end = patient.start()
+            elif purpose_match:
+                name_end = purpose_match.start()
+            elif action:
+                name_end = min(len(block), action.start() + 220)
+            else:
+                name_end = min(len(block), 220)
+
+            name = clean_diagnostic_value(block[:name_end])
+            indication_start = patient.start() if patient else None
+            indication_end = (
+                purpose_match.start()
+                if purpose_match and purpose_match.start() > (indication_start or 0)
+                else len(block)
+            )
+
         name = re.sub(
-            r"^(?:выполнение|проведение|определение|исследование|измерение|оценка)\s+",
+            r"^(?:выполнение|проведение|выполнить|провести|"
+            r"исследовать|измерить|оценить)\s+",
             "", name, flags=re.IGNORECASE
         )
-        if len(name) > 240:
-            name = name[:237].rsplit(" ", 1)[0] + "…"
+        name = clean_diagnostic_value(name)
+        if len(name) > 260:
+            name = name[:257].rsplit(" ", 1)[0] + "…"
         if not name:
             continue
 
-        indication_start = patient.start() if patient else (
-            condition.start() if condition else None
-        )
-        indication_end = purpose_match.start() if purpose_match else len(block)
         indication = (
             clean_diagnostic_value(block[indication_start:indication_end])
             if indication_start is not None else ""
@@ -1232,15 +1275,31 @@ def extract_diagnostic_recommendations(section_text, section_kind):
 
         purpose = ""
         if purpose_match:
-            tail = block[purpose_match.end():]
-            purpose = clean_diagnostic_value(re.split(r"[.;](?:\s|$)", tail, maxsplit=1)[0])
-            if purpose:
-                purpose = "Для " + purpose[0].lower() + purpose[1:]
+            purpose_start = purpose_match.start()
+            purpose_end = len(block)
+            if patient and patient.start() > purpose_start:
+                purpose_end = patient.start()
+            elif action and action.start() > purpose_start:
+                purpose_end = action.start()
+            purpose = clean_diagnostic_value(block[purpose_start:purpose_end])
+        else:
+            purpose_match_alt = re.search(
+                r"\bдля\s+(?:скрининга|диагностики|подтверждения|"
+                r"исключения|верификации|оценки|выявления)\b[^.;]{0,180}",
+                block, flags=re.IGNORECASE
+            )
+            if purpose_match_alt:
+                purpose = clean_diagnostic_value(purpose_match_alt.group(0))
+
+        if not indication:
+            indication = "В тексте рекомендации отдельные показания не выделены."
+        if not purpose:
+            purpose = "Отдельная цель исследования в формулировке рекомендации не указана."
 
         results.append({
             "name": name,
-            "indications": indication or "В тексте рекомендации отдельные показания не выделены.",
-            "purpose": purpose or "Отдельная цель исследования в формулировке рекомендации не указана.",
+            "indications": indication,
+            "purpose": purpose,
             "recommendation_type": kind,
             "source_excerpt": block[:1200],
             "source_section": section_kind,
@@ -1254,7 +1313,6 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             seen.add(key)
             unique.append(item)
     return unique
-
 
 def build_diagnostic_summary(extracted):
     laboratory = extract_diagnostic_recommendations(

@@ -26,13 +26,24 @@ READ_TIMEOUT = 300
 
 USER_AGENT = "ClinicalRecommendationsCatalog/1.0"
 
-SECTION_KEYS = [
+PARSER_METHOD = "universal_structural_headings_v6"
+
+REQUIRED_SECTION_KEYS = [
+    "terms",
     "definition",
+    "etiology_pathogenesis",
+    "epidemiology",
     "icd10",
+    "classification",
+    "clinical_picture",
+    "diagnostics",
+    "complaints_anamnesis",
+    "physical_examination",
     "laboratory_diagnostics",
     "instrumental_diagnostics",
     "other_diagnostics",
     "treatment",
+    "rehabilitation",
 ]
 
 
@@ -58,6 +69,11 @@ def load_catalog():
 
     if catalog.get("total") != len(recommendations):
         raise ValueError("Количество записей каталога не совпадает")
+
+    ids = [str(item["id"]) for item in recommendations]
+
+    if len(ids) != len(set(ids)):
+        raise ValueError("В каталоге обнаружены повторяющиеся ID")
 
     return recommendations
 
@@ -115,6 +131,9 @@ def is_already_processed(document_id, registry):
         return False
 
     if record.get("quality_check") != "passed":
+        return False
+
+    if record.get("extraction_method") != PARSER_METHOD:
         return False
 
     if record.get("missing_sections"):
@@ -219,7 +238,7 @@ def create_json(document, pdf_url, reader, full_text):
         "extraction_status": "text_extracted",
         "sections": {
             key: ""
-            for key in SECTION_KEYS
+            for key in REQUIRED_SECTION_KEYS
         },
         "full_text": full_text,
     }
@@ -232,6 +251,9 @@ def run_parser(input_file):
         "--input",
         str(input_file),
     ]
+
+    logging.info("Запуск актуального парсера:")
+    logging.info("%s", " ".join(command))
 
     result = subprocess.run(
         command,
@@ -265,8 +287,52 @@ def check_results(document_id):
                 f"Не создан ожидаемый файл: {path.name}"
             )
 
+    with paths["sections"].open("r", encoding="utf-8") as f:
+        sections_data = json.load(f)
+
     with paths["report"].open("r", encoding="utf-8") as f:
         report = json.load(f)
+
+    extraction_method = sections_data.get("extraction_method")
+
+    if extraction_method != PARSER_METHOD:
+        raise RuntimeError(
+            "Неверный метод извлечения: "
+            f"{extraction_method!r}. "
+            f"Ожидался {PARSER_METHOD!r}"
+        )
+
+    sections = sections_data.get("sections")
+
+    if not isinstance(sections, dict):
+        raise RuntimeError(
+            "В JSON результата отсутствует корректный объект sections"
+        )
+
+    missing_keys = [
+        key for key in REQUIRED_SECTION_KEYS
+        if key not in sections
+    ]
+
+    empty_sections = [
+        key for key in REQUIRED_SECTION_KEYS
+        if key in sections and not str(sections[key]).strip()
+    ]
+
+    if missing_keys:
+        raise RuntimeError(
+            f"В JSON отсутствуют разделы: {missing_keys}"
+        )
+
+    if empty_sections:
+        raise RuntimeError(
+            f"В JSON пустые разделы: {empty_sections}"
+        )
+
+    if sections_data.get("quality_check") != "passed":
+        raise RuntimeError(
+            "В JSON разделов quality_check не равен passed"
+        )
 
     passed = (
         report.get("quality_check") == "passed"
@@ -274,10 +340,9 @@ def check_results(document_id):
         and not report.get("warnings", [])
     )
 
-    return (
-        "passed" if passed else "review_required",
-        report,
-    )
+    status = "passed" if passed else "review_required"
+
+    return status, report, extraction_method
 
 
 def process_document(document, registry):
@@ -294,6 +359,7 @@ def process_document(document, registry):
         "finished_at": None,
         "error": None,
         "quality_check": None,
+        "extraction_method": None,
         "missing_sections": [],
         "warnings": [],
     }
@@ -332,14 +398,23 @@ def process_document(document, registry):
         logging.info("Страниц: %s", len(reader.pages))
         logging.info("Символов: %s", len(full_text))
 
+        # Удаляем результаты предыдущего запуска.
+        # Это исключает использование устаревшего отчёта.
+        for key in ("sections", "report"):
+            if paths[key].exists():
+                paths[key].unlink()
+
         run_parser(paths["input"])
 
-        status, report = check_results(document_id)
+        status, report, extraction_method = check_results(
+            document_id
+        )
 
         record.update({
             "status": status,
             "finished_at": now(),
             "quality_check": report.get("quality_check"),
+            "extraction_method": extraction_method,
             "missing_sections": report.get(
                 "missing_sections", []
             ),
@@ -415,7 +490,10 @@ def main():
         missing = requested - found
 
         if missing:
-            logging.warning("Не найдены ID: %s", sorted(missing))
+            logging.warning(
+                "Не найдены ID: %s",
+                sorted(missing),
+            )
     else:
         selected = recommendations[
             args.offset:args.offset + args.limit
@@ -434,6 +512,7 @@ def main():
 
     logging.info("Всего в каталоге: %s", len(recommendations))
     logging.info("Размер текущей партии: %s", len(selected))
+    logging.info("Метод парсера: %s", PARSER_METHOD)
 
     for index, document in enumerate(selected, start=1):
         document_id = str(document["id"])

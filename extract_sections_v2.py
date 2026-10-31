@@ -1281,7 +1281,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             source_lower = block.lower()
             # Сам пункт о комплексном обследовании заменяется карточками
             # его вложенных компонентов, чтобы не создавать общую карточку-дубль.
-            if re.search(r"(?i)комплексн\w*\s+лабораторно[- ]инструментальн\w*\s+исследован", source_lower):
+            if re.search(r"(?i)комплексн\\w*\\s+лабораторно\\s*[-–—]\\s*инструментальн\\w*\\s+исследован", source_lower):
                 continue
 
             # Пропускаем все рекомендации с диагностическими методами,
@@ -1427,7 +1427,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             )
             if not (
                 re.match(r"(?i)^рекомендуется\b|^рекомендовано\b", parent_text)
-                and re.search(r"(?i)комплексн\w*\s+лабораторно[- ]инструментальн\w*\s+исследован", parent_text)
+                and re.search(r"(?i)комплексн\\w*\\s+лабораторно\\s*[-–—]\\s*инструментальн\\w*\\s+исследован", parent_text)
             ):
                 continue
 

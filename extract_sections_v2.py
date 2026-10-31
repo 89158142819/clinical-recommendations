@@ -11,7 +11,7 @@ from pathlib import Path
 
 DEFAULT_INPUT = Path("output/749_2.json")
 
-EXTRACTION_METHOD = "universal_structural_headings_v5"
+EXTRACTION_METHOD = "universal_structural_headings_v6"
 
 
 # ============================================================
@@ -248,59 +248,283 @@ def find_heading_candidates(text, section):
 
 
 # ============================================================
-# Поиск следующей крупной главы
+# Нормализация названий глав
 # ============================================================
 
-def find_next_major_chapter(text, chapter_number, after_position):
+def normalize_heading_text(value):
     """
-    Ищет заголовок следующей крупной главы.
+    Приводит название заголовка к виду,
+    пригодному для сопоставления.
 
-    Например:
-    5. Профилактика и диспансерное наблюдение
-
-    Учитывает:
-    - начало заголовка с новой строки;
-    - точку или закрывающую скобку после номера;
-    - наличие пробела или его отсутствие;
-    - заглавную русскую букву после номера.
-
-    Не принимает за главу 5 подразделы:
-    5.1
-    5.1.1
-    5.2
-
-    Ищет только после указанной позиции, чтобы не выбрать
-    заголовок из оглавления.
+    Удаляет пробелы, знаки препинания и различия
+    в регистрах букв.
     """
 
-    number = re.escape(str(chapter_number))
+    value = value.lower().replace("ё", "е")
+
+    return re.sub(
+        r"[^а-яa-z0-9]",
+        "",
+        value
+    )
+
+
+# ============================================================
+# Очистка строки оглавления
+# ============================================================
+
+def clean_toc_heading_line(line):
+    """
+    Удаляет из строки оглавления:
+    - номер главы;
+    - точки-лидеры;
+    - номер страницы в конце строки.
+    """
+
+    value = line.strip()
+
+    value = re.sub(
+        r"^\s*5\s*[.)]\s*",
+        "",
+        value
+    )
+
+    # Удаляем точки-лидеры и всё после них.
+    value = re.split(
+        r"\.{2,}|…{1,}",
+        value,
+        maxsplit=1
+    )[0]
+
+    # Удаляем номер страницы в конце строки.
+    value = re.sub(
+        r"\s+\d{1,4}\s*$",
+        "",
+        value
+    )
+
+    return value.strip(" \t.-–—")
+
+
+# ============================================================
+# Поиск названия главы 5 в оглавлении
+# ============================================================
+
+def find_chapter_title_in_contents(text, before_position):
+    """
+    Ищет название главы 5 в оглавлении.
+
+    Использует первое подходящее самостоятельное
+    обозначение главы 5 до начала реабилитации.
+
+    Пункты вида 5.1 и 5.1.1 не подходят.
+    """
 
     pattern = (
         r"(?im)^[ \t]*"
-        + number
-        + r"\s*[.)]\s*"
-        + r"(?=[А-ЯЁ])"
-        + r"[^\n]{3,250}"
+        r"5\s*[.)]\s*"
+        r"(?=[А-ЯЁ])"
+        r"([^\n]{10,300})"
+    )
+
+    for match in re.finditer(pattern, text):
+
+        if match.start() >= before_position:
+            break
+
+        raw_line = match.group(1)
+
+        title = clean_toc_heading_line(
+            "5. " + raw_line
+        )
+
+        normalized = normalize_heading_text(title)
+
+        # Отбрасываем слишком короткие и сомнительные строки.
+        if len(normalized) < 20:
+            continue
+
+        # Строка должна содержать несколько слов.
+        if len(title.split()) < 3:
+            continue
+
+        return {
+            "title": title,
+            "normalized_title": normalized,
+            "start": match.start(),
+            "matched_text": match.group(0).strip(),
+        }
+
+    return None
+
+
+# ============================================================
+# Получение текста заголовка из основного текста
+# ============================================================
+
+def get_heading_text_from_lines(lines, start_index):
+    """
+    Получает текст заголовка из строки и, если необходимо,
+    следующих за ней строк.
+
+    Это позволяет учитывать перенос длинного заголовка.
+    """
+
+    collected = []
+
+    for index in range(
+        start_index,
+        min(start_index + 4, len(lines))
+    ):
+
+        line = lines[index].strip()
+
+        if not line:
+            break
+
+        # Не захватываем следующий самостоятельный пункт.
+        if index > start_index and re.match(
+            r"^\d+(?:\.\d+)*\s*[.)]",
+            line
+        ):
+            break
+
+        collected.append(line)
+
+    return " ".join(collected)
+
+
+# ============================================================
+# Поиск настоящей главы 5
+# ============================================================
+
+def find_next_major_chapter(
+    text,
+    chapter_number,
+    after_position
+):
+    """
+    Находит настоящую следующую главу по её названию.
+
+    Алгоритм:
+
+    1. Ищет название главы в оглавлении.
+    2. Нормализует найденное название.
+    3. Ищет самостоятельный заголовок с таким же названием
+       после начала главы 4.
+    4. Не принимает за главу 5 обычные пункты списка,
+       даже если они начинаются с цифры 5.
+
+    Если надёжное совпадение не найдено,
+    возвращает None.
+    """
+
+    if str(chapter_number) != "5":
+        return None, []
+
+    toc_heading = find_chapter_title_in_contents(
+        text,
+        after_position
+    )
+
+    if toc_heading is None:
+        return None, []
+
+    target_title = toc_heading["normalized_title"]
+
+    lines = text.splitlines()
+    line_positions = []
+
+    current_position = 0
+
+    for line in lines:
+        line_positions.append(current_position)
+        current_position += len(line) + 1
+
+    pattern = (
+        r"^[ \t]*"
+        r"5\s*[.)]\s*"
+        r"(?=[А-ЯЁ])"
+        r"[^\n]{3,300}"
     )
 
     candidates = []
 
-    for match in re.finditer(pattern, text):
+    for line_index, line in enumerate(lines):
 
-        if match.start() <= after_position:
+        line_start = line_positions[line_index]
+
+        if line_start <= after_position:
+            continue
+
+        if not re.match(pattern, line, flags=re.IGNORECASE):
+            continue
+
+        heading_text = get_heading_text_from_lines(
+            lines,
+            line_index
+        )
+
+        # Убираем номер главы перед сравнением.
+        heading_without_number = re.sub(
+            r"^\s*5\s*[.)]\s*",
+            "",
+            heading_text
+        )
+
+        candidate_normalized = normalize_heading_text(
+            heading_without_number
+        )
+
+        if not candidate_normalized:
+            continue
+
+        # Основное условие: название из оглавления
+        # должно совпасть с началом найденного заголовка.
+        exact_match = candidate_normalized.startswith(
+            target_title
+        )
+
+        # Дополнительная проверка для случаев,
+        # когда заголовок перенесён или сокращён
+        # при извлечении текста из PDF.
+        partial_match = (
+            len(candidate_normalized) >= 20
+            and len(target_title) >= 20
+            and (
+                candidate_normalized.startswith(
+                    target_title[:min(50, len(target_title))]
+                )
+                or target_title.startswith(
+                    candidate_normalized[:min(50, len(candidate_normalized))]
+                )
+            )
+        )
+
+        if not exact_match and not partial_match:
             continue
 
         candidates.append({
-            "start": match.start(),
-            "matched_text": match.group(0).strip(),
+            "start": line_start,
+            "matched_text": line.strip(),
+            "toc_title": toc_heading["title"],
+            "normalized_title": target_title,
+            "match_type": (
+                "exact"
+                if exact_match
+                else "partial"
+            ),
         })
 
     if not candidates:
         return None, []
 
-    # Берём первое совпадение после начала главы 4.
-    candidates.sort(key=lambda item: item["start"])
+    candidates.sort(
+        key=lambda item: item["start"]
+    )
 
+    # Выбираем первое подтверждённое совпадение
+    # после начала главы 4.
     return candidates[0], candidates
 
 
@@ -359,14 +583,10 @@ def extract_sections(text):
     """
     Извлекает 15 основных разделов.
 
-    Особые правила:
-
     Глава 3 заканчивается перед заголовком главы 4.
 
-    Глава 4 заканчивается перед заголовком главы 5.
-
-    Внутренние подразделы глав 3 и 4 не используются
-    для определения границ крупных разделов.
+    Глава 4 заканчивается перед подтверждённым заголовком
+    главы 5, найденным по названию из оглавления.
     """
 
     all_candidates = {}
@@ -429,6 +649,8 @@ def extract_sections(text):
             )
         )
 
+        # Обрезаем главу 4 только при подтверждённом
+        # совпадении названия с оглавлением.
         if chapter5_heading:
 
             rehabilitation_end = (
@@ -566,7 +788,8 @@ def check_rehabilitation_boundary(
     if chapter5_heading is None:
 
         warnings.append(
-            "Не найден заголовок главы 5 после главы 4. "
+            "Не найдено подтверждённое совпадение заголовка "
+            "главы 5 с названием из оглавления. "
             "Граница реабилитации не подтверждена."
         )
 
@@ -762,6 +985,8 @@ def build_quality_report(
         chapter5_report = {
             "start": chapter5_heading["start"],
             "matched_text": chapter5_heading["matched_text"],
+            "toc_title": chapter5_heading["toc_title"],
+            "match_type": chapter5_heading["match_type"],
             "candidate_count": len(chapter5_candidates),
         }
 
@@ -830,6 +1055,8 @@ def build_quality_report(
         "note": (
             "Проверка подтверждает обнаружение структурных "
             "заголовков и определение границ глав 3 и 4. "
+            "Граница главы 4 определяется сопоставлением "
+            "названия главы 5 из оглавления с основным текстом. "
             "Медицинская полнота, сохранность текста и "
             "соответствие исходному PDF требуют отдельной проверки."
         ),
@@ -1122,6 +1349,16 @@ def main():
         print(
             "Заголовок главы 5:",
             chapter5_heading["matched_text"]
+        )
+
+        print(
+            "Название из оглавления:",
+            chapter5_heading["toc_title"]
+        )
+
+        print(
+            "Тип совпадения:",
+            chapter5_heading["match_type"]
         )
 
     else:

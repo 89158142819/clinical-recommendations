@@ -1,3 +1,4 @@
+
 import argparse
 import json
 import re
@@ -12,7 +13,6 @@ DEFAULT_INPUT = Path("output/749_2.json")
 
 EXTRACTION_METHOD = "universal_structural_headings_v6"
 
-# Разделы, отсутствие которых допускается.
 OPTIONAL_SECTION_KEYS = {
     "other_diagnostics",
 }
@@ -602,9 +602,6 @@ def extract_sections(text):
 
     # --------------------------------------------------------
     # Необязательные разделы.
-    #
-    # Если подраздел 2.5 отсутствует, добавляем пустое
-    # значение. Это не считается ошибкой качества.
     # --------------------------------------------------------
 
     for optional_key in OPTIONAL_SECTION_KEYS:
@@ -789,8 +786,6 @@ def build_quality_report(
 
         if key not in matched_headings:
 
-            # Отсутствие необязательного подраздела
-            # не является ошибкой.
             if key in OPTIONAL_SECTION_KEYS:
                 continue
 
@@ -899,6 +894,16 @@ def build_quality_report(
             )
 
     # --------------------------------------------------------
+    # Список отсутствующих необязательных разделов.
+    # --------------------------------------------------------
+
+    optional_sections_not_found = [
+        key
+        for key in OPTIONAL_SECTION_KEYS
+        if key not in matched_headings
+    ]
+
+    # --------------------------------------------------------
     # Итоговый статус.
     # --------------------------------------------------------
 
@@ -958,6 +963,10 @@ def build_quality_report(
         "text_length": len(text),
 
         "missing_sections": missing_sections,
+
+        "optional_sections_not_found": (
+            optional_sections_not_found
+        ),
 
         "optional_sections": {
             key: {
@@ -1159,8 +1168,6 @@ def main():
 
         "quality_check": quality_report["quality_check"],
 
-        # Все 15 ключей сохраняются в JSON.
-        # Необязательный раздел может иметь пустое значение.
         "sections": {
             section["key"]: extracted.get(
                 section["key"],

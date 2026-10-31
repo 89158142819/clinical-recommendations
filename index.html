@@ -149,7 +149,9 @@
           ? "Не рекомендуется"
           : item.recommendation_type === "consider"
             ? "Рассмотреть по показаниям"
-            : "Рекомендуется";
+            : item.recommendation_type === "mixed"
+              ? "Разные условия рекомендации"
+              : "Рекомендуется";
         card.append(make("span", "diagnostic-status " + (item.recommendation_type || ""), statusText));
         card.append(make("h4", "", item.name || "Исследование"));
         card.append(make("p", ""));

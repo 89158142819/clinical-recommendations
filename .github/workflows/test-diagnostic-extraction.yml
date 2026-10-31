@@ -33,5 +33,5 @@ jobs:
       - name: Сохранить результат теста
         uses: actions/upload-artifact@v4
         with:
-          name: diagnostic-test-404-2
-          path: diagnostic_test_404_2.json
+          name: diagnostic-regression-results
+          path: diagnostic_regression_results.json

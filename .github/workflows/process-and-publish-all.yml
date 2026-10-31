@@ -65,6 +65,11 @@ jobs:
           print(f"Размер партии: {batch}")
           PY
 
+      - name: Проверить синтаксис парсера и регрессионные примеры
+        run: |
+          python -m py_compile extract_sections_v2.py download_batch.py publish_site.py
+          python test_diagnostic_extraction.py
+
       - name: Обработать каталог партиями и публиковать успешные результаты
         env:
           BATCH_SIZE: ${{ inputs.batch_size }}

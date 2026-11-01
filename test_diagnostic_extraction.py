@@ -12,7 +12,7 @@ SOURCES = [
     "762_2",
 ]
 OUTPUT = Path("diagnostic_regression_results.json")
-LEVEL_MARKER = "Уровень убедительности рекомендации"
+LEVEL_MARKER_RE = __import__("re").compile(r"Уровень\\s+убедительности\\s+рекомендаци(?:и|й)", __import__("re").IGNORECASE)
 
 results = []
 errors = []
@@ -62,7 +62,7 @@ for document_id in SOURCES:
             )
             print(text[:500].replace("\n", " "))
             if item.get("boundary_status") != "incomplete":
-                if LEVEL_MARKER.lower() not in text.lower():
+                if not LEVEL_MARKER_RE.search(text):
                     errors.append(
                         f"{document_id}/{group}/{item.get('number')}: "
                         "в блоке отсутствует строка уровня убедительности"

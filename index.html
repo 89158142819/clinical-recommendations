@@ -139,61 +139,65 @@
       return el;
     }
 
-    function prepareDiagnosticDisplayText(value) {
-      if (!value) return "";
-
-      const text = String(value).replace(/\r/g, "").replace(/[ \t]*\n[ \t]*/g, " ").replace(/\s{2,}/g, " ").trim();
-
-      // В начале показываем само исследование, а затем — кому и при каких
-      // условиях оно рекомендовано. Исходный смысл и все оговорки сохраняются.
-      const patterns = [
-        /^(.*?)\s+рекомендуется\s+выполнение\s+следующих\s+(?:лабораторных\s+)?исследований\s*:\s*(.*)$/i,
-        /^(.*?)\s+рекомендуется\s+(?:выполнять|выполнить|проводить|провести)\s+(.*)$/i,
-        /^(.*?)\s+рекомендуется\s+выполнение\s+(?!следующих)(.*)$/i
-      ];
-
-      for (const pattern of patterns) {
-        const match = text.match(pattern);
-        if (!match || !match[1].trim() || !match[2].trim()) continue;
-
-        const condition = match[1].trim();
-        let remainder = match[2].trim();
-        const splitPattern = /\s+(?=с диагностической целью|с целью|для определения|для планирования|для своевременного|для оценки|для подбора|в ранние сроки|при отсутствии|при необходимости|при прогрессировании|с частотой|но не позднее|после проведения|в случае)/i;
-        const split = remainder.search(splitPattern);
-        const citation = remainder.search(/\s+(?=\[\s*\d)/);
-        let cut = -1;
-
-        if (split >= 0 && citation >= 0) cut = Math.min(split, citation);
-        else cut = Math.max(split, citation);
-
-        if (cut < 0) {
-          const sentenceEnd = remainder.search(/[.!?](?=\s|$)/);
-          if (sentenceEnd >= 0) cut = sentenceEnd;
-        }
-
-        if (cut <= 0) continue;
-
-        const study = remainder.slice(0, cut).replace(/[,:;\s]+$/, "").trim();
-        const continuation = remainder.slice(cut).trim();
-        if (!study || study.length < 8) continue;
-
-        return study + " — " + condition + (/[.!?]$/.test(condition) ? " " : ". ") + continuation;
-      }
-
-      return text;
+    function normalizeDiagnosticText(value) {
+      return String(value || "")
+        .replace(/\r/g, "")
+        .replace(/[ \t]*\n[ \t]*/g, " ")
+        .replace(/\s{2,}/g, " ")
+        .trim();
     }
 
     function getDiagnosticRecommendationType(value) {
-      const text = String(value || "");
-      const recommendationPattern = /не\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)|рекоменд(?:уется|овано|ована|ованы)/gi;
-      const matches = [...text.matchAll(recommendationPattern)];
-      if (!matches.length) return "unknown";
+      const text = normalizeDiagnosticText(value);
+      const negativePattern = /\bне\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)\b/gi;
+      const positivePattern = /\bрекоменд(?:уется|овано|ована|ованы|уем|овать)\b/gi;
+      const negativeMatches = [...text.matchAll(negativePattern)];
+      // Убираем отрицательные обороты перед поиском положительных:
+      // иначе слово «рекомендуется» внутри «не рекомендуется»
+      // ошибочно окрашивает карточку в зелёный цвет.
+      const textWithoutNegative = text.replace(negativePattern, " ");
+      const positiveMatches = [...textWithoutNegative.matchAll(positivePattern)];
 
-      const hasNegative = matches.some(match => /^не\\s/i.test(match[0]));
-      const hasPositive = matches.some(match => !/^не\\s/i.test(match[0]));
+      if (negativeMatches.length && positiveMatches.length) return "mixed";
+      if (negativeMatches.length) return "not_recommended";
+      if (positiveMatches.length) return "recommended";
+      return "unknown";
+    }
 
-      if (hasNegative && hasPositive) return "mixed";
-      return hasNegative ? "not_recommended" : "recommended";
+    function getDiagnosticStudyTitle(value) {
+      let text = normalizeDiagnosticText(value);
+      text = text.replace(/^(?:лучевая диагностика|лабораторные диагностические исследования|инструментальные диагностические исследования|иные диагностические исследования)\s*/i, "");
+
+      // Если название исследования уже стоит в начале, отделяем его
+      // от следующего условия назначения.
+      const leadingStudy = text.match(/^((?:ультразвуковое исследование|сонография|рентгенография|компьютерная томография|магнитно[-\s]резонансная томография|электрокардиографическое исследование|эндоскопическое исследование|оценка степени)[^.!?]{0,220}?)(?=\s+(?:Всем|В процессе|У пациентов|У детей|Детям|Пациентам|Рутинное применение|при наличии|при подозрении))/i);
+      if (leadingStudy) return leadingStudy[1].trim().replace(/[,:;\s]+$/, "");
+
+      // Название исследования после «рекомендуется выполнение/проведение».
+      const recommendedStudy = text.match(/(?:рекомендуется|рекомендовано)\s+(?:выполнение|проведение)\s+((?:(?:планового|регулярного|контрольного|ультразвукового|рентгенологического|рентгенографического|лабораторного|инструментального)\s+)*(?:ультразвукового исследования|ультразвукового|сонографического|рентгенографии|рентгенологического контроля|компьютерной томографии|магнитно[-\s]резонансной томографии|исследования|обследования|контроля)[^.!?]{0,220}?)(?=\s+(?:Всем|всем|детям|пациентам|у пациентов|у детей|при наличии|при подозрении|для оценки|для определения|до достижения|с целью))/i);
+      if (recommendedStudy) return recommendedStudy[1].trim().replace(/[,:;\s]+$/, "");
+
+      // Смешанные методы контроля: УЗИ и/или рентгенологический контроль.
+      const combinedStudy = text.match(/проведение\s+((?:регулярного\s+)?ультразвукового[^.!?]{0,180}?(?:и\/или|и|или)[^.!?]{0,120}?(?:контроля|исследования|обследования))(?=\s+(?:детям|пациентам|до достижения|при))/i);
+      if (combinedStudy) return combinedStudy[1].trim().replace(/[,:;\s]+$/, "");
+
+      // Отрицательные рекомендации по нескольким методам визуализации.
+      const imagingStudy = text.match(/(?:применение|выполнение)\s+((?:компьютерной томографии[^.!?]{0,160}?(?:и|и\/или|а также)\s+магнитно[-\s]резонансной томографии[^.!?]{0,100}?|компьютерной томографии[^.!?]{0,100}?|магнитно[-\s]резонансной томографии[^.!?]{0,100}?)(?=\s+(?:для|с целью|при|в целях|не рекомендуется|не рекомендовано|рутинное|у пациентов)))/i);
+      if (imagingStudy) return imagingStudy[1].trim().replace(/[,:;\s]+$/, "");
+
+      // Если отдельное название выделить надёжно нельзя, не придумываем его.
+      return "";
+    }
+
+    function prepareDiagnosticDisplayText(value) {
+      const text = normalizeDiagnosticText(value);
+      if (!text) return "";
+
+      const study = getDiagnosticStudyTitle(text);
+      if (!study) return text;
+
+      // Исходная формулировка полностью сохраняется ниже названия исследования.
+      return "Исследование: " + study + "\n\nУсловия и текст рекомендации: " + text;
     }
 
     function renderDiagnosticCards(container, items) {

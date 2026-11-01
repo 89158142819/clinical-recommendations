@@ -80,7 +80,7 @@ def main():
         diagnostic_summary = data.get("diagnostic_summary")
         if (
             not isinstance(diagnostic_summary, dict)
-            or diagnostic_summary.get("method") not in ("recommendation_blocks_v1", "recommendation_blocks_v2", "recommendation_blocks_v3", "recommendation_blocks_v4", "recommendation_blocks_v5")
+            or diagnostic_summary.get("method") not in ("recommendation_blocks_v1", "recommendation_blocks_v2", "recommendation_blocks_v3", "recommendation_blocks_v4", "recommendation_blocks_v5", "recommendation_blocks_v6")
             or not isinstance(diagnostic_summary.get("laboratory"), list)
             or not isinstance(diagnostic_summary.get("instrumental"), list)
             or not isinstance(diagnostic_summary.get("other"), list)

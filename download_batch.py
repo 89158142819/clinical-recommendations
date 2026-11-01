@@ -32,7 +32,7 @@ READ_TIMEOUT = 300
 
 USER_AGENT = "ClinicalRecommendationsCatalog/1.0"
 
-PARSER_METHOD = "universal_structural_headings_v12"
+PARSER_METHOD = "universal_structural_headings_v11"
 
 
 # ============================================================

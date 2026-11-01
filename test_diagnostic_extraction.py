@@ -5,6 +5,7 @@ from extract_sections_v2 import build_diagnostic_summary
 
 SOURCES = [
     "903_1",  # Острый панкреатит — эталон полного блока до уровня убедительности.
+    "520_2",  # Незавершённый остеогенез — альтернативная запись уровня УДД/УУР.
     "404_2",
     "1067_1",
     "507_4",
@@ -68,6 +69,30 @@ for document_id in SOURCES:
                         f"{document_id}/{group}/{item.get('number')}: "
                         "в блоке отсутствует строка уровня убедительности"
                     )
+
+    if document_id == "520_2":
+        if counts["laboratory"] != 5:
+            errors.append(
+                f"520_2: ожидалось 5 лабораторных блоков с маркерами УДД/УУР, "
+                f"получено {counts['laboratory']}"
+            )
+        lab_items = summary["laboratory"]
+        if any(item.get("boundary_status") == "incomplete" for item in lab_items):
+            errors.append("520_2: один или несколько лабораторных блоков остались незавершёнными")
+        combined_lab = __import__("re").sub(
+            r"\\s+",
+            " ",
+            " ".join(item.get("text", "") for item in lab_items)
+        ).lower()
+        for phrase in (
+            "каждые 3 месяца",
+            "перед началом терапии бисфосфонатами",
+            "перед каждым курсом терапии бисфосфонатами",
+        ):
+            if phrase not in combined_lab:
+                errors.append(f"520_2: потеряно условие лабораторного контроля: {phrase}")
+        if "комментарий:" in combined_lab or "комментарии:" in combined_lab:
+            errors.append("520_2: комментарии после маркера уровня попали в текст рекомендации")
 
     if document_id == "903_1":
         if counts["laboratory"] != 2:

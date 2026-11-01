@@ -11,7 +11,7 @@ from pathlib import Path
 
 DEFAULT_INPUT = Path("output/749_2.json")
 
-EXTRACTION_METHOD = "universal_structural_headings_v11"
+EXTRACTION_METHOD = "universal_structural_headings_v12"
 
 OPTIONAL_SECTION_KEYS = {
     "other_diagnostics",
@@ -1157,7 +1157,7 @@ def build_quality_report(
 
 
 
-DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v3"
+DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v4"
 
 
 def clean_diagnostic_block_text(value):
@@ -1206,6 +1206,25 @@ def extract_diagnostic_recommendations(section_text, section_kind):
     )
     text = clean_diagnostic_block_text(text)
     text = re.sub(r"\s+", " ", text).strip()
+
+    # Remove only the expected subsection heading at the start of a diagnostic section.
+    section_heading_patterns = {
+        "laboratory_diagnostics": (
+            r"^\s*\d+(?:\.\d+)*\s+лабораторные\s+"
+            r"диагностические\s+исследования\b[\s:—–-]*"
+        ),
+        "instrumental_diagnostics": (
+            r"^\s*\d+(?:\.\d+)*\s+инструментальные\s+"
+            r"диагностические\s+исследования\b[\s:—–-]*"
+        ),
+        "other_diagnostics": (
+            r"^\s*\d+(?:\.\d+)*\s+иные\s+"
+            r"диагностические\s+исследования\b[\s:—–-]*"
+        ),
+    }
+    heading_pattern = section_heading_patterns.get(section_kind)
+    if heading_pattern:
+        text = re.sub(heading_pattern, "", text, count=1, flags=re.IGNORECASE).strip()
 
     def sentence_start(value, position):
         prefix = value[:position]

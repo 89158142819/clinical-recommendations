@@ -50,6 +50,7 @@
     .diagnostic-item h4 { margin: 0 0 8px; font-size: 15px; }
     .diagnostic-recommended-label { display: inline-block; color: #18794e; font-weight: 700; }
     .diagnostic-not-recommended-label { display: inline-block; color: #c62828; font-weight: 700; }
+    .diagnostic-mixed-label { display: inline-block; color: #8a5a00; font-weight: 700; }
     .diagnostic-item p { margin: 6px 0; font-size: 14px; }
     .diagnostic-label { color: var(--muted); font-weight: 700; }
     .diagnostic-status { display: inline-block; font-size: 12px; border-radius: 20px; padding: 3px 8px; background: #edf3f8; color: #34516d; margin-bottom: 7px; }
@@ -182,11 +183,17 @@
       return text;
     }
 
-    function isNotRecommendedDiagnostic(value) {
+    function getDiagnosticRecommendationType(value) {
       const text = String(value || "");
-      const recommendationPattern = /не\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)|рекоменд(?:уется|овано|ована|ованы)/gi;
-      const firstRecommendation = recommendationPattern.exec(text);
-      return !!firstRecommendation && /^не\s/i.test(firstRecommendation[0]);
+      const recommendationPattern = /не\\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)|рекоменд(?:уется|овано|ована|ованы)/gi;
+      const matches = [...text.matchAll(recommendationPattern)];
+      if (!matches.length) return "unknown";
+
+      const hasNegative = matches.some(match => /^не\\s/i.test(match[0]));
+      const hasPositive = matches.some(match => !/^не\\s/i.test(match[0]));
+
+      if (hasNegative && hasPositive) return "mixed";
+      return hasNegative ? "not_recommended" : "recommended";
     }
 
     function renderDiagnosticCards(container, items) {
@@ -206,12 +213,20 @@
             : "Полный блок рекомендации";
         card.append(make("span", "diagnostic-status " + (boundary === "incomplete" || boundary === "review_required" ? "consider" : ""), statusText));
         const heading = make("h4");
-        const notRecommended = isNotRecommendedDiagnostic(item.text || item.source_excerpt || "");
-        heading.append(make(
-          "span",
-          notRecommended ? "diagnostic-not-recommended-label" : "diagnostic-recommended-label",
-          notRecommended ? "Не рекомендовано" : "Рекомендовано"
-        ));
+        const recommendationType = getDiagnosticRecommendationType(item.text || item.source_excerpt || "");
+        const recommendationLabel = recommendationType === "not_recommended"
+          ? "Не рекомендовано"
+          : recommendationType === "mixed"
+            ? "Смешанный блок — требует проверки"
+            : recommendationType === "unknown"
+              ? "Формулировка требует проверки"
+              : "Рекомендовано";
+        const recommendationClass = recommendationType === "not_recommended"
+          ? "diagnostic-not-recommended-label"
+          : recommendationType === "mixed" || recommendationType === "unknown"
+            ? "diagnostic-mixed-label"
+            : "diagnostic-recommended-label";
+        heading.append(make("span", recommendationClass, recommendationLabel));
         card.append(heading);
         if (item.text) {
           card.append(make("div", "section-text", prepareDiagnosticDisplayText(item.text)));

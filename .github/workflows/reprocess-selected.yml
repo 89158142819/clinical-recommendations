@@ -1,6 +1,9 @@
 name: Повторная обработка одной клинической рекомендации
 
 on:
+  push:
+    paths:
+      - "reprocess-trigger.txt"
   workflow_dispatch:
     inputs:
       document_id:
@@ -18,6 +21,7 @@ concurrency:
 
 jobs:
   reprocess:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.head_commit.message == 'Run selected reprocess 1086_1')
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -40,14 +44,14 @@ jobs:
 
       - name: Повторно обработать выбранную рекомендацию
         env:
-          DOCUMENT_ID: ${{ inputs.document_id }}
+          DOCUMENT_ID: ${{ inputs.document_id || '1086_1' }}
         run: |
           set -e
           python download_batch.py --ids "$DOCUMENT_ID" --force
 
       - name: Проверить полноту диагностических рекомендаций
         env:
-          DOCUMENT_ID: ${{ inputs.document_id }}
+          DOCUMENT_ID: ${{ inputs.document_id || '1086_1' }}
         run: |
           if [ "$DOCUMENT_ID" = "1086_1" ]; then
             python validate_1086_1_diagnostic.py

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T06:33:23.477131+00:00",
+  "updated_at": "2026-11-01T06:34:10.188830+00:00",
   "total_processed": 778,
   "results": {
     "750_2": {
@@ -14864,8 +14864,8 @@
       "id": "903_1",
       "title": "Острый панкреатит",
       "status": "passed",
-      "started_at": "2026-11-01T06:33:19.075820+00:00",
-      "finished_at": "2026-11-01T06:33:23.449773+00:00",
+      "started_at": "2026-11-01T06:34:06.285382+00:00",
+      "finished_at": "2026-11-01T06:34:10.160981+00:00",
       "error": null,
       "quality_check": "passed",
       "extraction_method": "universal_structural_headings_v9",

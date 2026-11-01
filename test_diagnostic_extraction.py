@@ -12,6 +12,7 @@ SOURCES = [
     "535_3",
     "762_2",
     "1086_1",  # Врождённый вывих бедра — контроль границы PDF и КТ/МРТ.
+    "683_2",  # Хронический тонзиллит — несколько лабораторных рекомендаций и комментарии.
 ]
 OUTPUT = Path("diagnostic_regression_results.json")
 LEVEL_MARKER_RE = __import__("re").compile(r"(?:Уровень\s+у[\s\-–—]*б[\s\-–—]*е[\s\-–—]*д[\s\-–—]*и[\s\-–—]*т[\s\-–—]*е[\s\-–—]*л[\s\-–—]*ь[\s\-–—]*н[\s\-–—]*о[\s\-–—]*с[\s\-–—]*т[\s\-–—]*и\s+р[\s\-–—]*е[\s\-–—]*к[\s\-–—]*о[\s\-–—]*м[\s\-–—]*е[\s\-–—]*н[\s\-–—]*д[\s\-–—]*а[\s\-–—]*ц[\s\-–—]*и[\s\-–—]*[ий]|УДД\s*\d+\s*[;,]?\s*УУР)", __import__("re").IGNORECASE)
@@ -164,6 +165,57 @@ for document_id in SOURCES:
                 errors.append(
                     f"535_3/{group}: рекомендации не разделены на отдельные блоки; "
                     f"получено {len(summary[group])}"
+                )
+
+if "683_2" in SOURCES:
+    item = next((x for x in results if x["id"] == "683_2"), None)
+    if item is None:
+        errors.append("683_2: документ не обработан регрессионным тестом")
+    else:
+        lab_items = item["diagnostic_summary"]["laboratory"]
+        if len(lab_items) != 3:
+            errors.append(
+                f"683_2: ожидалось 3 лабораторных рекомендации, получено {len(lab_items)}"
+            )
+        expected_starts = (
+            "рекомендуется клинико-лабораторное исследование",
+            "рекомендуется определять содержание антистрептолизина",
+            "рекомендуется бактериологическое исследование",
+        )
+        for index, expected in enumerate(expected_starts):
+            if index >= len(lab_items):
+                break
+            value = __import__("re").sub(r"^\\s*[•●▪]\\s*", "", lab_items[index].get("text", "")).strip().lower()
+            if not value.startswith(expected):
+                errors.append(
+                    f"683_2: блок {index + 1} должен начинаться с «{expected}», "
+                    f"фактически: {value[:120]}"
+                )
+
+        expected_levels = ("5", "5", "4")
+        for index, expected_level in enumerate(expected_levels):
+            if index >= len(lab_items):
+                break
+            value = lab_items[index].get("text", "")
+            if not __import__("re").search(
+                rf"уровень\\s+достоверности\\s+доказательств\\s*[-–—]\\s*{expected_level}\\b",
+                value,
+                __import__("re").IGNORECASE,
+            ):
+                errors.append(
+                    f"683_2: у лабораторного блока {index + 1} "
+                    f"не сохранён уровень достоверности {expected_level}"
+                )
+
+        for index, diagnostic in enumerate(lab_items):
+            value = diagnostic.get("text", "").lower()
+            if "комментарии:" in value or "комментарий:" in value:
+                errors.append(
+                    f"683_2: комментарии попали в лабораторный блок {index + 1}"
+                )
+            if value.startswith(("a)", "a)).", "(уровень достоверности")):
+                errors.append(
+                    f"683_2: OCR-фрагмент или хвост уровня попал в начало блока {index + 1}"
                 )
 
 OUTPUT.write_text(

@@ -138,37 +138,22 @@
 
     function renderDiagnosticCards(container, items) {
       if (!Array.isArray(items) || !items.length) {
-        container.append(make("p", "muted", "В этом подразделе не удалось автоматически выделить отдельные рекомендации. Ниже доступен исходный текст."));
+        container.append(make("p", "muted", "В этом подразделе не обнаружены отдельные блоки рекомендаций с уровнем убедительности. Исходный текст раздела доступен ниже."));
         return;
       }
 
       const list = make("div", "diagnostic-list");
-      items.forEach(item => {
+      items.forEach((item, index) => {
         const card = make("article", "diagnostic-item");
-        const statusText = item.recommendation_type === "not_recommended"
-          ? "Не рекомендуется"
-          : item.recommendation_type === "consider"
-            ? "Рассмотреть по показаниям"
-            : item.recommendation_type === "mixed"
-              ? "Разные условия рекомендации"
-              : "Рекомендуется";
-        card.append(make("span", "diagnostic-status " + (item.recommendation_type || ""), statusText));
-        card.append(make("h4", "", item.name || "Исследование"));
-        card.append(make("p", ""));
-        const indication = card.lastChild;
-        indication.append(make("span", "diagnostic-label", "Показания: "));
-        indication.append(document.createTextNode(item.indications || "Не указаны в отдельной формулировке."));
-        const purpose = make("p", "");
-        purpose.append(make("span", "diagnostic-label", "Цель: "));
-        purpose.append(document.createTextNode(item.purpose || "Не указана в отдельной формулировке."));
-        card.append(purpose);
-
-        if (item.source_excerpt) {
-          const source = make("details", "source-details");
-          source.append(make("summary", "", "Фрагмент исходной рекомендации"));
-          source.append(make("div", "section-text", item.source_excerpt));
-          card.append(source);
-        }
+        const boundary = item.boundary_status || "review_required";
+        const statusText = boundary === "incomplete"
+          ? "Не найден уровень убедительности — блок неполный"
+          : boundary === "review_required"
+            ? "Начало блока требует проверки"
+            : "Полный блок рекомендации";
+        card.append(make("span", "diagnostic-status " + (boundary === "incomplete" || boundary === "review_required" ? "consider" : ""), statusText));
+        card.append(make("h4", "", "Рекомендация " + (item.number || index + 1)));
+        card.append(make("div", "section-text", item.text || "Текст рекомендации отсутствует."));
         list.append(card);
       });
       container.append(list);

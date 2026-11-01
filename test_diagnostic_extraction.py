@@ -14,7 +14,7 @@ SOURCES = [
     "1086_1",  # Врождённый вывих бедра — контроль границы PDF и КТ/МРТ.
 ]
 OUTPUT = Path("diagnostic_regression_results.json")
-LEVEL_MARKER_RE = __import__("re").compile(r"(?:Уровень\\s+убедительности\\s+рекомендаций|УДД\\s*\\d+\\s*[;,]?\\s*УУР)\\s*[:\\-–—]?\\s*[A-ZА-ЯЁ0-9]+", __import__("re").IGNORECASE)
+LEVEL_MARKER_RE = __import__("re").compile(r"(?:Уровень\s+убедительности\s+рекомендаций|УДД\s*\d+\s*[;,]?\s*УУР)\s*[:\-–—]?\s*[A-ZА-ЯЁ0-9]+", __import__("re").IGNORECASE)
 
 results = []
 errors = []
@@ -80,7 +80,7 @@ for document_id in SOURCES:
         if any(item.get("boundary_status") == "incomplete" for item in lab_items):
             errors.append("520_2: один или несколько лабораторных блоков остались незавершёнными")
         combined_lab = __import__("re").sub(
-            r"\\s+",
+            r"\s+",
             " ",
             " ".join(item.get("text", "") for item in lab_items)
         ).lower()

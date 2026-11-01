@@ -57,6 +57,7 @@ jobs:
             echo "Новых опубликованных изменений нет"
           else
             git commit -m "Reprocess acute pancreatitis with diagnostic blocks v3"
+            git pull --rebase origin main
             git push
           fi
 

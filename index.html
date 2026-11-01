@@ -48,6 +48,7 @@
     .diagnostic-list { display: grid; gap: 12px; margin-top: 14px; }
     .diagnostic-item { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: #fbfdff; }
     .diagnostic-item h4 { margin: 0 0 8px; font-size: 15px; }
+    .diagnostic-recommended-label { display: inline-block; color: #18794e; font-weight: 700; }
     .diagnostic-item p { margin: 6px 0; font-size: 14px; }
     .diagnostic-label { color: var(--muted); font-weight: 700; }
     .diagnostic-status { display: inline-block; font-size: 12px; border-radius: 20px; padding: 3px 8px; background: #edf3f8; color: #34516d; margin-bottom: 7px; }
@@ -136,6 +137,50 @@
       return el;
     }
 
+    function prepareDiagnosticDisplayText(value) {
+      if (!value) return "";
+
+      const text = String(value).replace(/\\r/g, "").replace(/[ \\t]*\\n[ \\t]*/g, " ").replace(/\\s{2,}/g, " ").trim();
+
+      // В начале показываем само исследование, а затем — кому и при каких
+      // условиях оно рекомендовано. Исходный смысл и все оговорки сохраняются.
+      const patterns = [
+        /^(.*?)\\s+рекомендуется\\s+выполнение\\s+следующих\\s+(?:лабораторных\\s+)?исследований\\s*:\\s*(.*)$/i,
+        /^(.*?)\\s+рекомендуется\\s+(?:выполнять|выполнить|проводить|провести|использовать)\\s+(.*)$/i,
+        /^(.*?)\\s+рекомендуется\\s+выполнение\\s+(?!следующих)(.*)$/i
+      ];
+
+      for (const pattern of patterns) {
+        const match = text.match(pattern);
+        if (!match || !match[1].trim() || !match[2].trim()) continue;
+
+        const condition = match[1].trim();
+        let remainder = match[2].trim();
+        const splitPattern = /\\s+(?=с диагностической целью|с целью|для определения|для планирования|для своевременного|для оценки|для подбора|в ранние сроки|при отсутствии|при необходимости|при прогрессировании|с частотой|но не позднее|после проведения|в случае)/i;
+        const split = remainder.search(splitPattern);
+        const citation = remainder.search(/\\s+(?=\\[\\s*\\d)/);
+        let cut = -1;
+
+        if (split >= 0 && citation >= 0) cut = Math.min(split, citation);
+        else cut = Math.max(split, citation);
+
+        if (cut < 0) {
+          const sentenceEnd = remainder.search(/[.!?](?=\\s|$)/);
+          if (sentenceEnd >= 0) cut = sentenceEnd;
+        }
+
+        if (cut <= 0) continue;
+
+        const study = remainder.slice(0, cut).replace(/[,:;\\s]+$/, "").trim();
+        const continuation = remainder.slice(cut).trim();
+        if (!study || study.length < 8) continue;
+
+        return study + " — " + condition + (/[.!?]$/.test(condition) ? " " : ". ") + continuation;
+      }
+
+      return text;
+    }
+
     function renderDiagnosticCards(container, items) {
       if (!Array.isArray(items) || !items.length) {
         container.append(make("p", "muted", "В этом подразделе не обнаружены отдельные блоки рекомендаций с уровнем убедительности. Исходный текст раздела доступен ниже."));
@@ -152,11 +197,11 @@
             ? "Начало блока требует проверки"
             : "Полный блок рекомендации";
         card.append(make("span", "diagnostic-status " + (boundary === "incomplete" || boundary === "review_required" ? "consider" : ""), statusText));
-        card.append(make("h4", "", item.text
-          ? "Рекомендация " + (item.number || index + 1)
-          : (item.name || "Рекомендация " + (index + 1))));
+        const heading = make("h4");
+        heading.append(make("span", "diagnostic-recommended-label", "Рекомендовано"));
+        card.append(heading);
         if (item.text) {
-          card.append(make("div", "section-text", item.text));
+          card.append(make("div", "section-text", prepareDiagnosticDisplayText(item.text)));
         } else {
           card.append(make("p", "muted", "Карточка создана прежней версией парсера. Для полного текста рекомендации откройте исходный текст раздела ниже."));
           if (item.source_excerpt) {

@@ -78,11 +78,12 @@ for document_id in SOURCES:
             errors.append(
                 f"903_1: ожидалось 10 инструментальных блоков, получено {counts['instrumental']}"
             )
-        all_text = "\n".join(
+        all_text = "\\n".join(
             item["text"] for item in summary["instrumental"]
         ).lower()
-        for phrase in ("24 -  96 часов", "не позднее 12 часов", "7 -  10 дней"):
-            if phrase.lower() not in all_text:
+        normalized_all_text = __import__("re").sub(r"\\s+", " ", all_text)
+        for phrase in ("24 - 96 часов", "не позднее 12 часов", "7 - 10 дней"):
+            if phrase.lower() not in normalized_all_text:
                 errors.append(
                     f"903_1: потеряно важное условие инструментальной диагностики: {phrase}"
                 )

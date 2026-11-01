@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T09:21:10.637050+00:00",
+  "updated_at": "2026-11-01T12:56:50.574752+00:00",
   "total_processed": 778,
   "results": {
     "750_2": {
@@ -315,14 +315,32 @@
     "1086_1": {
       "id": "1086_1",
       "title": "Врождённый вывих бедра",
-      "status": "failed",
-      "started_at": "2026-11-01T09:21:05.637852+00:00",
-      "finished_at": "2026-11-01T09:21:10.609608+00:00",
-      "error": "Неверный метод извлечения: 'universal_structural_headings_v12'. Ожидался 'universal_structural_headings_v11'",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-11-01T12:56:43.558261+00:00",
+      "finished_at": "2026-11-01T12:56:50.546908+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 68,
+      "pages_with_text": 68,
+      "empty_pages": [],
+      "text_length": 144058,
+      "pdf_file": "output/1086_1.pdf",
+      "input_file": "output/1086_1.json",
+      "sections_file": "output/1086_1_sections_v2.json",
+      "report_file": "output/1086_1_quality_report_v2.json"
     },
     "1073_1": {
       "id": "1073_1",

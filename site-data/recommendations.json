@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-01T09:21:11.130085+00:00",
+  "updated_at": "2026-11-01T12:56:51.075226+00:00",
   "source": "https://cr.minzdrav.gov.ru/clin-rec",
-  "total": 600,
+  "total": 601,
   "recommendations": [
     {
       "id": "750_2",
@@ -130,6 +130,19 @@
       "publication_date": "2026-10-20T17:47:04.163000",
       "application_status": "Применяется",
       "document_file": "docs/12_4.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
+      "id": "1086_1",
+      "title": "Врождённый вывих бедра",
+      "icd10": "Q65",
+      "age_category": "Дети",
+      "developer": "Ассоциация травматологов-ортопедов России",
+      "nps_approved": "Да",
+      "publication_date": "2026-10-16T13:01:23.707000",
+      "application_status": "Применяется",
+      "document_file": "docs/1086_1.json",
       "quality_check": "passed",
       "sections_count": 15
     },

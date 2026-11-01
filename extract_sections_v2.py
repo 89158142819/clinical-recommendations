@@ -1200,6 +1200,15 @@ def extract_diagnostic_recommendations(section_text, section_kind):
     )
     bullet_re = re.compile(r"^[ \t]*[•●▪]\s*", re.MULTILINE)
 
+    # Убираем границы страниц до деления на абзацы: PDF может разорвать
+    # одну рекомендацию между словами (например, «ортопедических» /
+    # «устройств»). Такой перенос не должен становиться границей блока.
+    section_text = re.sub(
+        r"[ \t]*\n*[ \t]*\[Страница\s+\d+\][ \t]*\n[ \t]*\d{1,3}[ \t]*\n?",
+        " ",
+        section_text,
+        flags=re.IGNORECASE,
+    )
     text = clean_diagnostic_block_text(section_text)
     text = re.sub(r"\r\n?", "\n", text)
     # Маркеры списка всегда начинают отдельный смысловой абзац.

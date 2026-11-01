@@ -1242,9 +1242,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         # именно с него, не захватывая комментарий после предыдущего уровня.
         bullets = list(bullet_marker_re.finditer(value, 0, position))
         if bullets:
-            bullet = bullets[-1]
-            if not recommendation_re.search(value[bullet.end():position]):
-                return bullet.start()
+            return bullets[-1].start()
         return sentence_start(value, position)
 
     def polarity(match):

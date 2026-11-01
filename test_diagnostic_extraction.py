@@ -14,7 +14,7 @@ SOURCES = [
     "1086_1",  # Врождённый вывих бедра — контроль границы PDF и КТ/МРТ.
 ]
 OUTPUT = Path("diagnostic_regression_results.json")
-LEVEL_MARKER_RE = __import__("re").compile(r"(?:Уровень\s+убедительности\s+рекомендаций|УДД\s*\d+\s*[;,]?\s*УУР)\s*[:\-–—]?\s*[A-ZА-ЯЁ0-9]+", __import__("re").IGNORECASE)
+LEVEL_MARKER_RE = __import__("re").compile(r"(?:Уровень\s+убедительности\s+р[\s\-–—]*е[\s\-–—]*к[\s\-–—]*о[\s\-–—]*м[\s\-–—]*е[\s\-–—]*н[\s\-–—]*д[\s\-–—]*а[\s\-–—]*ц[\s\-–—]*и[\s\-–—]*[ий]|УДД\s*\d+\s*[;,]?\s*УУР)", __import__("re").IGNORECASE)
 
 results = []
 errors = []

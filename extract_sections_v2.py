@@ -1198,6 +1198,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         r"(?i)(?<![а-яё])(?:не\s+рекомендуется|не\s+рекомендовано|не\s+рекомендована|не\s+рекомендованы|рекомендуется|рекомендовано|рекомендована|рекомендованы)(?![а-яё])"
     )
     bullet_re = re.compile(r"^[ \t]*[•●▪]\s*", re.MULTILINE)
+    bullet_marker_re = re.compile(r"[•●▪]\s*")
 
     # Убираем разрыв страницы до нормализации переносов строк.
     text = re.sub(
@@ -1236,6 +1237,16 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         ))
         return boundaries[-1].end() if boundaries else 0
 
+    def recommendation_start(value, position):
+        # Если рекомендация начинается с маркера списка, начинаем блок
+        # именно с него, не захватывая комментарий после предыдущего уровня.
+        bullets = list(bullet_marker_re.finditer(value, 0, position))
+        if bullets:
+            bullet = bullets[-1]
+            if not recommendation_re.search(value[bullet.end():position]):
+                return bullet.start()
+        return sentence_start(value, position)
+
     def polarity(match):
         return "negative" if re.match(
             r"не\s+", match.group(0), re.IGNORECASE
@@ -1271,7 +1282,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             for match in matches:
                 current = polarity(match)
                 if current != current_polarity:
-                    position = sentence_start(segment, match.start())
+                    position = recommendation_start(segment, match.start())
                     if not clusters or position > clusters[-1]["start"]:
                         clusters.append({"polarity": current, "start": position})
                     current_polarity = current
@@ -1318,7 +1329,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         for match in matches:
             current = polarity(match)
             if current != current_polarity:
-                position = sentence_start(tail, match.start())
+                position = recommendation_start(tail, match.start())
                 if not starts or position > starts[-1]:
                     starts.append(position)
                 current_polarity = current

@@ -2,12 +2,6 @@ name: Тест новой диагностики — острый панкреа
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "extract_sections_v2.py"
-      - "download_batch.py"
-      - "print_pancreatitis_report.py"
-      - ".github/workflows/test-pancreatitis-v3.yml"
 
 permissions:
   contents: write

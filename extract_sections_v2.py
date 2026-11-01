@@ -1157,7 +1157,7 @@ def build_quality_report(
 
 
 
-DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v4"
+DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v5"
 
 
 def clean_diagnostic_block_text(value):
@@ -1189,8 +1189,10 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         return []
 
     marker_re = re.compile(
-        r"(?i)Уровень\s+убедительности\s+р[\s\-–—]*е[\s\-–—]*к[\s\-–—]*о[\s\-–—]*м[\s\-–—]*е[\s\-–—]*н[\s\-–—]*д[\s\-–—]*а[\s\-–—]*ц[\s\-–—]*и[\s\-–—]*[ий]"
-        r"\s*[:\-–—]?\s*[A-ZА-ЯЁ0-9]+(?:\s*\))?"
+        r"(?i)(?:"
+        r"Уровень\\s+убедительности\\s+р[\\s\\-–—]*е[\\s\\-–—]*к[\\s\\-–—]*о[\\s\\-–—]*м[\\s\\-–—]*е[\\s\\-–—]*н[\\s\\-–—]*д[\\s\\-–—]*а[\\s\\-–—]*ц[\\s\\-–—]*и[\\s\\-–—]*[ий]"
+        r"|УДД\\s*\\d+\\s*[;,]?\\s*УУР"
+        r")\\s*[:\\-–—]?\\s*[A-ZА-ЯЁ0-9]+(?:\\s*\\))?"
     )
     recommendation_re = re.compile(
         r"(?i)(?<![а-яё])(?:не\s+рекомендуется|не\s+рекомендовано|не\s+рекомендована|не\s+рекомендованы|рекомендуется|рекомендовано|рекомендована|рекомендованы)(?![а-яё])"

@@ -1180,95 +1180,127 @@ def clean_diagnostic_block_text(value):
 
 def extract_diagnostic_recommendations(section_text, section_kind):
     """
-    Сохраняет полные блоки диагностических рекомендаций.
+    Извлекает рекомендации отдельными смысловыми абзацами.
 
-    Граница завершения блока — строка «Уровень убедительности
-    рекомендации/рекомендаций» вместе со значением уровня.
-    Комментарии после этой строки в блок не включаются.
+    Переносы строк внутри абзаца PDF объединяются, а пустые строки
+    сохраняются как границы абзацев. Это не позволяет начинать блок
+    с последней строки фразы, если PDF разорвал её переносом страницы.
+    Несколько рекомендаций между соседними маркерами уровня делятся:
+    предыдущие сохраняются как incomplete, последняя получает маркер.
     """
     if not isinstance(section_text, str) or not section_text.strip():
         return []
 
-    # Уровень убедительности встречается как отдельной строкой,
-    # так и внутри скобок после уровня достоверности доказательств.
-    # Захватываем сам маркер и его значение, не захватывая комментарий дальше.
     marker_re = re.compile(
-        r"(?i)Уровень\s+убедительности\s+р[\s\-–—]*е[\s\-–—]*к[\s\-–—]*о[\s\-–—]*м[\s\-–—]*е[\s\-–—]*н[\s\-–—]*д[\s\-–—]*а[\s\-–—]*ц[\s\-–—]*и[\s\-–—]*[ий]\b"
+        r"(?i)Уровень\s+убедительности\s+р[\s\-–—]*е[\s\-–—]*к[\s\-–—]*о[\s\-–—]*м[\s\-–—]*е[\s\-–—]*н[\s\-–—]*д[\s\-–—]*а[\s\-–—]*ц[\s\-–—]*и[\s\-–—]*[ий]"
         r"\s*[:\-–—]?\s*[A-ZА-ЯЁ0-9]+(?:\s*\))?"
     )
-    bullet_re = re.compile(r"(?m)^[ \t]*[•●▪]\s*")
     recommendation_re = re.compile(
-        r"(?im)^[ \t]*.{0,300}?\b(?:не\s+рекомендуется|рекомендуется|рекомендовано)\b"
+        r"(?i)(?<![а-яё])(?:не\s+рекомендуется|рекомендуется|рекомендовано|рекомендована|рекомендованы)(?![а-яё])"
     )
+    bullet_re = re.compile(r"^[ \t]*[•●▪]\s*", re.MULTILINE)
 
-    markers = list(marker_re.finditer(section_text))
+    text = clean_diagnostic_block_text(section_text)
+    text = re.sub(r"\r\n?", "\n", text)
+    # Маркеры списка всегда начинают отдельный смысловой абзац.
+    text = re.sub(r"\n[ \t]*(?=[•●▪])", "\n\n", text)
+    text = re.sub(r"[ \t]*\n[ \t]*", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    # Обычные одиночные переносы — это переносы строк PDF внутри абзаца.
+    text = re.sub(r"(?<!\n)\n(?!\n)", " ", text)
+    text = re.sub(r"[ \t]{2,}", " ", text).strip()
+
+    markers = list(marker_re.finditer(text))
     results = []
     cursor = 0
 
-    for number, marker in enumerate(markers, start=1):
-        between = section_text[cursor:marker.start()]
-        bullet = bullet_re.search(between)
-
-        if bullet:
-            start = cursor + bullet.start()
-            boundary_status = "complete"
-        else:
-            recommendation = recommendation_re.search(between)
-            if recommendation:
-                start = cursor + recommendation.start()
-                boundary_status = "complete_without_bullet"
-            else:
-                # Резервный режим: текст не теряется, но граница
-                # начала рекомендации требует ручной проверки.
-                nonempty = re.search(r"(?m)^[ \t]*\S", between)
-                if not nonempty:
-                    cursor = marker.end()
-                    continue
-                start = cursor + nonempty.start()
-                boundary_status = "review_required"
-
-        block_text = section_text[start:marker.end()].strip()
+    def append_block(block_text, level="", boundary_status="incomplete",
+                     source_start=0, source_end=0):
+        block_text = clean_diagnostic_block_text(block_text).strip()
         block_text = re.sub(r"^[ \t]*[•●▪]\s*", "", block_text)
-        block_text = clean_diagnostic_block_text(block_text)
-        level_line = marker.group(0).strip()
-
         if not block_text:
-            cursor = marker.end()
-            continue
-
+            return
         results.append({
             "number": len(results) + 1,
             "text": block_text,
-            "level": level_line,
+            "level": level,
             "boundary_status": boundary_status,
-            "source_start": start,
-            "source_end": marker.end(),
+            "source_start": source_start,
+            "source_end": source_end,
         })
+
+    for marker in markers:
+        segment = text[cursor:marker.start()]
+        paragraphs = []
+        offset = 0
+        for paragraph in re.split(r"\n\s*\n", segment):
+            paragraph_text = paragraph.strip()
+            if paragraph_text and recommendation_re.search(paragraph_text):
+                local_start = segment.find(paragraph, offset)
+                if local_start < 0:
+                    local_start = offset
+                paragraphs.append((paragraph_text, cursor + local_start))
+            offset += len(paragraph) + 2
+
+        if paragraphs:
+            # Если между двумя маркерами несколько самостоятельных
+            # рекомендаций, только последняя относится к текущему уровню.
+            for index, (paragraph_text, paragraph_start) in enumerate(paragraphs):
+                is_last = index == len(paragraphs) - 1
+                if is_last:
+                    block_text = paragraph_text + " " + marker.group(0).strip()
+                    bullet_status = "complete" if bullet_re.search(paragraph_text) else "complete_without_bullet"
+                    append_block(
+                        block_text,
+                        level=marker.group(0).strip(),
+                        boundary_status=bullet_status,
+                        source_start=paragraph_start,
+                        source_end=marker.end(),
+                    )
+                else:
+                    append_block(
+                        paragraph_text,
+                        boundary_status="incomplete",
+                        source_start=paragraph_start,
+                        source_end=paragraph_start + len(paragraph_text),
+                    )
+        else:
+            # Резервный режим для рекомендаций с нестандартной формулировкой:
+            # сохраняем ближайший непустой абзац, но явно помечаем его для проверки.
+            nonempty = [
+                (p.strip(), segment.find(p))
+                for p in re.split(r"\n\s*\n", segment)
+                if p.strip()
+            ]
+            if nonempty:
+                paragraph_text, local_start = nonempty[-1]
+                append_block(
+                    paragraph_text + " " + marker.group(0).strip(),
+                    level=marker.group(0).strip(),
+                    boundary_status="review_required",
+                    source_start=cursor + max(local_start, 0),
+                    source_end=marker.end(),
+                )
 
         cursor = marker.end()
 
-    # Если после последнего маркера осталась ещё одна рекомендация,
-    # сохраняем её отдельно как незавершённую, не придумывая уровень.
-    tail = section_text[cursor:]
-    if tail.strip():
-        bullet = bullet_re.search(tail)
-        recommendation = recommendation_re.search(tail)
-        candidate = bullet.start() if bullet else (
-            recommendation.start() if recommendation else None
-        )
-        if candidate is not None:
-            incomplete_text = tail[candidate:].strip()
-            incomplete_text = re.sub(r"^[ \t]*[•●▪]\s*", "", incomplete_text)
-            incomplete_text = clean_diagnostic_block_text(incomplete_text)
-            if incomplete_text:
-                results.append({
-                    "number": len(results) + 1,
-                    "text": incomplete_text,
-                    "level": "",
-                    "boundary_status": "incomplete",
-                    "source_start": cursor + candidate,
-                    "source_end": len(section_text),
-                })
+    # Рекомендации без маркера уровня сохраняются отдельно и не получают
+    # выдуманный уровень убедительности.
+    tail = text[cursor:]
+    offset = 0
+    for paragraph in re.split(r"\n\s*\n", tail):
+        paragraph_text = paragraph.strip()
+        if paragraph_text and recommendation_re.search(paragraph_text):
+            local_start = tail.find(paragraph, offset)
+            if local_start < 0:
+                local_start = offset
+            append_block(
+                paragraph_text,
+                boundary_status="incomplete",
+                source_start=cursor + local_start,
+                source_end=cursor + local_start + len(paragraph_text),
+            )
+        offset += len(paragraph) + 2
 
     return results
 

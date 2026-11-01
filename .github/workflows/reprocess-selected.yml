@@ -61,7 +61,7 @@ jobs:
 
       - name: Проверить полноту диагностических рекомендаций
         env:
-          DOCUMENT_ID: ${{ inputs.document_id || '1086_1' }}
+          DOCUMENT_ID: ${{ inputs.document_id || '' }}
         run: |
           if [ "$DOCUMENT_ID" = "1086_1" ]; then
             python validate_1086_1_diagnostic.py

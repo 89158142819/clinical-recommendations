@@ -140,14 +140,14 @@
     function prepareDiagnosticDisplayText(value) {
       if (!value) return "";
 
-      const text = String(value).replace(/\\r/g, "").replace(/[ \\t]*\\n[ \\t]*/g, " ").replace(/\\s{2,}/g, " ").trim();
+      const text = String(value).replace(/\r/g, "").replace(/[ \t]*\n[ \t]*/g, " ").replace(/\s{2,}/g, " ").trim();
 
       // В начале показываем само исследование, а затем — кому и при каких
       // условиях оно рекомендовано. Исходный смысл и все оговорки сохраняются.
       const patterns = [
-        /^(.*?)\\s+рекомендуется\\s+выполнение\\s+следующих\\s+(?:лабораторных\\s+)?исследований\\s*:\\s*(.*)$/i,
-        /^(.*?)\\s+рекомендуется\\s+(?:выполнять|выполнить|проводить|провести|использовать)\\s+(.*)$/i,
-        /^(.*?)\\s+рекомендуется\\s+выполнение\\s+(?!следующих)(.*)$/i
+        /^(.*?)\s+рекомендуется\s+выполнение\s+следующих\s+(?:лабораторных\s+)?исследований\s*:\s*(.*)$/i,
+        /^(.*?)\s+рекомендуется\s+(?:выполнять|выполнить|проводить|провести|использовать)\s+(.*)$/i,
+        /^(.*?)\s+рекомендуется\s+выполнение\s+(?!следующих)(.*)$/i
       ];
 
       for (const pattern of patterns) {
@@ -156,22 +156,22 @@
 
         const condition = match[1].trim();
         let remainder = match[2].trim();
-        const splitPattern = /\\s+(?=с диагностической целью|с целью|для определения|для планирования|для своевременного|для оценки|для подбора|в ранние сроки|при отсутствии|при необходимости|при прогрессировании|с частотой|но не позднее|после проведения|в случае)/i;
+        const splitPattern = /\s+(?=с диагностической целью|с целью|для определения|для планирования|для своевременного|для оценки|для подбора|в ранние сроки|при отсутствии|при необходимости|при прогрессировании|с частотой|но не позднее|после проведения|в случае)/i;
         const split = remainder.search(splitPattern);
-        const citation = remainder.search(/\\s+(?=\\[\\s*\\d)/);
+        const citation = remainder.search(/\s+(?=\[\s*\d)/);
         let cut = -1;
 
         if (split >= 0 && citation >= 0) cut = Math.min(split, citation);
         else cut = Math.max(split, citation);
 
         if (cut < 0) {
-          const sentenceEnd = remainder.search(/[.!?](?=\\s|$)/);
+          const sentenceEnd = remainder.search(/[.!?](?=\s|$)/);
           if (sentenceEnd >= 0) cut = sentenceEnd;
         }
 
         if (cut <= 0) continue;
 
-        const study = remainder.slice(0, cut).replace(/[,:;\\s]+$/, "").trim();
+        const study = remainder.slice(0, cut).replace(/[,:;\s]+$/, "").trim();
         const continuation = remainder.slice(cut).trim();
         if (!study || study.length < 8) continue;
 

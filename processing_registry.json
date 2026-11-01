@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T06:39:36.955447+00:00",
+  "updated_at": "2026-11-01T07:37:01.860114+00:00",
   "total_processed": 778,
   "results": {
     "750_2": {
@@ -316,11 +316,11 @@
       "id": "1086_1",
       "title": "Врождённый вывих бедра",
       "status": "passed",
-      "started_at": "2026-10-31T19:23:07.613953+00:00",
-      "finished_at": "2026-10-31T19:23:12.101110+00:00",
+      "started_at": "2026-11-01T07:36:56.406691+00:00",
+      "finished_at": "2026-11-01T07:37:01.832863+00:00",
       "error": null,
       "quality_check": "passed",
-      "extraction_method": "universal_structural_headings_v8",
+      "extraction_method": "universal_structural_headings_v11",
       "missing_sections": [],
       "warnings": [],
       "optional_sections_not_found": [],

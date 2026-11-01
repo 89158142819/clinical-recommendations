@@ -20,7 +20,7 @@ def main():
 
     # Не удаляем уже опубликованные документы: каталог пополняется
     # партиями. В публичный список попадают только документы, прошедшие
-    # структурную проверку актуальным парсером v8 и имеющие новую
+    # структурную проверку актуальным парсером v11 и имеющие новую
     # структурированную диагностику.
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -40,7 +40,7 @@ def main():
         source = OUTPUT_DIR / f"{document_id}_sections_v2.json"
         existing = DOCS_DIR / f"{document_id}.json"
 
-        if source.exists() and registry_item.get("extraction_method") == "universal_structural_headings_v8":
+        if source.exists() and registry_item.get("extraction_method") == "universal_structural_headings_v11":
             data = read_json(source)
         elif existing.exists():
             # Пока каталог обрабатывается партиями, сохраняем уже

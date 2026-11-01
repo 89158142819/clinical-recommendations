@@ -107,7 +107,7 @@ for document_id in SOURCES:
         all_text = "\\n".join(
             item["text"] for item in summary["instrumental"]
         ).lower()
-        normalized_all_text = __import__("re").sub(r"\\s+", " ", all_text)
+        normalized_all_text = __import__("re").sub(r"\s+", " ", all_text)
         for phrase in ("24 - 96 часов", "не позднее 12 часов", "7 - 10 дней"):
             if phrase.lower() not in normalized_all_text:
                 errors.append(
@@ -185,7 +185,7 @@ if "683_2" in SOURCES:
         for index, expected in enumerate(expected_starts):
             if index >= len(lab_items):
                 break
-            value = __import__("re").sub(r"^\\s*[•●▪]\\s*", "", lab_items[index].get("text", "")).strip().lower()
+            value = __import__("re").sub(r"^\s*[•●▪]\s*", "", lab_items[index].get("text", "")).strip().lower()
             if not value.startswith(expected):
                 errors.append(
                     f"683_2: блок {index + 1} должен начинаться с «{expected}», "
@@ -198,7 +198,7 @@ if "683_2" in SOURCES:
                 break
             value = lab_items[index].get("text", "")
             if not __import__("re").search(
-                rf"уровень\\s+достоверности\\s+доказательств\\s*[-–—]\\s*{expected_level}\\b",
+                rf"уровень\s+достоверности\s+доказательств\s*[-–—]\s*{expected_level}\b",
                 value,
                 __import__("re").IGNORECASE,
             ):

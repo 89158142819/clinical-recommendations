@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-SOURCE = Path("output/903_1_sections_v2.json")
+SOURCE = Path("output/903_1_sections_v2.json")  # результат повторной обработки исходного PDF
 
 if not SOURCE.exists():
     raise FileNotFoundError(f"Не найден результат обработки: {SOURCE}")

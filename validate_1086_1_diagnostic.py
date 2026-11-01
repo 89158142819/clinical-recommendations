@@ -12,8 +12,8 @@ instrumental = summary.get("instrumental") or []
 
 errors = []
 
-if data.get("extraction_method") != "universal_structural_headings_v11":
-    errors.append("Документ обработан не парсером universal_structural_headings_v11")
+if data.get("extraction_method") != "universal_structural_headings_v12":
+    errors.append("Документ обработан не парсером universal_structural_headings_v12")
 
 if not laboratory:
     errors.append("Не извлечена лабораторная рекомендация")
@@ -61,6 +61,13 @@ for group_name, group in (("laboratory", laboratory), ("instrumental", instrumen
             errors.append(f"{group_name}: в блок попала служебная метка страницы")
         if "Уровень убедительности" in block and item.get("boundary_status") == "incomplete":
             errors.append(f"{group_name}: блок с маркером уровня помечен incomplete")
+        heading_pattern = (
+            r"^\s*\d+(?:\.\d+)*\s+"
+            + ("лабораторные" if group_name == "laboratory" else "инструментальные")
+            + r"\s+диагностические\s+исследования"
+        )
+        if __import__("re").match(heading_pattern, block, __import__("re").IGNORECASE):
+            errors.append(f"{group_name}: в рекомендацию попал заголовок подраздела")
 
 # Проверяем, что рекомендация по IHDI не склеена с отрицательной рекомендацией КТ/МРТ.
 for item in negative_blocks:

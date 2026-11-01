@@ -1,1 +1,1 @@
-Trigger selected reprocessing of 1086_1 after publisher compatibility fix.
+520_2 1090_1 903_1

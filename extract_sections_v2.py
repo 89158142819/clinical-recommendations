@@ -1247,6 +1247,19 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         if bullets:
             return bullets[-1].start()
 
+        # Для отрицательной рекомендации «не рекомендуется» название
+        # метода может быть длинным и содержать точки в кодах услуг.
+        # Поэтому отдельно сохраняем предшествующее наименование КТ/МРТ,
+        # даже если обычный поиск границы предложения остановился внутри кода.
+        if re.match(r"(?i)не\\s+рекоменд", value[position:]):
+            lookback_start = max(0, position - 500)
+            imaging_leads = list(re.finditer(
+                r"(?i)(?:рутинное\\s+)?применение\\s+(?=(?:компьютерной\\s+томографии|магнитно[-\\s]резонансной\\s+томографии))",
+                value[lookback_start:position],
+            ))
+            if imaging_leads:
+                return lookback_start + imaging_leads[-1].start()
+
         sentence = sentence_start(value, position)
         prefix = value[sentence:position].strip()
 

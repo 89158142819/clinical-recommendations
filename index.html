@@ -185,7 +185,7 @@
 
     function getDiagnosticRecommendationType(value) {
       const text = String(value || "");
-      const recommendationPattern = /не\\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)|рекоменд(?:уется|овано|ована|ованы)/gi;
+      const recommendationPattern = /не\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)|рекоменд(?:уется|овано|ована|ованы)/gi;
       const matches = [...text.matchAll(recommendationPattern)];
       if (!matches.length) return "unknown";
 

@@ -2,6 +2,9 @@ name: Тест новой диагностики — острый панкреа
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/test-pancreatitis-v3.yml"
 
 permissions:
   contents: write
@@ -51,7 +54,12 @@ jobs:
             echo "Новых опубликованных изменений нет"
           else
             git commit -m "Reprocess acute pancreatitis with diagnostic blocks v3"
-            git pull --rebase origin main
+            if ! git pull --rebase origin main; then
+              echo "Разрешаем конфликт повторной обработки: сохраняем проверенные файлы текущего запуска"
+              git checkout --theirs processing_registry.json site-data/docs/903_1.json site-data/recommendations.json
+              git add processing_registry.json site-data/docs/903_1.json site-data/recommendations.json
+              GIT_EDITOR=true git rebase --continue
+            fi
             git push
           fi
 

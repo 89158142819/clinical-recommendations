@@ -1,0 +1,68 @@
+name: Тест новой диагностики — острый панкреатит
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clinical-recommendations-pancreatitis-test
+  cancel-in-progress: false
+
+jobs:
+  test-pancreatitis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: pip install -r requirements.txt
+
+      - name: Проверить синтаксис
+        run: python -m py_compile extract_sections_v2.py download_batch.py publish_site.py print_pancreatitis_report.py
+
+      - name: Запустить регрессионную проверку
+        run: python test_diagnostic_extraction.py
+
+      - name: Повторно обработать острый панкреатит новым парсером
+        run: python download_batch.py --ids 903_1 --force
+
+      - name: Проверить полные блоки рекомендаций
+        run: python print_pancreatitis_report.py
+
+      - name: Обновить публикацию
+        run: |
+          set -e
+          python publish_site.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add processing_registry.json site-data
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Новых опубликованных изменений нет"
+          else
+            git commit -m "Reprocess acute pancreatitis with diagnostic blocks v3"
+            git push
+          fi
+
+      - name: Сохранить результаты проверки
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acute-pancreatitis-diagnostic-v3
+          path: |
+            output/903_1.pdf
+            output/903_1.json
+            output/903_1_sections_v2.json
+            output/903_1_quality_report_v2.json
+          if-no-files-found: warn
+          retention-days: 90

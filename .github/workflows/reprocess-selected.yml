@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   reprocess:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.head_commit.message == 'Run selected reprocess 1086_1')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Run selected reprocess'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -44,10 +44,20 @@ jobs:
 
       - name: Повторно обработать выбранную рекомендацию
         env:
-          DOCUMENT_ID: ${{ inputs.document_id || '1086_1' }}
+          DOCUMENT_ID: ${{ inputs.document_id || '' }}
         run: |
           set -e
-          python download_batch.py --ids "$DOCUMENT_ID" --force
+          if [ -n "$DOCUMENT_ID" ]; then
+            IDS="$DOCUMENT_ID"
+          else
+            IDS="$(cat reprocess-trigger.txt)"
+          fi
+          read -r -a DOC_IDS <<< "$IDS"
+          if [ "${#DOC_IDS[@]}" -eq 0 ]; then
+            echo "Не указаны ID для повторной обработки"
+            exit 1
+          fi
+          python download_batch.py --ids "${DOC_IDS[@]}" --force
 
       - name: Проверить полноту диагностических рекомендаций
         env:

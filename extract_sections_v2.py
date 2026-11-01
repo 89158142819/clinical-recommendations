@@ -11,7 +11,7 @@ from pathlib import Path
 
 DEFAULT_INPUT = Path("output/749_2.json")
 
-EXTRACTION_METHOD = "universal_structural_headings_v11"
+EXTRACTION_METHOD = "universal_structural_headings_v12"
 
 OPTIONAL_SECTION_KEYS = {
     "other_diagnostics",

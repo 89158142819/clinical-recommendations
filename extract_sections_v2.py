@@ -1157,527 +1157,97 @@ def build_quality_report(
 
 
 
-DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v2"
-
-def clean_diagnostic_value(value):
-    value = re.sub(r"\s+", " ", value or "")
-    return value.strip(" \t\r\n:;,.–—-")
+DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v3"
 
 
 def extract_diagnostic_recommendations(section_text, section_kind):
+    """
+    Сохраняет полные блоки диагностических рекомендаций.
+
+    Граница завершения блока — строка «Уровень убедительности
+    рекомендации/рекомендаций» вместе со значением уровня.
+    Комментарии после этой строки в блок не включаются.
+    """
     if not isinstance(section_text, str) or not section_text.strip():
         return []
 
-    # В КР рекомендации могут быть оформлены маркерами списка,
-    # отдельными строками или обычными абзацами с формулировкой
-    # «Рекомендуется» / «Рекомендовано».
-    bullet_re = re.compile(r"(?m)^[ \t]*[•●▪]\s*")
-    bullets = list(bullet_re.finditer(section_text))
-    recommendation_line_re = re.compile(
-        r"(?im)^[ \t]*(?:[•●▪]\s*)?.*\b(?:не\s+рекомендуется|рекомендуется|рекомендовано)\b.*$"
+    marker_re = re.compile(
+        r"(?im)^[ \t]*Уровень\s+убедительности\s+рекомендаци(?:и|й)\b[^\n]*"
     )
-    recommendation_blocks = list(recommendation_line_re.finditer(section_text))
+    bullet_re = re.compile(r"(?m)^[ \t]*[•●▪]\s*")
+    recommendation_re = re.compile(
+        r"(?im)^[ \t]*.{0,300}?\b(?:не\s+рекомендуется|рекомендуется|рекомендовано)\b"
+    )
+
+    markers = list(marker_re.finditer(section_text))
     results = []
+    cursor = 0
 
-    research_re = re.compile(
-        r"(?i)(антител|иммуноглобулин|анализ|исследован|определени|"
-        r"эндоскоп|биопси|ультразву|узи\b|рентген|томограф|денситометр|"
-        r"генетическ|hла|hla|пцр|копролог|гормон|электрокарди|"
-        r"эхокарди|спирометр|скопи|маммограф|функци|пункци|"
-        r"морфологическ|консультац|направить)"
-    )
+    for number, marker in enumerate(markers, start=1):
+        between = section_text[cursor:marker.start()]
+        bullet = bullet_re.search(between)
 
-    for index, match in enumerate(recommendation_blocks):
-        end = (
-            recommendation_blocks[index + 1].start()
-            if index + 1 < len(recommendation_blocks)
-            else len(section_text)
-        )
-        raw_block = section_text[match.start():end]
-        raw_block = re.sub(r"\s*\[Страница\s+\d+\]\s*", " ", raw_block)
-        raw_block = clean_diagnostic_value(raw_block)
-
-        recommendation_match = re.search(
-            r"(?i)\b(не\s+рекомендуется|рекомендуется\s+рассмотреть|рекомендуется|рекомендовано)\b",
-            raw_block
-        )
-        if not recommendation_match:
-            continue
-
-        lead_in = clean_diagnostic_value(raw_block[:recommendation_match.start()])
-        block = clean_diagnostic_value(raw_block[recommendation_match.end():])
-
-        if recommendation_match.group(1).lower().startswith("не "):
-            kind = "not_recommended"
-        elif "рассмотреть" in recommendation_match.group(1).lower():
-            kind = "consider"
+        if bullet:
+            start = cursor + bullet.start()
+            boundary_status = "complete"
         else:
-            kind = "recommended"
-
-        block = re.split(
-            r"\bУровень\s+достоверности\s+доказательств\b|\bКомментарии?\s*:",
-            block, maxsplit=1, flags=re.IGNORECASE
-        )[0]
-        block = clean_diagnostic_value(block)
-        if len(block) < 20 or not research_re.search(block):
-            continue
-        if re.search(r"(?i)\bкритери\w*\b", block) and re.search(r"(?i)\bиспользовать\b", block):
-            continue
-
-        patient = re.search(
-            r"\b(?:пациентам|пациентов|пациенту|пациента|детям|взрослым|лицам|родственникам)\b|"
-            r"\bв\s+тех\s+случаях\b|\bпри\s+(?:подозрении|наличии|планировании|невозможности|отсутствии|появлении)\b|"
-            r"\bесли\s+пациент\b|\bу\s+пациентов\b",
-            block, flags=re.IGNORECASE
-        )
-        action = re.search(
-            r"\b(?:выполнить|выполнение|провести|проведение|"
-            r"определить|определение|исследовать|исследование|"
-            r"измерить|измерение|оценить|оценка|направить)\b",
-            block, flags=re.IGNORECASE
-        )
-        purpose_match = re.search(
-            r"\bс\s+(?:(?:диагностической|лечебной|профилактической)\s+)?целью\b|"
-            r"\bдля\s+[^.;]{0,70}\b(?:скрининга|диагностики|подтверждения|"
-            r"исключения|верификации|оценки|выявления)\b",
-            block, flags=re.IGNORECASE
-        )
-
-        # Название исследования может стоять как до указания пациентов,
-        # так и после него ("пациентам ... выполнить исследование").
-        if action and patient and action.start() > patient.start():
-            name_start = action.start()
-            name_end_match = re.search(
-                r"\b(?:на\s+фоне|через\s+\d|в\s+динамике|"
-                r"с\s+интервалом|при\s+появлении)\b",
-                block[name_start + 1:],
-                flags=re.IGNORECASE
-            )
-            name_end = (
-                name_start + 1 + name_end_match.start()
-                if name_end_match else len(block)
-            )
-            if purpose_match and purpose_match.start() > name_start:
-                name_end = min(name_end, purpose_match.start())
-            name = clean_diagnostic_value(block[name_start:name_end])
-            indication_start = patient.start()
-            indication_end = name_start
-        else:
-            if patient:
-                name_end = patient.start()
-            elif purpose_match:
-                name_end = purpose_match.start()
-            elif action:
-                name_end = min(len(block), action.start() + 220)
+            recommendation = recommendation_re.search(between)
+            if recommendation:
+                start = cursor + recommendation.start()
+                boundary_status = "complete_without_bullet"
             else:
-                name_end = min(len(block), 220)
+                # Резервный режим: текст не теряется, но граница
+                # начала рекомендации требует ручной проверки.
+                nonempty = re.search(r"(?m)^[ \t]*\S", between)
+                if not nonempty:
+                    cursor = marker.end()
+                    continue
+                start = cursor + nonempty.start()
+                boundary_status = "review_required"
 
-            name = clean_diagnostic_value(block[:name_end])
-            indication_start = patient.start() if patient else None
-            indication_end = (
-                purpose_match.start()
-                if purpose_match and purpose_match.start() > (indication_start or 0)
-                else len(block)
-            )
+        block_text = section_text[start:marker.end()].strip()
+        block_text = re.sub(r"^[ \t]*[•●▪]\s*", "", block_text)
+        level_line = marker.group(0).strip()
 
-        name = re.sub(
-            r"^(?:селективное|рутинное|повторное|выполнение|проведение|выполнить|провести|"
-            r"исследовать|измерить|оценить)\s+",
-            "", name, flags=re.IGNORECASE
-        )
-        name = clean_diagnostic_value(name)
-        name = re.sub(r"(?i)^содержание\s+", "Определение содержания ", name)
-        if name.count("(") > name.count(")"):
-            name += ")" * (name.count("(") - name.count(")"))
-
-        # Часто встречающиеся лабораторные и инструментальные методы
-        # приводим к коротким и понятным названиям.
-        lower_name = name.lower()
-
-        if section_kind == "other_diagnostics":
-            source_lower = block.lower()
-            # Сам пункт о комплексном обследовании заменяется карточками
-            # его вложенных компонентов, чтобы не создавать общую карточку-дубль.
-            if re.search(r"(?i)комплекс\w*\s+лабораторно\s*[-–—]\s*инструментальн\w*\s+исследован", source_lower):
-                continue
-
-            # Пропускаем все рекомендации с диагностическими методами,
-            # а не только три заранее заданных названия.
-            diagnostic_action = re.search(
-                r"(?i)антител|иммуноглобулин|анализ|исследован|определени|"
-                r"биопси|эндоскоп|гастроэнтеролог|консультац|обследован|"
-                r"ультразву|узи\b|рентген|денситометр|генетическ|"
-                r"hla[- ]?dq|гистологическ|патолого-анатомическ|"
-                r"копролог|гормон|томограф|скрининг",
-                source_lower
-            )
-            non_diagnostic_action = re.search(
-                r"(?i)разрешить\s+.*диет|перевести\s+на\s+общий\s+стол|"
-                r"продолжить\s+динамическое\s+наблюдение|"
-                r"избегать\s+неоправданных\s+диетологических",
-                source_lower
-            )
-            if not diagnostic_action or non_diagnostic_action:
-                continue
-
-            if "hla-dq2" in source_lower or "hla -dq2" in source_lower or "hla dq2" in source_lower:
-                name = "Генетическое исследование HLA-DQ2/DQ8"
-            elif "нагрузк" in source_lower and "глютен" in source_lower:
-                name = "Глютеновая нагрузка (провокационный тест)"
-            elif "гастроэнтеролог" in source_lower and (
-                "направить" in source_lower or "консультац" in source_lower
-            ):
-                name = "Консультация врача-гастроэнтеролога"
-
-        lower_name = name.lower()
-        if "тканевой трансглютаминазе" in lower_name and "igg" in lower_name and "деамидированным пептидам" in lower_name:
-            name = "Антитела к тканевой трансглютаминазе IgG и деамидированным пептидам глиадина IgG"
-        elif ("тканевой трансглютаминазе" in lower_name or "тканевой транглютаминазе" in lower_name) and ("iga" in lower_name or "класса а" in lower_name):
-            name = "Антитела к тканевой трансглютаминазе IgA (anti-tTG IgA)"
-        elif "антител" in lower_name and "эндомизию" in lower_name:
-            name = "Антитела к эндомизию IgA (EMA)"
-        elif "антител" in lower_name and "нативному глиадину" in lower_name:
-            name = "Антитела к нативному глиадину (AGA)"
-        elif "эзофагогастродуоденоскопия" in lower_name:
-            name = "ЭГДС с биопсией двенадцатиперстной кишки"
-        elif "h la-dq2" in lower_name or "hla-dq2" in lower_name or "hla dq2" in lower_name:
-            name = "Генетическое исследование HLA-DQ2/DQ8"
-
-        if len(name) > 260:
-            name = name[:257].rsplit(" ", 1)[0] + "…"
-        if not name:
+        if not block_text:
+            cursor = marker.end()
             continue
-
-        indication = (
-            clean_diagnostic_value(block[indication_start:indication_end])
-            if indication_start is not None else ""
-        )
-        if lead_in:
-            indication = clean_diagnostic_value(
-                (lead_in + " " + indication).strip()
-            )
-
-        purpose = ""
-        if purpose_match:
-            purpose_start = purpose_match.start()
-            purpose_end = len(block)
-            if patient and patient.start() > purpose_start:
-                purpose_end = patient.start()
-            elif action and action.start() > purpose_start:
-                purpose_end = action.start()
-            purpose = clean_diagnostic_value(block[purpose_start:purpose_end])
-        else:
-            purpose_match_alt = re.search(
-                r"\bдля\s+[^.;]{0,70}\b(?:скрининга|диагностики|подтверждения|"
-                r"исключения|верификации|оценки|выявления)\b[^.;]{0,180}",
-                block, flags=re.IGNORECASE
-            )
-            if purpose_match_alt:
-                purpose = clean_diagnostic_value(purpose_match_alt.group(0))
-
-        if "anti-ttg iga" in name.lower():
-            indication = re.sub(
-                r"\s+и\s+исследование\s+уровня\s+иммуноглобулина\s+а\b.*$",
-                "", indication, flags=re.IGNORECASE
-            )
-        indication = re.sub(r"\s+дополнительное$", "", indication, flags=re.IGNORECASE)
-        if not indication:
-            indication = "В тексте рекомендации отдельные показания не выделены."
-
-        if purpose and purpose.lower().startswith("с диагностической целью"):
-            purpose = "Диагностика заболевания"
-        elif purpose and purpose.lower().startswith("с целью "):
-            purpose = purpose[8:]
-        elif purpose and purpose.lower().startswith("для патолого"):
-            purpose = "Морфологическое подтверждение диагноза"
-        elif purpose and purpose.lower().startswith("для подтверждения диагноза"):
-            purpose = "Подтверждение диагноза"
-        elif purpose and purpose.lower().startswith("для установления диагноза"):
-            purpose = "Установление диагноза"
-
-        purpose = clean_diagnostic_value(purpose)
-        if purpose.lower().startswith("скрининга"):
-            purpose = "Скрининг" + purpose[len("скрининга"):]
-        elif purpose.lower().startswith("исключения "):
-            purpose = "Исключение " + purpose[len("исключения "):]
-        elif purpose.lower().startswith("установления диагноза"):
-            purpose = "Установление диагноза"
-        if purpose:
-            purpose = purpose[0].upper() + purpose[1:]
-        else:
-            purpose = "Отдельная цель исследования в формулировке рекомендации не указана."
 
         results.append({
-            "name": name,
-            "indications": indication,
-            "purpose": purpose,
-            "recommendation_type": kind,
-            "source_excerpt": clean_diagnostic_value((lead_in + " " + block).strip())[:1200],
-            "source_section": section_kind,
+            "number": len(results) + 1,
+            "text": block_text,
+            "level": level_line,
+            "boundary_status": boundary_status,
+            "source_start": start,
+            "source_end": marker.end(),
         })
 
-        # В одной рекомендации может быть сразу несколько исследований.
-        # В целиакии отдельно указано первичное определение общего IgA.
-        if (
-            section_kind == "laboratory_diagnostics"
-            and "anti-ttg iga" in name.lower()
-            and re.search(r"(?i)и\s+исследование\s+уровня\s+иммуноглобулина\s+а\s+в\s+крови", block)
-        ):
-            results.append({
-                "name": "Общий иммуноглобулин A (IgA)",
-                "indications": indication,
-                "purpose": "Исключение дефицита IgA, способного привести к ложноотрицательному результату серологического скрининга",
-                "recommendation_type": kind,
-                "source_excerpt": block[:1200],
-                "source_section": section_kind,
-            })
+        cursor = marker.end()
 
-    # В разделе иных методов часть рекомендаций оформлена как
-    # комплексное обследование с вложенным перечнем процедур. Эти строки
-    # не начинаются словом «Рекомендуется», но являются частью рекомендации.
-    if section_kind == "other_diagnostics":
-        bullet_matches = list(bullet_re.finditer(section_text))
-        for parent_index, parent_match in enumerate(bullet_matches):
-            parent_end = (
-                bullet_matches[parent_index + 1].start()
-                if parent_index + 1 < len(bullet_matches)
-                else len(section_text)
-            )
-            parent_text = clean_diagnostic_value(
-                section_text[parent_match.end():parent_end]
-            )
-            if not (
-                re.match(r"(?i)^рекомендуется\b|^рекомендовано\b", parent_text)
-                and re.search(r"(?i)комплекс\w*\s+лабораторно\s*[-–—]\s*инструментальн\w*\s+исследован", parent_text)
-            ):
-                continue
-
-            indication_match = re.search(
-                r"(?i)(пациентам\s+с\s+подтвержденным\s+диагнозом.*?обследования)",
-                parent_text
-            )
-            inherited_indication = (
-                clean_diagnostic_value(indication_match.group(1))
-                if indication_match else
-                "Пациентам с подтвержденным диагнозом целиакии при первичном обследовании."
-            )
-
-            for child_index in range(parent_index + 1, len(bullet_matches)):
-                child_match = bullet_matches[child_index]
-                child_text_end = (
-                    bullet_matches[child_index + 1].start()
-                    if child_index + 1 < len(bullet_matches)
-                    else len(section_text)
-                )
-                child_text = clean_diagnostic_value(
-                    section_text[child_match.end():child_text_end]
-                )
-
-                # Следующая самостоятельная рекомендация завершает список
-                # компонентов комплексного обследования.
-                if re.match(
-                    r"(?i)^(?:не\s+)?рекомендуется\b|^рекомендовано\b|^рекомендовано\b",
-                    child_text
-                ):
-                    break
-
-                child_text = re.split(
-                    r"\bУровень\s+достоверности\s+доказательств\b",
-                    child_text, maxsplit=1, flags=re.IGNORECASE
-                )[0]
-                child_text = clean_diagnostic_value(child_text)
-                if len(child_text) < 8:
-                    continue
-
-                low = child_text.lower()
-                if "клинический осмотр" in low:
-                    child_name = "Клинический осмотр и антропометрические измерения"
-                elif "общий (клинический) анализ крови" in low:
-                    child_name = "Общий (клинический) анализ крови развернутый"
-                elif "анализ крови биохимический" in low:
-                    child_name = "Биохимический анализ крови (общетерапевтический профиль)"
-                elif "тиреоидного профиля" in low:
-                    child_name = "Исследование гормонов и антител тиреоидного профиля"
-                elif "копрологическое исследование" in low:
-                    child_name = "Копрологическое исследование"
-                elif "ультразвуковое исследование органов брюшной полости" in low:
-                    child_name = "УЗИ органов брюшной полости (комплексное)"
-                elif "ультразвуковое исследование щитовидной железы" in low:
-                    child_name = "УЗИ щитовидной и паращитовидных желез"
-                elif "ультразвуковое исследование матки и придатков" in low:
-                    child_name = "УЗИ органов малого таза (девочкам старше 12 лет)"
-                elif "рентгеноденситометрия" in low:
-                    child_name = "Рентгеноденситометрия поясничного отдела позвоночника"
-                elif "консультации специалистов" in low:
-                    child_name = "Консультации профильных специалистов по показаниям"
-                else:
-                    # Не отбрасываем незнакомый вложенный пункт:
-                    # сохраняем его исходную формулировку как название.
-                    child_name = child_text.split(":", 1)[0].strip().rstrip(".")
-
+    # Если после последнего маркера осталась ещё одна рекомендация,
+    # сохраняем её отдельно как незавершённую, не придумывая уровень.
+    tail = section_text[cursor:]
+    if tail.strip():
+        bullet = bullet_re.search(tail)
+        recommendation = recommendation_re.search(tail)
+        candidate = bullet.start() if bullet else (
+            recommendation.start() if recommendation else None
+        )
+        if candidate is not None:
+            incomplete_text = tail[candidate:].strip()
+            incomplete_text = re.sub(r"^[ \t]*[•●▪]\s*", "", incomplete_text)
+            if incomplete_text:
                 results.append({
-                    "name": child_name,
-                    "indications": inherited_indication,
-                    "purpose": "Выявление дефицитных состояний и исключение часто ассоциированных аутоиммунных и эндокринных заболеваний.",
-                    "recommendation_type": "recommended",
-                    "source_excerpt": child_text[:1200],
-                    "source_section": section_kind,
+                    "number": len(results) + 1,
+                    "text": incomplete_text,
+                    "level": "",
+                    "boundary_status": "incomplete",
+                    "source_start": cursor + candidate,
+                    "source_end": len(section_text),
                 })
 
-    # Отдельно собираем рекомендации по контрольной диагностике
-    # во время и после глютеновой нагрузки. Это единый протокол наблюдения,
-    # а не новые дубли лабораторных и инструментальных методов.
-    if section_kind == "other_diagnostics":
-        heading_match = re.search(
-            r"(?i)Провокационный\s+тест\s*\(нагрузка\s+глютеном\)",
-            section_text
-        )
-        if heading_match:
-            followup_items = []
-            tail = section_text[heading_match.end():]
-            followup_bullets = list(bullet_re.finditer(tail))
-            for idx, bullet in enumerate(followup_bullets):
-                item_end = (
-                    followup_bullets[idx + 1].start()
-                    if idx + 1 < len(followup_bullets)
-                    else len(tail)
-                )
-                item_text = clean_diagnostic_value(
-                    tail[bullet.end():item_end]
-                )
-                if not re.search(
-                    r"(?i)(?:^не\s+рекомендуется\b|^рекомендовано\b|"
-                    r"^рекомендуется\b|\bрекомендуется\b)",
-                    item_text
-                ):
-                    continue
-                if not re.search(
-                    r"(?i)глютен|провокационн|антител|биопси|"
-                    r"патолого-анатомическ|гистологическ|наблюдени",
-                    item_text
-                ):
-                    continue
-                item_text = re.split(
-                    r"\bУровень\s+достоверности\s+доказательств\b",
-                    item_text, maxsplit=1, flags=re.IGNORECASE
-                )[0]
-                item_text = clean_diagnostic_value(item_text)
-                if item_text and item_text not in followup_items:
-                    followup_items.append(item_text)
+    return results
 
-            if followup_items:
-                followup_summaries = []
-                for followup in followup_items:
-                    low_followup = followup.lower()
-                    if "через 1 месяц" in low_followup or "каждые три месяца" in low_followup:
-                        followup_summaries.append(
-                            "При ранней реакции на провокационный тест: определить anti-tTG IgA через 1 месяц после начала лечения, затем каждые 3 месяца при ежедневном приёме глютена в течение 12 месяцев."
-                        )
-                    elif "появлении симптомов" in low_followup:
-                        followup_summaries.append(
-                            "При появлении симптомов во время глютеновой нагрузки — провести обследование раньше; по показаниям выполнить биопсию двенадцатиперстной кишки и гистологическое исследование."
-                        )
-                    elif "через 6 месяцев" in low_followup:
-                        followup_summaries.append(
-                            "При отрицательных серологических и морфологических результатах через 6 месяцев глютеновой нагрузки — перевести ребёнка на общий стол и продолжить наблюдение в течение 2 лет."
-                        )
-                    elif "после 1 года" in low_followup or "после одного года" in low_followup:
-                        followup_summaries.append(
-                            "При отсутствии симптомов и специфических аутоантител после 1 года приёма глютена — разрешить обычную глютенсодержащую диету; контроль аутоантител проводить ежегодно или раз в 2 года, раньше при появлении симптомов."
-                        )
-                    else:
-                        followup_summaries.append(followup)
-
-                results.append({
-                    "name": "Контрольная диагностика и наблюдение при глютеновой нагрузке",
-                    "indications": " • ".join(followup_summaries),
-                    "purpose": "Своевременное подтверждение или исключение целиакии и определение дальнейшей тактики обследования и питания.",
-                    "recommendation_type": "recommended",
-                    "source_excerpt": " || ".join(followup_items)[:4000],
-                    "source_section": section_kind,
-                })
-
-    # Объединяем одинаковые исследования независимо от показаний.
-    # Разные клинические ситуации сохраняются внутри одной карточки.
-    grouped = {}
-    order = []
-
-    for item in results:
-        key = re.sub(r"\s+", " ", item["name"].strip().lower())
-        key = key.replace("ё", "е")
-
-        if key not in grouped:
-            grouped[key] = dict(item)
-            grouped[key]["_indications"] = []
-            grouped[key]["_purposes"] = []
-            grouped[key]["_recommendation_types"] = []
-            grouped[key]["_source_excerpts"] = []
-            order.append(key)
-
-        target = grouped[key]
-
-        for value in (
-            item.get("indications", ""),
-            item.get("purpose", ""),
-        ):
-            if value and value not in (
-                "В тексте рекомендации отдельные показания не выделены.",
-                "Отдельная цель исследования в формулировке рекомендации не указана."
-            ):
-                bucket = "_indications" if value == item.get("indications") else "_purposes"
-                if value not in target[bucket]:
-                    target[bucket].append(value)
-
-        recommendation_type = item.get("recommendation_type")
-        if recommendation_type and recommendation_type not in target["_recommendation_types"]:
-            target["_recommendation_types"].append(recommendation_type)
-
-        excerpt = item.get("source_excerpt", "")
-        if excerpt and excerpt not in target["_source_excerpts"]:
-            target["_source_excerpts"].append(excerpt)
-
-    unique = []
-    for key in order:
-        item = grouped[key]
-        indications = item.pop("_indications")
-        purposes = item.pop("_purposes")
-        recommendation_types = item.pop("_recommendation_types")
-        excerpts = item.pop("_source_excerpts")
-
-        if item.get("source_section") == "other_diagnostics" and item.get("name") == "Глютеновая нагрузка (провокационный тест)":
-            indications = [
-                re.sub(r"\s*•?\s*пациентов излишнему дискомфорту.*$", "", value, flags=re.IGNORECASE).strip()
-                for value in indications
-            ]
-            indications = [value for value in indications if value]
-            purposes = [
-                "Окончательная верификация диагноза целиакии"
-                for value in purposes
-                if "верификации диагноза" in value.lower()
-            ] or purposes
-
-        item["indications"] = (
-            " • ".join(indications)
-            if indications else "В тексте рекомендации отдельные показания не выделены."
-        )
-        item["purpose"] = (
-            " • ".join(purposes)
-            if purposes else "Отдельная цель исследования в формулировке рекомендации не указана."
-        )
-
-        if len(recommendation_types) == 1:
-            item["recommendation_type"] = recommendation_types[0]
-        elif "not_recommended" in recommendation_types:
-            item["recommendation_type"] = "mixed"
-        elif "consider" in recommendation_types:
-            item["recommendation_type"] = "consider"
-        else:
-            item["recommendation_type"] = "recommended"
-
-        item["source_excerpt"] = " || ".join(excerpts)[:4000]
-        unique.append(item)
-
-    return unique
 
 def build_diagnostic_summary(extracted):
     laboratory = extract_diagnostic_recommendations(
@@ -1692,9 +1262,20 @@ def build_diagnostic_summary(extracted):
         extracted.get("other_diagnostics", {}).get("text", ""),
         "other_diagnostics"
     )
+
+    all_items = laboratory + instrumental + other
+    has_review = any(
+        item.get("boundary_status") in ("review_required", "incomplete")
+        for item in all_items
+    )
+
     return {
         "method": DIAGNOSTIC_EXTRACTION_METHOD,
-        "status": "draft" if laboratory or instrumental or other else "not_extracted",
+        "status": (
+            "review_required" if has_review
+            else "extracted" if all_items
+            else "not_extracted"
+        ),
         "laboratory": laboratory,
         "instrumental": instrumental,
         "other": other,
@@ -1703,7 +1284,11 @@ def build_diagnostic_summary(extracted):
             "instrumental": len(instrumental),
             "other": len(other)
         },
-        "note": "Автоматически выделенные формулировки рекомендаций. Требуется сверка с исходным документом."
+        "note": (
+            "Сохранены полные блоки рекомендаций до строки уровня "
+            "убедительности включительно. Комментарии после этой строки "
+            "не включаются в блок; незавершённые границы требуют проверки."
+        )
     }
 
 

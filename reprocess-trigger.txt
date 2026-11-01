@@ -1,1 +1,1 @@
-Trigger selected reprocessing of 1086_1.
+Trigger selected reprocessing of 1086_1 after publisher compatibility fix.

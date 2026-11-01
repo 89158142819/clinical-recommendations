@@ -101,6 +101,36 @@ for document_id in SOURCES:
         if __import__("re").search(r"(?m)^\s*\d{1,3}\s*$", combined_text):
             errors.append("903_1: в блоки попали отдельные номера страниц PDF")
 
+    if document_id == "1086_1":
+        for group in ("laboratory", "instrumental"):
+            for item in summary[group]:
+                if __import__("re").match(
+                    r"^\s*\d+(?:\.\d+)*\s+(?:лабораторные|инструментальные)\s+диагностические\s+исследования",
+                    item.get("text", ""),
+                    __import__("re").IGNORECASE,
+                ):
+                    errors.append(
+                        f"1086_1/{group}/{item.get('number')}: "
+                        "заголовок подраздела попал в текст рекомендации"
+                    )
+        negative_blocks = [
+            item.get("text", "")
+            for item in summary["instrumental"]
+            if __import__("re").search(
+                r"не\s+рекомендуется",
+                item.get("text", ""),
+                __import__("re").IGNORECASE,
+            )
+        ]
+        if not negative_blocks:
+            errors.append("1086_1: не найдена отдельная отрицательная рекомендация КТ/МРТ")
+        elif not any(
+            "компьютерной томографии" in value.lower()
+            and "магнитно" in value.lower()
+            for value in negative_blocks
+        ):
+            errors.append("1086_1: отрицательный блок не содержит одновременно КТ и МРТ")
+
     if document_id == "535_3":
         if not all(counts[k] > 0 for k in ("laboratory", "instrumental")):
             errors.append("535_3: не извлечены лабораторные или инструментальные рекомендации")

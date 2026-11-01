@@ -1,0 +1,84 @@
+name: Повторная обработка одной клинической рекомендации
+
+on:
+  workflow_dispatch:
+    inputs:
+      document_id:
+        description: "ID клинической рекомендации"
+        required: true
+        default: "1086_1"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clinical-recommendations-selected-reprocess
+  cancel-in-progress: false
+
+jobs:
+  reprocess:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: pip install -r requirements.txt
+
+      - name: Проверить синтаксис и регрессионные тесты
+        run: |
+          python -m py_compile extract_sections_v2.py download_batch.py publish_site.py validate_1086_1_diagnostic.py
+          python test_diagnostic_extraction.py
+
+      - name: Повторно обработать выбранную рекомендацию
+        env:
+          DOCUMENT_ID: ${{ inputs.document_id }}
+        run: |
+          set -e
+          python download_batch.py --ids "$DOCUMENT_ID" --force
+
+      - name: Проверить полноту диагностических рекомендаций
+        env:
+          DOCUMENT_ID: ${{ inputs.document_id }}
+        run: |
+          if [ "$DOCUMENT_ID" = "1086_1" ]; then
+            python validate_1086_1_diagnostic.py
+          else
+            echo "Для этого ID нет специального контрольного сценария; выполнены общие проверки."
+          fi
+
+      - name: Сформировать опубликованный каталог
+        run: python publish_site.py
+
+      - name: Сохранить результат и опубликовать
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add processing_registry.json site-data
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Нет изменений для публикации"
+          else
+            git commit -m "Reprocess selected clinical recommendation"
+            git push
+          fi
+
+      - name: Сохранить отчёты обработки
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selected-reprocess-reports
+          path: |
+            processing_registry.json
+            output/*_quality_report_v2.json
+            output/1086_1_sections_v2.json
+          if-no-files-found: warn
+          retention-days: 30

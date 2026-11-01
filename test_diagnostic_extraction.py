@@ -90,6 +90,16 @@ for document_id in SOURCES:
                 "903_1: комментарий после уровня убедительности попал в блок рекомендации"
             )
 
+    if document_id == "535_3":
+        if not all(counts[k] > 0 for k in ("laboratory", "instrumental")):
+            errors.append("535_3: не извлечены лабораторные или инструментальные рекомендации")
+        for group in ("laboratory", "instrumental"):
+            if len(summary[group]) < 2:
+                errors.append(
+                    f"535_3/{group}: рекомендации не разделены на отдельные блоки; "
+                    f"получено {len(summary[group])}"
+                )
+
 OUTPUT.write_text(
     json.dumps(results, ensure_ascii=False, indent=2),
     encoding="utf-8",

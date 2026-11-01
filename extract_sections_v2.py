@@ -1259,7 +1259,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         if len(prefix) > 180:
             return position
 
-        if re.search(r"(?i)комментарии?\s*:", prefix):
+        if re.search(r"(?i)комментарии?\s*:", value[:position]):
             return position
 
         if re.match(r"(?i)^(?:[a-zа-яё]\s*[).]+|лабораторные\s+методы\s+диагностики\s*:)", prefix):

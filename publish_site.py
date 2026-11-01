@@ -40,7 +40,7 @@ def main():
         source = OUTPUT_DIR / f"{document_id}_sections_v2.json"
         existing = DOCS_DIR / f"{document_id}.json"
 
-        if source.exists() and registry_item.get("extraction_method") == "universal_structural_headings_v11":
+        if source.exists() and registry_item.get("extraction_method") == "universal_structural_headings_v12":
             data = read_json(source)
         elif existing.exists():
             # Пока каталог обрабатывается партиями, сохраняем уже

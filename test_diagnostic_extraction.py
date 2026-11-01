@@ -3,13 +3,8 @@ from pathlib import Path
 
 from extract_sections_v2 import build_diagnostic_summary
 
-# Несколько разных КР для проверки вариантов оформления рекомендаций:
-# 404_2 — целиакия, вложенные пункты и провокационная нагрузка;
-# 1067_1 — короткий раздел и отсутствие показаний к части исследований;
-# 507_4 — туберкулёз у детей, сложные рекомендации и иммунодиагностика;
-# 535_3 — рак носоглотки, рекомендации в маркированных блоках;
-# 762_2 — трансплантация сердца, длинные блоки «Рекомендовано».
 SOURCES = [
+    "903_1",  # Острый панкреатит — эталон полного блока до уровня убедительности.
     "404_2",
     "1067_1",
     "507_4",
@@ -17,6 +12,7 @@ SOURCES = [
     "762_2",
 ]
 OUTPUT = Path("diagnostic_regression_results.json")
+LEVEL_MARKER = "Уровень убедительности рекомендации"
 
 results = []
 errors = []
@@ -56,34 +52,54 @@ for document_id in SOURCES:
     )
 
     for group in ("laboratory", "instrumental", "other"):
-        print(f"\\n{group.upper()}")
-        for number, item in enumerate(summary[group], 1):
-            print(f"{number}. {item['name']}")
-            print("   Показания:", item["indications"])
-            print("   Цель:", item["purpose"])
-            print("   Тип:", item["recommendation_type"])
+        print(f"\n{group.upper()}")
+        for item in summary[group]:
+            text = item.get("text", "")
+            print(
+                f"{item.get('number')}. "
+                f"{item.get('boundary_status')} | "
+                f"{len(text)} символов"
+            )
+            print(text[:500].replace("\n", " "))
+            if item.get("boundary_status") != "incomplete":
+                if LEVEL_MARKER.lower() not in text.lower():
+                    errors.append(
+                        f"{document_id}/{group}/{item.get('number')}: "
+                        "в блоке отсутствует строка уровня убедительности"
+                    )
 
-    # Проверяем, что парсер действительно извлекает ожидаемые разделы
-    # на нескольких документах, а не только на целиакии.
-    if document_id == "404_2" and not all(counts[k] > 0 for k in ("laboratory", "instrumental", "other")):
-        errors.append("404_2: один из трёх диагностических подразделов пуст")
-    if document_id == "507_4" and not all(counts[k] > 0 for k in ("laboratory", "instrumental", "other")):
-        errors.append("507_4: не извлечены пункты из одного из трёх подразделов")
-    if document_id == "535_3" and not all(counts[k] > 0 for k in ("laboratory", "instrumental")):
-        errors.append("535_3: не извлечены лабораторные или инструментальные исследования")
-    if document_id == "762_2" and not all(counts[k] > 0 for k in ("laboratory", "instrumental", "other")):
-        errors.append("762_2: не извлечены пункты из одного из трёх подразделов")
+    if document_id == "903_1":
+        if counts["laboratory"] != 2:
+            errors.append(
+                f"903_1: ожидалось 2 лабораторных блока, получено {counts['laboratory']}"
+            )
+        if counts["instrumental"] != 10:
+            errors.append(
+                f"903_1: ожидалось 10 инструментальных блоков, получено {counts['instrumental']}"
+            )
+        all_text = "\n".join(
+            item["text"] for item in summary["instrumental"]
+        ).lower()
+        for phrase in ("24 -  96 часов", "не позднее 12 часов", "7 -  10 дней"):
+            if phrase.lower() not in all_text:
+                errors.append(
+                    f"903_1: потеряно важное условие инструментальной диагностики: {phrase}"
+                )
+        if "комментарий." in all_text:
+            errors.append(
+                "903_1: комментарий после уровня убедительности попал в блок рекомендации"
+            )
 
 OUTPUT.write_text(
     json.dumps(results, ensure_ascii=False, indent=2),
     encoding="utf-8",
 )
 
-print("\\nРезультат сохранён в", OUTPUT)
+print("\nРезультат сохранён в", OUTPUT)
 if errors:
-    print("\\nОШИБКИ РЕГРЕССИОННОГО ТЕСТА:")
+    print("\nОШИБКИ РЕГРЕССИОННОГО ТЕСТА:")
     for error in errors:
         print("-", error)
     raise SystemExit(1)
 
-print("\\nРЕГРЕССИОННЫЙ ТЕСТ ПРОЙДЕН")
+print("\nРЕГРЕССИОННЫЙ ТЕСТ ПРОЙДЕН")

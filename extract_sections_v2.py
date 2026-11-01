@@ -1180,13 +1180,10 @@ def clean_diagnostic_block_text(value):
 
 def extract_diagnostic_recommendations(section_text, section_kind):
     """
-    Извлекает рекомендации отдельными смысловыми абзацами.
-
-    Переносы строк внутри абзаца PDF объединяются, а пустые строки
-    сохраняются как границы абзацев. Это не позволяет начинать блок
-    с последней строки фразы, если PDF разорвал её переносом страницы.
-    Несколько рекомендаций между соседними маркерами уровня делятся:
-    предыдущие сохраняются как incomplete, последняя получает маркер.
+    Извлекает рекомендации до маркера уровня убедительности.
+    Переносы строк PDF не считаются границами блока. Если в одном
+    фрагменте встречаются положительная и отрицательная рекомендации,
+    они разделяются по началу предложений.
     """
     if not isinstance(section_text, str) or not section_text.strip():
         return []
@@ -1196,32 +1193,34 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         r"\s*[:\-–—]?\s*[A-ZА-ЯЁ0-9]+(?:\s*\))?"
     )
     recommendation_re = re.compile(
-        r"(?i)(?<![а-яё])(?:не\s+рекомендуется|рекомендуется|рекомендовано|рекомендована|рекомендованы)(?![а-яё])"
+        r"(?i)(?<![а-яё])(?:не\s+рекомендуется|не\s+рекомендовано|не\s+рекомендована|не\s+рекомендованы|рекомендуется|рекомендовано|рекомендована|рекомендованы)(?![а-яё])"
     )
     bullet_re = re.compile(r"^[ \t]*[•●▪]\s*", re.MULTILINE)
 
-    # Убираем границы страниц до деления на абзацы: PDF может разорвать
-    # одну рекомендацию между словами (например, «ортопедических» /
-    # «устройств»). Такой перенос не должен становиться границей блока.
-    section_text = re.sub(
+    # Убираем разрыв страницы до нормализации переносов строк.
+    text = re.sub(
         r"[ \t]*\n*[ \t]*\[Страница\s+\d+\][ \t]*\n[ \t]*\d{1,3}[ \t]*\n?",
         " ",
         section_text,
         flags=re.IGNORECASE,
     )
-    text = clean_diagnostic_block_text(section_text)
-    text = re.sub(r"\r\n?", "\n", text)
-    # Маркеры списка всегда начинают отдельный смысловой абзац.
-    text = re.sub(r"\n[ \t]*(?=[•●▪])", "\n\n", text)
-    text = re.sub(r"[ \t]*\n[ \t]*", "\n", text)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    # Обычные одиночные переносы — это переносы строк PDF внутри абзаца.
-    text = re.sub(r"(?<!\n)\n(?!\n)", " ", text)
-    text = re.sub(r"[ \t]{2,}", " ", text).strip()
+    text = clean_diagnostic_block_text(text)
+    text = re.sub(r"\s+", " ", text).strip()
 
-    markers = list(marker_re.finditer(text))
+    def sentence_start(value, position):
+        prefix = value[:position]
+        boundaries = list(re.finditer(
+            r"[.!?][\"»')\]]*\s+(?=[А-ЯЁA-Z0-9])",
+            prefix
+        ))
+        return boundaries[-1].end() if boundaries else 0
+
+    def polarity(match):
+        return "negative" if re.match(
+            r"не\s+", match.group(0), re.IGNORECASE
+        ) else "positive"
+
     results = []
-    cursor = 0
 
     def append_block(block_text, level="", boundary_status="incomplete",
                      source_start=0, source_end=0):
@@ -1238,78 +1237,79 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             "source_end": source_end,
         })
 
+    markers = list(marker_re.finditer(text))
+    cursor = 0
+
     for marker in markers:
         segment = text[cursor:marker.start()]
-        paragraphs = []
-        offset = 0
-        for paragraph in re.split(r"\n\s*\n", segment):
-            paragraph_text = paragraph.strip()
-            if paragraph_text and recommendation_re.search(paragraph_text):
-                local_start = segment.find(paragraph, offset)
-                if local_start < 0:
-                    local_start = offset
-                paragraphs.append((paragraph_text, cursor + local_start))
-            offset += len(paragraph) + 2
+        matches = list(recommendation_re.finditer(segment))
 
-        if paragraphs:
-            # Если между двумя маркерами несколько самостоятельных
-            # рекомендаций, только последняя относится к текущему уровню.
-            for index, (paragraph_text, paragraph_start) in enumerate(paragraphs):
-                is_last = index == len(paragraphs) - 1
+        if matches:
+            clusters = []
+            current_polarity = None
+            for match in matches:
+                current = polarity(match)
+                if current != current_polarity:
+                    position = sentence_start(segment, match.start())
+                    if not clusters or position > clusters[-1]["start"]:
+                        clusters.append({"polarity": current, "start": position})
+                    current_polarity = current
+
+            for index, cluster in enumerate(clusters):
+                block_start = cluster["start"]
+                is_last = index == len(clusters) - 1
+                block_end = len(segment) if is_last else clusters[index + 1]["start"]
+                block_text = segment[block_start:block_end].strip()
+
                 if is_last:
-                    block_text = paragraph_text + " " + marker.group(0).strip()
-                    bullet_status = "complete" if bullet_re.search(paragraph_text) else "complete_without_bullet"
+                    block_text = (block_text + " " + marker.group(0).strip()).strip()
+                    status = "complete" if bullet_re.search(block_text) else "complete_without_bullet"
                     append_block(
                         block_text,
                         level=marker.group(0).strip(),
-                        boundary_status=bullet_status,
-                        source_start=paragraph_start,
+                        boundary_status=status,
+                        source_start=cursor + block_start,
                         source_end=marker.end(),
                     )
                 else:
                     append_block(
-                        paragraph_text,
+                        block_text,
                         boundary_status="incomplete",
-                        source_start=paragraph_start,
-                        source_end=paragraph_start + len(paragraph_text),
+                        source_start=cursor + block_start,
+                        source_end=cursor + block_end,
                     )
-        else:
-            # Резервный режим для рекомендаций с нестандартной формулировкой:
-            # сохраняем ближайший непустой абзац, но явно помечаем его для проверки.
-            nonempty = [
-                (p.strip(), segment.find(p))
-                for p in re.split(r"\n\s*\n", segment)
-                if p.strip()
-            ]
-            if nonempty:
-                paragraph_text, local_start = nonempty[-1]
-                append_block(
-                    paragraph_text + " " + marker.group(0).strip(),
-                    level=marker.group(0).strip(),
-                    boundary_status="review_required",
-                    source_start=cursor + max(local_start, 0),
-                    source_end=marker.end(),
-                )
+        elif segment.strip():
+            append_block(
+                segment.strip() + " " + marker.group(0).strip(),
+                level=marker.group(0).strip(),
+                boundary_status="review_required",
+                source_start=cursor,
+                source_end=marker.end(),
+            )
 
         cursor = marker.end()
 
-    # Рекомендации без маркера уровня сохраняются отдельно и не получают
-    # выдуманный уровень убедительности.
     tail = text[cursor:]
-    offset = 0
-    for paragraph in re.split(r"\n\s*\n", tail):
-        paragraph_text = paragraph.strip()
-        if paragraph_text and recommendation_re.search(paragraph_text):
-            local_start = tail.find(paragraph, offset)
-            if local_start < 0:
-                local_start = offset
+    matches = list(recommendation_re.finditer(tail))
+    if matches:
+        starts = []
+        current_polarity = None
+        for match in matches:
+            current = polarity(match)
+            if current != current_polarity:
+                position = sentence_start(tail, match.start())
+                if not starts or position > starts[-1]:
+                    starts.append(position)
+                current_polarity = current
+
+        for index, block_start in enumerate(starts):
+            block_end = starts[index + 1] if index + 1 < len(starts) else len(tail)
             append_block(
-                paragraph_text,
+                tail[block_start:block_end],
                 boundary_status="incomplete",
-                source_start=cursor + local_start,
-                source_end=cursor + local_start + len(paragraph_text),
+                source_start=cursor + block_start,
+                source_end=cursor + block_end,
             )
-        offset += len(paragraph) + 2
 
     return results
 

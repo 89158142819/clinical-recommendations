@@ -12,7 +12,7 @@ SOURCES = [
     "762_2",
 ]
 OUTPUT = Path("diagnostic_regression_results.json")
-LEVEL_MARKER_RE = __import__("re").compile(r"Уровень\\s+убедительности\\s+рекомендаци(?:и|й)", __import__("re").IGNORECASE)
+LEVEL_MARKER_RE = __import__("re").compile(r"Уровень\s+убедительности\s+рекомендаци(?:и|й)", __import__("re").IGNORECASE)
 
 results = []
 errors = []

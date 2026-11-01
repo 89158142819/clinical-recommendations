@@ -1228,7 +1228,8 @@ def extract_diagnostic_recommendations(section_text, section_kind):
                 boundary_status = "review_required"
 
         block_text = section_text[start:marker.end()].strip()
-        block_text = re.sub(r"^[ \t]*[•●▪]\s*", "", block_text)
+        block_text = re.sub(r"^[ \t]*[•●▪]\s*", "", block_text)
+        block_text = clean_diagnostic_block_text(block_text)
         level_line = marker.group(0).strip()
 
         if not block_text:
@@ -1257,7 +1258,8 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         )
         if candidate is not None:
             incomplete_text = tail[candidate:].strip()
-            incomplete_text = re.sub(r"^[ \t]*[•●▪]\s*", "", incomplete_text)
+            incomplete_text = re.sub(r"^[ \t]*[•●▪]\s*", "", incomplete_text)
+            incomplete_text = clean_diagnostic_block_text(incomplete_text)
             if incomplete_text:
                 results.append({
                     "number": len(results) + 1,

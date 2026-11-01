@@ -89,6 +89,15 @@ for document_id in SOURCES:
             errors.append(
                 "903_1: комментарий после уровня убедительности попал в блок рекомендации"
             )
+        combined_text = "\\n".join(
+            item["text"]
+            for group in ("laboratory", "instrumental")
+            for item in summary[group]
+        ).lower()
+        if "[страница" in combined_text:
+            errors.append("903_1: в блоки попали служебные метки страниц PDF")
+        if __import__("re").search(r"(?m)^\\s*\\d{1,3}\\s*$", combined_text):
+            errors.append("903_1: в блоки попали отдельные номера страниц PDF")
 
     if document_id == "535_3":
         if not all(counts[k] > 0 for k in ("laboratory", "instrumental")):

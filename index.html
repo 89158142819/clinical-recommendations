@@ -149,8 +149,10 @@
 
     function getDiagnosticRecommendationType(value) {
       const text = normalizeDiagnosticText(value);
-      const negativePattern = /\bне\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)\b/gi;
-      const positivePattern = /\bрекоменд(?:уется|овано|ована|ованы|уем|овать)\b/gi;
+      // \b в JavaScript не распознаёт кириллицу как часть слова,
+      // поэтому перед русским «не рекомендуется» он не срабатывает.
+      const negativePattern = /(^|[^а-яё])не\s+рекоменд(?:уется|овано|ована|ованы|уем|овать)(?=$|[^а-яё])/gi;
+      const positivePattern = /рекоменд(?:уется|овано|ована|ованы|уем|овать)/gi;
       const negativeMatches = [...text.matchAll(negativePattern)];
       // Убираем отрицательные обороты перед поиском положительных:
       // иначе слово «рекомендуется» внутри «не рекомендуется»

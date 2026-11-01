@@ -1157,7 +1157,7 @@ def build_quality_report(
 
 
 
-DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v5"
+DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v6"
 
 
 def clean_diagnostic_block_text(value):
@@ -1193,6 +1193,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         r"Уровень\s+у[\s\-–—]*б[\s\-–—]*е[\s\-–—]*д[\s\-–—]*и[\s\-–—]*т[\s\-–—]*е[\s\-–—]*л[\s\-–—]*ь[\s\-–—]*н[\s\-–—]*о[\s\-–—]*с[\s\-–—]*т[\s\-–—]*и\s+р[\s\-–—]*е[\s\-–—]*к[\s\-–—]*о[\s\-–—]*м[\s\-–—]*е[\s\-–—]*н[\s\-–—]*д[\s\-–—]*а[\s\-–—]*ц[\s\-–—]*и[\s\-–—]*[ий]"
         r"|УДД\s*\d+\s*[;,]?\s*УУР"
         r")\s*[:\-–—]?\s*[A-ZА-ЯЁ0-9]+(?:\s*\))?"
+        r"(?:\s*\(\s*уровень\s+достоверности\s+доказательств\s*[-–—]\s*\d+\s*\))?"
     )
     recommendation_re = re.compile(
         r"(?i)(?<![а-яё])(?:не\s+рекомендуется|не\s+рекомендовано|не\s+рекомендована|не\s+рекомендованы|рекомендуется|рекомендовано|рекомендована|рекомендованы)(?![а-яё])"
@@ -1238,12 +1239,33 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         return boundaries[-1].end() if boundaries else 0
 
     def recommendation_start(value, position):
-        # Если рекомендация начинается с маркера списка, начинаем блок
-        # именно с него, не захватывая комментарий после предыдущего уровня.
+        # OCR иногда превращает маркеры списка в «A)» / «A)).».
+        # Не считаем такой фрагмент началом рекомендации.
+        # Комментарии после предыдущего уровня также не должны
+        # переходить в следующий самостоятельный блок.
         bullets = list(bullet_marker_re.finditer(value, 0, position))
         if bullets:
             return bullets[-1].start()
-        return sentence_start(value, position)
+
+        sentence = sentence_start(value, position)
+        prefix = value[sentence:position].strip()
+
+        if not prefix:
+            return sentence
+
+        # Если между границей предложения и рекомендацией находится
+        # длинное описание диагностических методов, пояснение или OCR-
+        # артефакт, начинаем блок непосредственно со слова «Рекомендуется».
+        if len(prefix) > 180:
+            return position
+
+        if re.search(r"(?i)комментарии?\s*:", prefix):
+            return position
+
+        if re.match(r"(?i)^(?:[a-zа-яё]\s*[).]+|лабораторные\s+методы\s+диагностики\s*:)", prefix):
+            return position
+
+        return sentence
 
     def polarity(match):
         return "negative" if re.match(

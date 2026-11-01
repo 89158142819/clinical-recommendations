@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T06:37:47.224577+00:00",
+  "updated_at": "2026-11-01T06:39:36.955447+00:00",
   "total_processed": 778,
   "results": {
     "750_2": {
@@ -14863,14 +14863,32 @@
     "903_1": {
       "id": "903_1",
       "title": "Острый панкреатит",
-      "status": "failed",
-      "started_at": "2026-11-01T06:37:43.169399+00:00",
-      "finished_at": "2026-11-01T06:37:47.182744+00:00",
-      "error": "Неверный метод извлечения: 'universal_structural_headings_v11'. Ожидался 'universal_structural_headings_v12'",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-11-01T06:39:32.747146+00:00",
+      "finished_at": "2026-11-01T06:39:36.930413+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v11",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 54,
+      "pages_with_text": 54,
+      "empty_pages": [],
+      "text_length": 126237,
+      "pdf_file": "output/903_1.pdf",
+      "input_file": "output/903_1.json",
+      "sections_file": "output/903_1_sections_v2.json",
+      "report_file": "output/903_1_quality_report_v2.json"
     },
     "537_3": {
       "id": "537_3",

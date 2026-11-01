@@ -1251,10 +1251,10 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         # метода может быть длинным и содержать точки в кодах услуг.
         # Поэтому отдельно сохраняем предшествующее наименование КТ/МРТ,
         # даже если обычный поиск границы предложения остановился внутри кода.
-        if re.match(r"(?i)не\\s+рекоменд", value[position:]):
+        if re.match(r"(?i)не\s+рекоменд", value[position:]):
             lookback_start = max(0, position - 500)
             imaging_leads = list(re.finditer(
-                r"(?i)(?:рутинное\\s+)?применение\\s+(?=(?:компьютерной\\s+томографии|магнитно[-\\s]резонансной\\s+томографии))",
+                r"(?i)(?:рутинное\s+)?применение\s+(?=(?:компьютерной\s+томографии|магнитно[-\s]резонансной\s+томографии))",
                 value[lookback_start:position],
             ))
             if imaging_leads:

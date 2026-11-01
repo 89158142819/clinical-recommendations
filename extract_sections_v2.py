@@ -1164,17 +1164,17 @@ def clean_diagnostic_block_text(value):
     # Убираем служебные метки страниц и номера страниц,
     # которые pypdf вставляет при переходе между страницами PDF.
     value = re.sub(
-        r"(?m)^[ \\t]*\\d{1,3}[ \\t]*\\n(?=[ \\t]*\\[Страница\\s+\\d+\\])",
+        r"(?m)^[ \t]*\d{1,3}[ \t]*\n(?=[ \t]*\[Страница\s+\d+\])",
         "",
         value
     )
     value = re.sub(
-        r"\\[Страница\\s+\\d+\\][ \\t]*\\d*",
+        r"\[Страница\s+\d+\][ \t]*\d*",
         "",
         value,
         flags=re.IGNORECASE
     )
-    value = re.sub(r"\\n{3,}", "\\n\\n", value)
+    value = re.sub(r"\n{3,}", "\n\n", value)
     return value.strip()
 
 

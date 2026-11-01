@@ -1171,10 +1171,14 @@ def extract_diagnostic_recommendations(section_text, section_kind):
     if not isinstance(section_text, str) or not section_text.strip():
         return []
 
+    # Уровень убедительности встречается как отдельной строкой,
+    # так и внутри скобок после уровня достоверности доказательств.
+    # Захватываем сам маркер и его значение, не захватывая комментарий дальше.
     marker_re = re.compile(
-        r"(?im)^[ \t]*Уровень\s+убедительности\s+рекомендаци(?:и|й)\b[^\n]*"
+        r"(?i)Уровень\s+убедительности\s+рекомендаци(?:и|й)\b"
+        r"\s*[:\-–—]?\s*[A-ZА-ЯЁ0-9]+(?:\s*\))?"
     )
-    bullet_re = re.compile(r"(?m)^[ \t]*[•●▪]\s*")
+    bullet_re = re.compile(r"(?m)^[ \t]*[•●▪]\s*")
     recommendation_re = re.compile(
         r"(?im)^[ \t]*.{0,300}?\b(?:не\s+рекомендуется|рекомендуется|рекомендовано)\b"
     )

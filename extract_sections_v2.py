@@ -361,7 +361,12 @@ def find_heading_candidates(text, section):
                 candidate["matched_text"]
             )
 
-            if new_length > old_length:
+            old_is_semantic = unique[position].get("semantic", False)
+            new_is_semantic = candidate.get("semantic", False)
+
+            if old_is_semantic and not new_is_semantic:
+                unique[position] = candidate
+            elif old_is_semantic == new_is_semantic and new_length > old_length:
                 unique[position] = candidate
 
     return sorted(

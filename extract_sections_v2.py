@@ -13,7 +13,7 @@ from diagnostic_enrichment import enrich_diagnostic_summary
 
 DEFAULT_INPUT = Path("output/749_2.json")
 
-EXTRACTION_METHOD = "universal_structural_headings_v12"
+EXTRACTION_METHOD = "universal_structural_headings_v13"
 
 OPTIONAL_SECTION_KEYS = {
     "other_diagnostics",
@@ -290,6 +290,55 @@ def find_heading_candidates(text, section):
                     "start": match.start(),
                     "matched_text": match.group(0),
                 })
+
+    # --------------------------------------------------------
+    # Семантический поиск заголовков без обязательной нумерации.
+    # PDF извлекается в обычный текст, поэтому вместо HTML-тегов и
+    # жирного шрифта используем отдельную короткую строку-заголовок.
+    # --------------------------------------------------------
+
+    semantic_candidates = []
+    current_position = 0
+
+    for line in text.splitlines(keepends=True):
+        line_value = line.strip()
+        line_start = current_position
+        current_position += len(line)
+
+        if not line_value or len(line_value) > 220:
+            continue
+
+        # Заголовок не должен выглядеть как законченная фраза/предложение.
+        if re.search(r"[.!?;]\\s*$", line_value):
+            continue
+
+        # Не принимаем строки, похожие на обычный текст рекомендации.
+        if re.search(
+            r"(?i)\\b(?:рекомендуется|рекомендовано|следует|необходимо|"
+            r"проводить|выполнять|назначается|характеризуется)\\b",
+            line_value
+        ):
+            continue
+
+        for alias in section["aliases"]:
+            phrase_pattern = build_phrase_pattern(alias)
+            semantic_pattern = (
+                r"(?i)^\\s*(?:(?:\\d+(?:\\.\\d+){0,3})\\s*[.)]?\\s*)?"
+                + phrase_pattern
+                + r"(?:\\s*[:—–-].*)?\\s*$"
+            )
+
+            if re.match(semantic_pattern, line_value):
+                semantic_candidates.append({
+                    "key": section["key"],
+                    "number": None,
+                    "alias": alias,
+                    "start": line_start,
+                    "matched_text": line_value,
+                    "semantic": True,
+                })
+
+    candidates.extend(semantic_candidates)
 
     # Удаляем дублирующиеся совпадения по одной позиции.
     unique = {}

@@ -17,9 +17,16 @@ NEGATIVE_RE = re.compile(
     r"воздержаться|отказаться)(?![а-яё])"
 )
 ACTION_RE = re.compile(
-    r"(?i)\b(?:выполнение|проведение|определение|исследование|"
+    r"(?i)\b(?:выполнение|проведение|определение|"
     r"выполнять|выполнить|проводить|провести|определять|определить|назначение|контроль|"
     r"оценка|измерение|взятие|сдача)\b"
+)
+STUDY_START_RE = re.compile(
+    r"(?i)\\b(?:исследован\\w*|анализ\\w*|ультразвуков\\w*|"
+    r"рентген\\w*|компьютерн\\w*|магнитно-резонансн\\w*|"
+    r"эхокардиограф\\w*|электрокардиограф\\w*|спирометр\\w*|"
+    r"пульсоксиметр\\w*|аудиометр\\w*|эндоскоп\\w*|"
+    r"определени\\w*\\s+(?:уровня|содержания|концентрации|активности))"
 )
 CONDITION_RE = re.compile(
     r"(?i)\b(?:всем\s+пациентам|всем\s+детям|пациентам|"
@@ -149,8 +156,13 @@ def _extract_title_and_conditions(value):
         if action:
             title_source = title_source[action.end():].strip(" ,;:")
     else:
-        conditions_after_verb = ""
-        title_source = tail
+        study_start = STUDY_START_RE.search(tail)
+        if study_start:
+            conditions_after_verb = tail[:study_start.start()].strip(" ,;:")
+            title_source = tail[study_start.start():]
+        else:
+            conditions_after_verb = ""
+            title_source = tail
 
     # Название заканчивается перед условием назначения.
     condition_match = CONDITION_RE.search(title_source)

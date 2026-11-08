@@ -1,0 +1,94 @@
+name: Тест новой структурированной диагностики на четырёх рекомендациях
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/test-diagnostic-enrichment-documents.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test-diagnostic-documents:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: pip install -r requirements.txt
+
+      - name: Проверить синтаксис
+        run: python -m py_compile extract_sections_v2.py diagnostic_enrichment.py download_batch.py publish_site.py
+
+      - name: Повторно обработать четыре тестовые рекомендации
+        run: python download_batch.py --ids 683_2 1086_1 903_1 520_2 --force
+
+      - name: Проверить новые диагностические поля
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          ids = ["683_2", "1086_1", "903_1", "520_2"]
+          failed = []
+
+          for document_id in ids:
+              path = Path("output") / f"{document_id}_sections_v2.json"
+              if not path.exists():
+                  failed.append(f"{document_id}: нет результата парсера")
+                  continue
+
+              data = json.loads(path.read_text(encoding="utf-8"))
+              summary = data.get("diagnostic_summary", {})
+              print("\n" + "=" * 70)
+              print(document_id, data.get("title"))
+              print("Метод:", summary.get("method"))
+              print("Статус структуры:", data.get("quality_check"))
+
+              for category in ("laboratory", "instrumental", "other"):
+                  items = summary.get(category, [])
+                  print(f"{category}: {len(items)} карточек")
+                  for item in items:
+                      if item.get("extraction_method") != "diagnostic_enrichment_v1":
+                          failed.append(f"{document_id}/{category}: нет enrichment v1")
+                      if not item.get("source_text"):
+                          failed.append(f"{document_id}/{category}: не сохранён исходный текст")
+                      if not item.get("verdict"):
+                          failed.append(f"{document_id}/{category}: не определён вердикт")
+                      if not item.get("level"):
+                          failed.append(f"{document_id}/{category}: не сохранён УУР/УДД")
+                      print(
+                          "-", item.get("verdict"),
+                          "|", item.get("study_title") or "название требует проверки",
+                          "| Условия:", (item.get("conditions") or "")[:180],
+                          "| Цель:", (item.get("purpose") or "")[:120],
+                      )
+
+          if failed:
+              print("\nОШИБКИ:")
+              for error in failed:
+                  print("-", error)
+              raise SystemExit(1)
+
+          print("\nВсе четыре документа обработаны; новые поля и исходные формулировки присутствуют.")
+          PY
+
+      - name: Сохранить тестовые результаты
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-enrichment-four-documents
+          path: |
+            output/*_sections_v2.json
+            output/*_quality_report_v2.json
+            processing_registry.json
+          if-no-files-found: warn
+          retention-days: 30

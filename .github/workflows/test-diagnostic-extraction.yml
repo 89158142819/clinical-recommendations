@@ -32,6 +32,7 @@ jobs:
       - name: Проверить синтаксис парсера
         run: python -m py_compile extract_sections_v2.py diagnostic_enrichment.py publish_site.py
 
+      # Проверка v7: разделяем карточки только при смене вердикта
       - name: Проверить новые поля диагностических карточек
         run: python test_diagnostic_enrichment.py
 

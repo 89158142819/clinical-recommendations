@@ -1420,6 +1420,7 @@ def build_diagnostic_summary(extracted):
         )
     }
 
+    # Новые поля дополняют карточку, не заменяя исходный текст и уровень УУР/УДД.
     return enrich_diagnostic_summary(summary)
 
 

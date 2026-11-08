@@ -309,13 +309,13 @@ def find_heading_candidates(text, section):
             continue
 
         # Заголовок не должен выглядеть как законченная фраза/предложение.
-        if re.search(r"[.!?;]\\s*$", line_value):
+        if re.search(r"[.!?;]\s*$", line_value):
             continue
 
         # Не принимаем строки, похожие на обычный текст рекомендации.
         if re.search(
-            r"(?i)\\b(?:рекомендуется|рекомендовано|следует|необходимо|"
-            r"проводить|выполнять|назначается|характеризуется)\\b",
+            r"(?i)\b(?:рекомендуется|рекомендовано|следует|необходимо|"
+            r"проводить|выполнять|назначается|характеризуется)\b",
             line_value
         ):
             continue
@@ -323,9 +323,9 @@ def find_heading_candidates(text, section):
         for alias in section["aliases"]:
             phrase_pattern = build_phrase_pattern(alias)
             semantic_pattern = (
-                r"(?i)^\\s*(?:(?:\\d+(?:\\.\\d+){0,3})\\s*[.)]?\\s*)?"
+                r"(?i)^\s*(?:(?:\d+(?:\.\d+){0,3})\s*[.)]?\s*)?"
                 + phrase_pattern
-                + r"(?:\\s*[:—–-].*)?\\s*$"
+                + r"(?:\s*[:—–-].*)?\s*$"
             )
 
             if re.match(semantic_pattern, line_value):

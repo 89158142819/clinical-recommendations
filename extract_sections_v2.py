@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 
+from diagnostic_enrichment import enrich_diagnostic_summary
+
 
 # ============================================================
 # Настройки проекта
@@ -1157,7 +1159,7 @@ def build_quality_report(
 
 
 
-DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v6"
+DIAGNOSTIC_EXTRACTION_METHOD = "recommendation_blocks_v7"
 
 
 def clean_diagnostic_block_text(value):
@@ -1400,19 +1402,9 @@ def build_diagnostic_summary(extracted):
         "other_diagnostics"
     )
 
-    all_items = laboratory + instrumental + other
-    has_review = any(
-        item.get("boundary_status") in ("review_required", "incomplete")
-        for item in all_items
-    )
-
-    return {
+    summary = {
         "method": DIAGNOSTIC_EXTRACTION_METHOD,
-        "status": (
-            "review_required" if has_review
-            else "extracted" if all_items
-            else "not_extracted"
-        ),
+        "status": "extracted" if laboratory or instrumental or other else "not_extracted",
         "laboratory": laboratory,
         "instrumental": instrumental,
         "other": other,
@@ -1427,6 +1419,8 @@ def build_diagnostic_summary(extracted):
             "не включаются в блок; незавершённые границы требуют проверки."
         )
     }
+
+    return enrich_diagnostic_summary(summary)
 
 
 # ============================================================

@@ -78,6 +78,13 @@ def _split_clauses(value):
     if tail:
         result.append(tail)
 
+    # Разделяем исходный блок только при наличии обеих полярностей.
+    # Иначе точки с запятой внутри перечней и условий не должны создавать
+    # дополнительные карточки.
+    verdicts = {_verdict(part) for part in result}
+    if "recommended" not in verdicts or "not_recommended" not in verdicts:
+        return [text]
+
     # Не дробим один блок на несколько карточек, если полярность
     # соседних рекомендаций совпадает. Разделяем только разные вердикты.
     merged = []

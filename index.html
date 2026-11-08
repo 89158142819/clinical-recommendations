@@ -287,7 +287,7 @@
             : "Полный блок рекомендации";
         card.append(make("span", "diagnostic-status " + (boundary === "incomplete" || boundary === "review_required" ? "consider" : ""), statusText));
         const heading = make("h4");
-        const recommendationType = getDiagnosticRecommendationType(item.text || item.source_excerpt || "");
+        const recommendationType = item.verdict || getDiagnosticRecommendationType(item.text || item.source_excerpt || "");
         const recommendationLabel = recommendationType === "not_recommended"
           ? "Не рекомендовано"
           : recommendationType === "mixed"
@@ -302,13 +302,25 @@
             : "diagnostic-recommended-label";
         heading.append(make("span", recommendationClass, recommendationLabel));
         card.append(heading);
-        if (item.text) {
+        if (item.study_title) {
+          card.append(make("div", "section-text", "Исследование: " + item.study_title));
+        } else if (item.text) {
           card.append(make("div", "section-text", prepareDiagnosticDisplayText(item.text)));
         } else {
           card.append(make("p", "muted", "Карточка создана прежней версией парсера. Для полного текста рекомендации откройте исходный текст раздела ниже."));
-          if (item.source_excerpt) {
-            card.append(make("div", "section-text", item.source_excerpt));
-          }
+        }
+        if (item.conditions) {
+          card.append(make("div", "section-text", "Условия: " + item.conditions));
+        }
+        if (item.purpose) {
+          card.append(make("div", "section-text", "Цель: " + item.purpose));
+        }
+        const originalText = item.source_text || item.text || item.source_excerpt;
+        if (originalText) {
+          const originalDetails = make("details", "source-details");
+          originalDetails.append(make("summary", "", "Исходная формулировка рекомендации"));
+          originalDetails.append(make("div", "section-text", originalText));
+          card.append(originalDetails);
         }
         list.append(card);
       });

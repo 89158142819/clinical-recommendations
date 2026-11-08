@@ -54,9 +54,26 @@ def run():
     assert "выявления воспалительного процесса" in record["purpose"]
     assert summary["method"] == "recommendation_blocks_v7"
 
+    no_action_verb = item(
+        "Рекомендовано пациентам с признаками НО исследование состояния "
+        "минерального обмена: исследование уровня кальция в крови."
+    )
+    summary = enrich_diagnostic_summary({
+        "method": "recommendation_blocks_v6",
+        "status": "extracted",
+        "laboratory": [no_action_verb],
+        "instrumental": [],
+        "other": [],
+        "counts": {"laboratory": 1, "instrumental": 0, "other": 0},
+    })
+    record = summary["laboratory"][0]
+    assert "исследование состояния минерального обмена" in record["study_title"].lower()
+    assert "пациентам с признаками но" in record["conditions"].lower()
+
     print("OK: раздельная полярность положительной и отрицательной рекомендаций")
     print("OK: исходный текст и уровень УУР/УДД сохранены")
     print("OK: выделены название исследования, условия и цель")
+    print("OK: название найдено и без отдельного глагола «провести/выполнить»")
     print("OK: метод diagnostic_summary обновлён до v7")
 
 

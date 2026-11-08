@@ -218,7 +218,8 @@ def enrich_diagnostic_summary(summary):
                     "conditions": conditions,
                     "purpose": purpose,
                     "source_text": source_text,
-                    "text": clause,
+                    "recommendation_text": clause,
+                    "text": source_text,
                     "extraction_method": METHOD,
                 })
 

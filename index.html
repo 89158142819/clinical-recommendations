@@ -302,25 +302,32 @@
             : "diagnostic-recommended-label";
         heading.append(make("span", recommendationClass, recommendationLabel));
         card.append(heading);
-        if (item.study_title) {
-          card.append(make("div", "section-text", "Исследование: " + item.study_title));
+        if (item.extraction_method === "diagnostic_enrichment_v1") {
+          if (item.study_title) {
+            card.append(make("div", "section-text", "Исследование: " + item.study_title));
+          } else {
+            card.append(make("div", "section-text", "Название исследования требует уточнения."));
+          }
+          if (item.conditions) {
+            card.append(make("div", "section-text", "Условия: " + item.conditions));
+          }
+          if (item.purpose) {
+            card.append(make("div", "section-text", "Цель: " + item.purpose));
+          }
+          const originalText = item.source_text || item.text || "";
+          if (originalText) {
+            const originalDetails = make("details", "source-details");
+            originalDetails.append(make("summary", "", "Исходная формулировка рекомендации"));
+            originalDetails.append(make("div", "section-text", originalText));
+            card.append(originalDetails);
+          }
         } else if (item.text) {
           card.append(make("div", "section-text", prepareDiagnosticDisplayText(item.text)));
         } else {
           card.append(make("p", "muted", "Карточка создана прежней версией парсера. Для полного текста рекомендации откройте исходный текст раздела ниже."));
-        }
-        if (item.conditions) {
-          card.append(make("div", "section-text", "Условия: " + item.conditions));
-        }
-        if (item.purpose) {
-          card.append(make("div", "section-text", "Цель: " + item.purpose));
-        }
-        const originalText = item.source_text || item.text || item.source_excerpt;
-        if (originalText) {
-          const originalDetails = make("details", "source-details");
-          originalDetails.append(make("summary", "", "Исходная формулировка рекомендации"));
-          originalDetails.append(make("div", "section-text", originalText));
-          card.append(originalDetails);
+          if (item.source_excerpt) {
+            card.append(make("div", "section-text", item.source_excerpt));
+          }
         }
         list.append(card);
       });

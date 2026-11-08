@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "extract_sections_v2.py"
+      - "diagnostic_enrichment.py"
+      - "test_diagnostic_enrichment.py"
       - "download_batch.py"
       - "test_diagnostic_extraction.py"
       - ".github/workflows/test-diagnostic-extraction.yml"
@@ -26,6 +28,12 @@ jobs:
 
       - name: Установить зависимости
         run: pip install -r requirements.txt
+
+      - name: Проверить синтаксис парсера
+        run: python -m py_compile extract_sections_v2.py diagnostic_enrichment.py publish_site.py
+
+      - name: Проверить новые поля диагностических карточек
+        run: python test_diagnostic_enrichment.py
 
       - name: Проверить структурирование на целиакии
         run: python test_diagnostic_extraction.py

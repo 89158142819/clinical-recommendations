@@ -78,7 +78,16 @@ def _split_clauses(value):
     if tail:
         result.append(tail)
 
-    return result or [text]
+    # Не дробим один блок на несколько карточек, если полярность
+    # соседних рекомендаций совпадает. Разделяем только разные вердикты.
+    merged = []
+    for part in result:
+        if merged and _verdict(merged[-1]) == _verdict(part):
+            merged[-1] = _clean(merged[-1] + "; " + part)
+        else:
+            merged.append(part)
+
+    return merged or [text]
 
 
 def _verdict(value):

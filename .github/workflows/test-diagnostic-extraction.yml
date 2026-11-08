@@ -8,6 +8,7 @@ on:
       - "test_diagnostic_enrichment.py"
       - "download_batch.py"
       - "test_diagnostic_extraction.py"
+      - "test_semantic_heading_detection.py"
       - ".github/workflows/test-diagnostic-extraction.yml"
   workflow_dispatch:
 
@@ -35,6 +36,9 @@ jobs:
       # Проверка v7: разделяем карточки только при смене вердикта и наличии обеих полярностей
       - name: Проверить новые поля диагностических карточек
         run: python test_diagnostic_enrichment.py
+
+      - name: Проверить заголовки без нумерации
+        run: python test_semantic_heading_detection.py
 
       - name: Проверить структурирование на целиакии
         run: python test_diagnostic_extraction.py

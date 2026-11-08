@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - ".github/workflows/test-diagnostic-enrichment-documents.yml"
+      - "extract_sections_v2.py"
+      - "diagnostic_enrichment.py"
 
 permissions:
   contents: read

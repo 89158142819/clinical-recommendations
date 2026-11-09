@@ -31,7 +31,7 @@ jobs:
         run: python -m py_compile extract_sections_v2.py diagnostic_enrichment.py download_batch.py publish_site.py
 
       - name: Повторно обработать четыре тестовые рекомендации
-        run: python download_batch.py --ids 683_2 1086_1 903_1 520_2 --force
+        run: python download_batch.py --ids 683_2 1086_1 903_1 520_2 --force --fail-on-document-errors
 
       - name: Проверить новые диагностические поля
         run: |

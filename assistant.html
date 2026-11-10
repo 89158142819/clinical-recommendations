@@ -66,13 +66,18 @@
   const tokens=s=>norm(s).split(/\s+/).filter(t=>t.length>2&&!stopWords.has(t));
   function make(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
   function link(url,label){const a=make("a","",label);a.href=url;a.target="_blank";a.rel="noopener noreferrer";return a}
+  function stem(token){
+    const endings=["иями","ями","ами","ого","ему","ыми","ими","иях","ах","ях","ов","ев","ей","ам","ям","ом","ем","ой","ый","ий","ая","яя","ое","ее","ую","юю","а","я","ы","и","е","у","ю"];
+    for(const ending of endings){if(token.length-ending.length>=4&&token.endsWith(ending))return token.slice(0,-ending.length);}
+    return token;
+  }
   function score(item,terms,query){
-    const title=norm(item.title),icd=norm(item.icd10),hay=title+" "+icd;
+    const titleTokens=tokens(item.title).map(stem),icd=norm(item.icd10);
     let points=0;
-    terms.forEach(t=>{if(title.includes(t))points+=3;else if(icd.includes(t))points+=1;});
+    terms.forEach(t=>{const root=stem(t);if(titleTokens.some(word=>word===root||word.startsWith(root)||root.startsWith(word)))points+=3;else if(icd.includes(t))points+=1;});
     const expanded=(synonyms[query]||[]);
-    expanded.forEach(t=>{if(title.includes(norm(t)))points+=3;});
-    if(query&&title===query)points+=8;
+    expanded.forEach(t=>{if(norm(item.title).includes(norm(t)))points+=3;});
+    if(query&&norm(item.title)===query)points+=8;
     return points;
   }
   async function loadCatalog(){
@@ -120,7 +125,7 @@
       for(const item of scored){
         const loading=make("article","candidate","Загружаем "+item.title+"…");answer.append(loading);
         try{
-          const response=await fetch(item.document_file,{cache:"no-store"});
+          const response=await fetch("site-data/"+item.document_file,{cache:"no-store"});
           if(!response.ok)throw new Error("HTTP "+response.status);
           const doc=await response.json();
           const rendered=renderDoc(item,doc);loading.replaceWith(rendered);

@@ -342,7 +342,7 @@ def extract_text(pdf_content):
             "text": page_text,
         })
 
-    full_text, removed_repeated_headers = clean_extracted_pages(pages)
+    full_text, _ = clean_extracted_pages(pages)
 
 
     if not full_text.strip():

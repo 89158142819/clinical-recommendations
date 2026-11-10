@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Интеллектуальный поиск по клиническим рекомендациям Минздрава России.">
+  <title>Интеллектуальный поиск — Клинические рекомендации</title>
+  <style>
+    :root{--blue:#1769aa;--dark:#17324d;--bg:#f4f7fb;--border:#dce5ef;--muted:#63758a;--green:#18794e}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--dark);font:16px/1.55 Arial,sans-serif}
+    header{background:#fff;border-bottom:1px solid var(--border);padding:18px max(20px,calc((100% - 1050px)/2))}
+    .brand{font-size:12px;color:var(--blue);font-weight:700;letter-spacing:.06em}
+    h1{font-size:clamp(26px,4vw,36px);margin:8px 0}.subtitle{color:var(--muted);max-width:760px}
+    main{max-width:1050px;margin:26px auto;padding:0 16px}.panel,.answer{background:#fff;border:1px solid var(--border);border-radius:15px;padding:20px;margin-bottom:16px}
+    .search-row{display:flex;gap:10px;margin-top:14px}input,select,button{font:inherit;border-radius:9px;padding:12px 14px}
+    input,select{border:1px solid #bdcddd;background:#fff;min-width:0}input{flex:1;width:100%}button{background:var(--blue);color:white;border:0;cursor:pointer;font-weight:700}
+    button:disabled{opacity:.55;cursor:wait}.secondary{background:#eaf1f8;color:var(--dark)}.muted{color:var(--muted);font-size:13px}
+    .notice{background:#eef5fc;border-left:4px solid var(--blue);padding:12px 14px;border-radius:7px;margin-top:14px;color:#34516d;font-size:14px}
+    .status{padding:12px 0;color:var(--muted)}.candidate{border:1px solid var(--border);border-radius:11px;padding:14px;margin:12px 0}
+    .candidate h3{margin:0 0 5px;font-size:17px}.meta{font-size:13px;color:var(--muted);margin-bottom:10px}
+    .section{border-top:1px solid var(--border);padding:14px 0}.section h3{font-size:17px;margin:0 0 8px}
+    .source{font-size:13px;margin-top:12px}.source a{color:var(--blue)}.section-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+    .empty{text-align:center;padding:28px 12px;color:var(--muted)}.toplink{display:inline-block;margin-top:10px;color:var(--blue);text-decoration:none;font-weight:700}
+    footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+    @media(max-width:650px){.search-row{flex-direction:column}.search-row button{width:100%}.panel,.answer{padding:15px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">МЕДИЦИНСКАЯ СПРАВОЧНАЯ СИСТЕМА</div>
+  <h1>Интеллектуальный поиск</h1>
+  <div class="subtitle">Поиск диагностических рекомендаций по заболеванию на основании опубликованных клинических рекомендаций Минздрава России.</div>
+  <a class="toplink" href="index.html">← Вернуться к каталогу</a>
+</header>
+<main>
+  <section class="panel">
+    <h2>Какое заболевание вас интересует?</h2>
+    <div class="muted">Введите заболевание или вопрос, например: «диагностика хронического гастрита».</div>
+    <div class="search-row">
+      <input id="question" type="search" placeholder="Например, диагностика гастрита" autocomplete="off">
+      <select id="age" aria-label="Возрастная категория">
+        <option value="">Любой возраст</option><option value="Взрослые">Взрослые</option><option value="Дети">Дети</option>
+      </select>
+      <button id="searchButton">Найти</button>
+    </div>
+    <div class="notice">Сервис извлекает сведения непосредственно из структурированных документов. Если рекомендация не содержит отдельного подраздела или нужных сведений, это будет обозначено. Информация носит справочный характер и требует сверки с первоисточником.</div>
+  </section>
+  <section class="answer" id="answer" aria-live="polite"><div class="empty">Введите заболевание, чтобы найти соответствующие клинические рекомендации.</div></section>
+</main>
+<footer>Официальный источник документов: <a href="https://cr.minzdrav.gov.ru/clin-rec" target="_blank" rel="noopener noreferrer">Рубрикатор клинических рекомендаций Минздрава России</a>.</footer>
+<script>
+(() => {
+  const question=document.getElementById("question"),age=document.getElementById("age"),button=document.getElementById("searchButton"),answer=document.getElementById("answer");
+  let catalog=null;
+  const diagnosticSections=[
+    ["diagnostics","Диагностика: общие положения"],
+    ["complaints_anamnesis","Жалобы и анамнез"],
+    ["physical_examination","Физикальное обследование"],
+    ["laboratory_diagnostics","Лабораторная диагностика"],
+    ["instrumental_diagnostics","Инструментальная диагностика"],
+    ["other_diagnostics","Иные диагностические исследования"]
+  ];
+  const stopWords=new Set(["диагностика","диагностику","диагностике","диагностировать","заболевание","заболевания","болезнь","болезни","какая","какие","каковы","нужны","нужно","исследования","исследований","методы","метод","при","для","по","мне","покажи","найти","клиническая","рекомендация","рекомендации"]);
+  const synonyms={"гастрит":["гастрит","гастрита","гастрите"],"хронический":["хронический","хронического","хроническом"],"острый":["острый","острого","остром"],"тонзиллит":["тонзиллит","тонзиллита","тонзиллите"],"грипп":["грипп","гриппа","гриппе"]};
+  const norm=s=>String(s||"").toLocaleLowerCase("ru").replace(/ё/g,"е").replace(/[^а-яa-z0-9]+/g," ").trim();
+  const tokens=s=>norm(s).split(/\s+/).filter(t=>t.length>2&&!stopWords.has(t));
+  function make(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+  function link(url,label){const a=make("a","",label);a.href=url;a.target="_blank";a.rel="noopener noreferrer";return a}
+  function score(item,terms,query){
+    const title=norm(item.title),icd=norm(item.icd10),hay=title+" "+icd;
+    let points=0;
+    terms.forEach(t=>{if(title.includes(t))points+=3;else if(icd.includes(t))points+=1;});
+    const expanded=(synonyms[query]||[]);
+    expanded.forEach(t=>{if(title.includes(norm(t)))points+=3;});
+    if(query&&title===query)points+=8;
+    return points;
+  }
+  async function loadCatalog(){
+    if(catalog)return catalog;
+    const response=await fetch("site-data/recommendations.json",{cache:"no-store"});
+    if(!response.ok)throw new Error("Не удалось загрузить каталог: HTTP "+response.status);
+    catalog=await response.json();return catalog;
+  }
+  function renderDoc(item,data){
+    const card=make("article","candidate");
+    card.append(make("h3","",item.title));
+    card.append(make("div","meta","ID: "+item.id+" · МКБ-10: "+(item.icd10||"не указан")+" · "+(item.age_category||"Возраст не указан")+" · Статус: "+(item.application_status||"не указан")));
+    const sections=data.sections||{};
+    let found=0;
+    diagnosticSections.forEach(([key,label])=>{
+      const value=String(sections[key]||"").trim();
+      if(!value)return;
+      found++;
+      const section=make("section","section");
+      section.append(make("h3","",label));
+      section.append(make("div","section-text",value));
+      card.append(section);
+    });
+    if(!found)card.append(make("p","muted","В обработанном документе диагностические разделы не найдены."));
+    const source=make("div","source");
+    source.append(link("https://cr.minzdrav.gov.ru/view-cr/"+encodeURIComponent(item.id),"Открыть официальную клиническую рекомендацию"));
+    card.append(source);
+    return card;
+  }
+  async function run(){
+    const raw=question.value.trim();
+    if(!raw){answer.replaceChildren(make("div","empty","Введите название заболевания или вопрос."));return;}
+    button.disabled=true;button.textContent="Ищем…";answer.replaceChildren(make("div","status","Ищем подходящие клинические рекомендации…"));
+    try{
+      const data=await loadCatalog();
+      const clean=norm(raw).replace(/\b(диагностика|диагностику|диагностике|исследования|исследований|методы|метод|какие|какая|каковы|нужны|нужно|при|для)\b/g," ").trim();
+      const terms=tokens(clean);
+      const scored=data.recommendations.map(item=>({...item,_score:score(item,terms,clean)}))
+        .filter(item=>item._score>0&&(!age.value||(item.age_category||"").includes(age.value)))
+        .sort((a,b)=>b._score-a._score).slice(0,5);
+      answer.replaceChildren();
+      if(!scored.length){answer.append(make("div","empty","По названию заболевания совпадений не найдено. Попробуйте указать более точное название или код МКБ-10."));return;}
+      answer.append(make("h2","","Найденные клинические рекомендации"));
+      answer.append(make("p","muted","Найдено документов: "+scored.length+". Ниже приведён исходный текст диагностических разделов без пересказа."));
+      for(const item of scored){
+        const loading=make("article","candidate","Загружаем "+item.title+"…");answer.append(loading);
+        try{
+          const response=await fetch(item.document_file,{cache:"no-store"});
+          if(!response.ok)throw new Error("HTTP "+response.status);
+          const doc=await response.json();
+          const rendered=renderDoc(item,doc);loading.replaceWith(rendered);
+        }catch(error){loading.replaceChildren(make("h3","",item.title),make("p","muted","Не удалось загрузить документ: "+error.message));}
+      }
+    }catch(error){answer.replaceChildren(make("div","empty","Ошибка поиска: "+error.message));}
+    finally{button.disabled=false;button.textContent="Найти";}
+  }
+  button.addEventListener("click",run);
+  question.addEventListener("keydown",e=>{if(e.key==="Enter")run();});
+  question.focus();
+})();
+</script>
+</body>
+</html>

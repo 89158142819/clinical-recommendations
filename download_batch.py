@@ -418,7 +418,6 @@ def create_json(
             "text_length": len(full_text),
             "method": "pypdf+text_cleaner",
             "text_cleaning": "page_labels_headers_whitespace_and_hyphenation",
-            "removed_repeated_margin_lines": removed_repeated_headers,
         },
     }
 

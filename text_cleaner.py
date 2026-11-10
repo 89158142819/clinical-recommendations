@@ -1,5 +1,4 @@
 import re
-import unicodedata
 from collections import Counter
 
 
@@ -9,8 +8,6 @@ PAGE_LABEL_RE = re.compile(
 )
 
 PAGE_NUMBER_RE = re.compile(r"^\s*(?:\d{1,4}|[-–—]\s*\d{1,4}\s*[-–—])\s*$")
-
-BULLET_RE = re.compile(r"^\s*(?:[•●▪◦‣⁃]|[-–—]\s+|\d+[.)]\s+|[а-яёА-ЯЁ][.)]\s+)")
 
 
 def _normalize_line(line):
@@ -52,7 +49,7 @@ def _collect_repeated_margins(pages):
         if len(_line_key(line)) >= 5
     )
 
-    threshold = max(3, int(page_count * 0.30 + 0.999))
+    threshold = max(2, int(page_count * 0.50 + 0.999))
     return {
         key for key, count in counts.items()
         if count >= threshold

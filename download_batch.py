@@ -13,6 +13,8 @@ from pathlib import Path
 import requests
 from pypdf import PdfReader
 
+from text_cleaner import clean_extracted_pages
+
 
 # ============================================================
 # НАСТРОЙКИ
@@ -340,10 +342,8 @@ def extract_text(pdf_content):
             "text": page_text,
         })
 
-    full_text = "\n\n".join(
-        f"[Страница {p['page']}]\n{p['text']}"
-        for p in pages
-    )
+    full_text, removed_repeated_headers = clean_extracted_pages(pages)
+
 
     if not full_text.strip():
 
@@ -416,7 +416,9 @@ def create_json(
             "pages_with_text": pages_with_text,
             "empty_pages": empty_pages,
             "text_length": len(full_text),
-            "method": "pypdf",
+            "method": "pypdf+text_cleaner",
+            "text_cleaning": "page_labels_headers_whitespace_and_hyphenation",
+            "removed_repeated_margin_lines": removed_repeated_headers,
         },
     }
 

@@ -40,8 +40,9 @@ def _collect_repeated_margins(pages):
         if not lines:
             continue
 
-        candidates.extend(lines[:2])
-        candidates.extend(lines[-2:])
+        # Каждая строка учитывается не более одного раза на страницу.
+        page_candidates = set(lines[:2] + lines[-2:])
+        candidates.extend(page_candidates)
 
     counts = Counter(
         _line_key(line)

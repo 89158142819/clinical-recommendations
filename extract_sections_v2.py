@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 
+from text_cleaner import clean_full_text
+
 
 # ============================================================
 # Настройки проекта
@@ -1482,7 +1484,7 @@ def main():
             "В исходном JSON отсутствует поле full_text."
         )
 
-    full_text = source_data["full_text"]
+    full_text = clean_full_text(source_data["full_text"])
 
     if (
         not isinstance(full_text, str)

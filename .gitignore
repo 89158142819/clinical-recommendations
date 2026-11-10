@@ -1,0 +1,5 @@
+# Локальные и автоматически собираемые файлы
+__pycache__/
+*.py[cod]
+.env
+api/search_index.json

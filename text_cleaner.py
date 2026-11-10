@@ -126,25 +126,18 @@ def clean_extracted_pages(pages):
 
 
 def clean_full_text(text):
-    # Поддержка ранее сохранённых исходных JSON, в которых были
-    # искусственные метки [Страница N].
-    text = str(text or "")
-    text = text.replace("\r\n", "\n").replace("\r", "\n")
-    text = re.sub(r"(?im)^\s*\[?\s*(?:страница|стр\.?|page)\s*\d+\s*\]?\s*$", "", text)
-    text = re.sub(r"(?m)^\s*\d{1,4}\s*$", "", text)
-    text = text.replace("\u00a0", " ").replace("\u202f", " ")
-    text = text.replace("\u00ad", "").replace("\u200b", "").replace("\ufeff", "")
-    text = re.sub(r"(?<=[А-Яа-яЁё])-\s*\n\s*(?=[а-яё])", "", text)
+    # Поддержка ранее сохранённых исходных JSON с метками страниц.
+    text = str(text or "").replace("\r\n", "\n").replace("\r", "\n")
+    page_pattern = re.compile(
+        r"(?im)^\s*\[?\s*(?:страница|стр\.?|page)\s*\d+\s*\]?\s*$"
+    )
 
-    lines = []
-    for line in text.split("\n"):
-        line = _normalize_line(line)
-        if line:
-            line = re.sub(r"\s+([,.;:!?%)\]])", r"\1", line)
-            line = re.sub(r"([(])\s+", r"\1", line)
-        lines.append(line)
+    if page_pattern.search(text):
+        raw_pages = page_pattern.split(text)
+        pages = [{"text": part} for part in raw_pages if part.strip()]
+        cleaned, _ = clean_extracted_pages(pages)
+        return cleaned
 
-    text = "\n".join(lines)
-    text = re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", text)
-    text = re.sub(r"[ \t]+\n", "\n", text)
-    return text.strip()
+    # Без меток страниц удаляем только номера на внешних краях текста,
+    # чтобы не затронуть нумерованные медицинские перечни внутри.
+    return clean_page_text(text)

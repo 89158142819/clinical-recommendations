@@ -1,0 +1,47 @@
+name: Проверка интеллектуального поиска
+
+on:
+  push:
+    paths:
+      - "api/**"
+      - "site-data/recommendations.json"
+      - "site-data/docs/**"
+      - "render.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить файлы проекта
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости API
+        run: pip install -r api/requirements.txt
+
+      - name: Проверить синтаксис Python
+        run: python -m py_compile api/main.py api/build_search_index.py
+
+      - name: Собрать поисковый индекс
+        run: python api/build_search_index.py
+
+      - name: Проверить индекс
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("api/search_index.json").read_text(encoding="utf-8"))
+          assert data["indexed_documents"] > 0, "В индексе нет документов"
+          assert data["indexed_chunks"] > 0, "В индексе нет фрагментов"
+          print("Документов:", data["indexed_documents"])
+          print("Фрагментов:", data["indexed_chunks"])
+          print("Пропущено:", len(data["skipped_documents"]))
+          PY

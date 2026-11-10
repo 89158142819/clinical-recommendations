@@ -14,13 +14,14 @@
     main{max-width:1050px;margin:26px auto;padding:0 16px}.panel,.answer{background:#fff;border:1px solid var(--border);border-radius:15px;padding:20px;margin-bottom:16px}
     .search-row{display:flex;gap:10px;margin-top:14px}input,select,button{font:inherit;border-radius:9px;padding:12px 14px}
     input,select{border:1px solid #bdcddd;background:#fff;min-width:0}input{flex:1;width:100%}button{background:var(--blue);color:white;border:0;cursor:pointer;font-weight:700}
-    button:disabled{opacity:.55;cursor:wait}.secondary{background:#eaf1f8;color:var(--dark)}.muted{color:var(--muted);font-size:13px}
+    button:disabled{opacity:.55;cursor:wait}.muted{color:var(--muted);font-size:13px}
     .notice{background:#eef5fc;border-left:4px solid var(--blue);padding:12px 14px;border-radius:7px;margin-top:14px;color:#34516d;font-size:14px}
-    .status{padding:12px 0;color:var(--muted)}.candidate{border:1px solid var(--border);border-radius:11px;padding:14px;margin:12px 0}
-    .candidate h3{margin:0 0 5px;font-size:17px}.meta{font-size:13px;color:var(--muted);margin-bottom:10px}
-    .section{border-top:1px solid var(--border);padding:14px 0}.section h3{font-size:17px;margin:0 0 8px}
-    .source{font-size:13px;margin-top:12px}.source a{color:var(--blue)}.section-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
-    .empty{text-align:center;padding:28px 12px;color:var(--muted)}.toplink{display:inline-block;margin-top:10px;color:var(--blue);text-decoration:none;font-weight:700}
+    .status{padding:16px 0;color:var(--muted)}.empty{text-align:center;padding:28px 12px;color:var(--muted)}
+    .toplink{display:inline-block;margin-top:10px;color:var(--blue);text-decoration:none;font-weight:700}
+    .answer-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.7}
+    .sources{border-top:1px solid var(--border);margin-top:20px;padding-top:14px}.source{border:1px solid var(--border);border-radius:10px;padding:12px;margin:9px 0}
+    .source a{color:var(--blue);font-weight:700}.source .meta{font-size:12px;color:var(--muted);margin-top:4px}
+    .error{color:#9c342d;background:#fff3f1;border:1px solid #f1d0cc;border-radius:9px;padding:12px}
     footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
     @media(max-width:650px){.search-row{flex-direction:column}.search-row button{width:100%}.panel,.answer{padding:15px}}
   </style>
@@ -29,114 +30,94 @@
 <header>
   <div class="brand">МЕДИЦИНСКАЯ СПРАВОЧНАЯ СИСТЕМА</div>
   <h1>Интеллектуальный поиск</h1>
-  <div class="subtitle">Поиск диагностических рекомендаций по заболеванию на основании опубликованных клинических рекомендаций Минздрава России.</div>
+  <div class="subtitle">Задайте вопрос о диагностике заболевания. Сервис найдёт фрагменты официальных клинических рекомендаций и сформирует ответ с указанием источников.</div>
   <a class="toplink" href="index.html">← Вернуться к каталогу</a>
 </header>
 <main>
   <section class="panel">
-    <h2>Какое заболевание вас интересует?</h2>
-    <div class="muted">Введите заболевание или вопрос, например: «диагностика хронического гастрита».</div>
+    <h2>Что необходимо узнать?</h2>
+    <div class="muted">Например: «Какие лабораторные и инструментальные исследования рекомендуются при хроническом гастрите?»</div>
     <div class="search-row">
-      <input id="question" type="search" placeholder="Например, диагностика гастрита" autocomplete="off">
+      <input id="question" type="search" maxlength="600" placeholder="Введите вопрос по диагностике заболевания" autocomplete="off">
       <select id="age" aria-label="Возрастная категория">
         <option value="">Любой возраст</option><option value="Взрослые">Взрослые</option><option value="Дети">Дети</option>
       </select>
-      <button id="searchButton">Найти</button>
+      <button id="searchButton">Получить ответ</button>
     </div>
-    <div class="notice">Сервис извлекает сведения непосредственно из структурированных документов. Если рекомендация не содержит отдельного подраздела или нужных сведений, это будет обозначено. Информация носит справочный характер и требует сверки с первоисточником.</div>
+    <div class="notice">Ответ формируется только по найденным фрагментам клинических рекомендаций. В нём должны быть ссылки на первоисточники. Сервис не заменяет клиническое решение врача. Не вводите персональные данные пациентов.</div>
   </section>
-  <section class="answer" id="answer" aria-live="polite"><div class="empty">Введите заболевание, чтобы найти соответствующие клинические рекомендации.</div></section>
+  <section class="answer" id="answer" aria-live="polite"><div class="empty">Введите вопрос, чтобы получить ответ на основании клинических рекомендаций.</div></section>
 </main>
 <footer>Официальный источник документов: <a href="https://cr.minzdrav.gov.ru/clin-rec" target="_blank" rel="noopener noreferrer">Рубрикатор клинических рекомендаций Минздрава России</a>.</footer>
 <script>
 (() => {
-  const question=document.getElementById("question"),age=document.getElementById("age"),button=document.getElementById("searchButton"),answer=document.getElementById("answer");
-  let catalog=null;
-  const diagnosticSections=[
-    ["diagnostics","Диагностика: общие положения"],
-    ["complaints_anamnesis","Жалобы и анамнез"],
-    ["physical_examination","Физикальное обследование"],
-    ["laboratory_diagnostics","Лабораторная диагностика"],
-    ["instrumental_diagnostics","Инструментальная диагностика"],
-    ["other_diagnostics","Иные диагностические исследования"]
-  ];
-  const stopWords=new Set(["диагностика","диагностику","диагностике","диагностировать","заболевание","заболевания","болезнь","болезни","какая","какие","каковы","нужны","нужно","исследования","исследований","методы","метод","при","для","по","мне","покажи","найти","клиническая","рекомендация","рекомендации"]);
-  const synonyms={"гастрит":["гастрит","гастрита","гастрите"],"хронический":["хронический","хронического","хроническом"],"острый":["острый","острого","остром"],"тонзиллит":["тонзиллит","тонзиллита","тонзиллите"],"грипп":["грипп","гриппа","гриппе"]};
-  const norm=s=>String(s||"").toLocaleLowerCase("ru").replace(/ё/g,"е").replace(/[^а-яa-z0-9]+/g," ").trim();
-  const tokens=s=>norm(s).split(/\s+/).filter(t=>t.length>2&&!stopWords.has(t));
-  function make(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
-  function link(url,label){const a=make("a","",label);a.href=url;a.target="_blank";a.rel="noopener noreferrer";return a}
-  function stem(token){
-    const endings=["иями","ями","ами","ого","ему","ыми","ими","иях","ах","ях","ов","ев","ей","ам","ям","ом","ем","ой","ый","ий","ая","яя","ое","ее","ую","юю","а","я","ы","и","е","у","ю"];
-    for(const ending of endings){if(token.length-ending.length>=4&&token.endsWith(ending))return token.slice(0,-ending.length);}
-    return token;
+  // После создания сервиса на Render здесь будет его публичный URL.
+  const API_BASE_URL = "https://YOUR-RENDER-SERVICE.onrender.com";
+  const question=document.getElementById("question");
+  const age=document.getElementById("age");
+  const button=document.getElementById("searchButton");
+  const answer=document.getElementById("answer");
+
+  function make(tag,cls,text){
+    const element=document.createElement(tag);
+    if(cls)element.className=cls;
+    if(text!==undefined)element.textContent=text;
+    return element;
   }
-  function score(item,terms,query){
-    const titleTokens=tokens(item.title).map(stem),icd=norm(item.icd10);
-    let points=0;
-    terms.forEach(t=>{const root=stem(t);if(titleTokens.some(word=>word===root||word.startsWith(root)||root.startsWith(word)))points+=3;else if(icd.includes(t))points+=1;});
-    const expanded=(synonyms[query]||[]);
-    expanded.forEach(t=>{if(norm(item.title).includes(norm(t)))points+=3;});
-    if(query&&norm(item.title)===query)points+=8;
-    return points;
-  }
-  async function loadCatalog(){
-    if(catalog)return catalog;
-    const response=await fetch("site-data/recommendations.json",{cache:"no-store"});
-    if(!response.ok)throw new Error("Не удалось загрузить каталог: HTTP "+response.status);
-    catalog=await response.json();return catalog;
-  }
-  function renderDoc(item,data){
-    const card=make("article","candidate");
-    card.append(make("h3","",item.title));
-    card.append(make("div","meta","ID: "+item.id+" · МКБ-10: "+(item.icd10||"не указан")+" · "+(item.age_category||"Возраст не указан")+" · Статус: "+(item.application_status||"не указан")));
-    const sections=data.sections||{};
-    let found=0;
-    diagnosticSections.forEach(([key,label])=>{
-      const value=String(sections[key]||"").trim();
-      if(!value)return;
-      found++;
-      const section=make("section","section");
-      section.append(make("h3","",label));
-      section.append(make("div","section-text",value));
-      card.append(section);
+
+  function renderSources(sources){
+    if(!Array.isArray(sources)||!sources.length)return;
+    const container=make("section","sources");
+    container.append(make("h3","","Источники"));
+    sources.forEach(source=>{
+      const item=make("article","source");
+      const anchor=make("a","", "["+source.number+"] "+source.title);
+      anchor.href=source.source_url;
+      anchor.target="_blank";
+      anchor.rel="noopener noreferrer";
+      item.append(anchor);
+      item.append(make("div","meta",source.section+" · ID: "+source.id+" · МКБ-10: "+(source.icd10||"не указан")+" · "+(source.age_category||"возраст не указан")));
+      container.append(item);
     });
-    if(!found)card.append(make("p","muted","В обработанном документе диагностические разделы не найдены."));
-    const source=make("div","source");
-    source.append(link("https://cr.minzdrav.gov.ru/view-cr/"+encodeURIComponent(item.id),"Открыть официальную клиническую рекомендацию"));
-    card.append(source);
-    return card;
+    answer.append(container);
   }
+
   async function run(){
     const raw=question.value.trim();
-    if(!raw){answer.replaceChildren(make("div","empty","Введите название заболевания или вопрос."));return;}
-    button.disabled=true;button.textContent="Ищем…";answer.replaceChildren(make("div","status","Ищем подходящие клинические рекомендации…"));
+    if(raw.length<3){
+      answer.replaceChildren(make("div","empty","Введите вопрос длиной не менее трёх символов."));
+      return;
+    }
+    if(API_BASE_URL.includes("YOUR-RENDER-SERVICE")){
+      answer.replaceChildren(make("div","error","Серверная часть подготовлена, но ещё не опубликована. После создания сервиса на Render нужно будет указать его адрес в настройке API_BASE_URL на этой странице."));
+      return;
+    }
+    button.disabled=true;
+    button.textContent="Формируем ответ…";
+    answer.replaceChildren(make("div","status","Ищем подходящие фрагменты клинических рекомендаций и формируем ответ. Первый запрос после простоя сервера может занять больше времени."));
     try{
-      const data=await loadCatalog();
-      const clean=norm(raw).replace(/\b(диагностика|диагностику|диагностике|исследования|исследований|методы|метод|какие|какая|каковы|нужны|нужно|при|для)\b/g," ").trim();
-      const terms=tokens(clean);
-      const scored=data.recommendations.map(item=>({...item,_score:score(item,terms,clean)}))
-        .filter(item=>item._score>0&&(!age.value||(item.age_category||"").includes(age.value)))
-        .sort((a,b)=>b._score-a._score).slice(0,5);
+      const response=await fetch(API_BASE_URL.replace(/\/$/,"")+"/api/answer",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({question:raw,age:age.value||null})
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(data.detail||("Ошибка сервера: HTTP "+response.status));
       answer.replaceChildren();
-      if(!scored.length){answer.append(make("div","empty","По названию заболевания совпадений не найдено. Попробуйте указать более точное название или код МКБ-10."));return;}
-      answer.append(make("h2","","Найденные клинические рекомендации"));
-      answer.append(make("p","muted","Найдено документов: "+scored.length+". Ниже приведён исходный текст диагностических разделов без пересказа."));
-      for(const item of scored){
-        const loading=make("article","candidate","Загружаем "+item.title+"…");answer.append(loading);
-        try{
-          const response=await fetch("site-data/"+item.document_file,{cache:"no-store"});
-          if(!response.ok)throw new Error("HTTP "+response.status);
-          const doc=await response.json();
-          const rendered=renderDoc(item,doc);loading.replaceWith(rendered);
-        }catch(error){loading.replaceChildren(make("h3","",item.title),make("p","muted","Не удалось загрузить документ: "+error.message));}
-      }
-    }catch(error){answer.replaceChildren(make("div","empty","Ошибка поиска: "+error.message));}
-    finally{button.disabled=false;button.textContent="Найти";}
+      answer.append(make("h2","","Ответ по клиническим рекомендациям"));
+      answer.append(make("div","answer-text",data.answer||"Сервер не вернул текст ответа."));
+      renderSources(data.sources);
+      answer.append(make("p","muted","Найдено фрагментов: "+(data.retrieved_fragments??0)+" · Модель: "+(data.model||"не указана")));
+    }catch(error){
+      answer.replaceChildren(make("div","error","Не удалось получить ответ: "+error.message));
+    }finally{
+      button.disabled=false;
+      button.textContent="Получить ответ";
+    }
   }
+
   button.addEventListener("click",run);
-  question.addEventListener("keydown",e=>{if(e.key==="Enter")run();});
-  question.focus();
+  question.addEventListener("keydown",event=>{if(event.key==="Enter")run();});
 })();
 </script>
 </body>

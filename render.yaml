@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: clinical-recommendations-assistant
+    runtime: python
+    plan: free
+    buildCommand: pip install -r api/requirements.txt && python api/build_search_index.py
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-6-luna
+      - key: ALLOWED_ORIGINS
+        value: https://89158142819.github.io
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "8"

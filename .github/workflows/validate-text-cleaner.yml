@@ -1,0 +1,34 @@
+name: Проверка очистки текста PDF
+
+on:
+  push:
+    paths:
+      - "text_cleaner.py"
+      - "download_batch.py"
+      - "extract_sections_v2.py"
+      - "tests/test_text_cleaner.py"
+      - ".github/workflows/validate-text-cleaner.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-text-cleaner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получение репозитория
+        uses: actions/checkout@v4
+
+      - name: Установка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Проверка синтаксиса
+        run: |
+          python -m py_compile text_cleaner.py download_batch.py extract_sections_v2.py
+
+      - name: Модульные тесты очистки
+        run: |
+          python -m unittest discover -s tests -v

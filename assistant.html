@@ -76,7 +76,7 @@
       anchor.target="_blank";
       anchor.rel="noopener noreferrer";
       item.append(anchor);
-      item.append(make("div","meta",source.section+" · ID: "+source.id+" · МКБ-10: "+(source.icd10||"не указан")+" · "+(source.age_category||"возраст не указан")));
+      item.append(make("div","meta",source.section+" · ID: "+source.id+" · МКБ-10: "+(source.icd10||"не указан")+" · "+(source.age_category||"возраст не указан")+" · Статус: "+(source.application_status||"не указан")));
       container.append(item);
     });
     answer.append(container);

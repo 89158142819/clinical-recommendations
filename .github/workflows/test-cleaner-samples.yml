@@ -55,6 +55,15 @@ jobs:
           run-id: 41314075250
           path: samples/batch40
 
+      - name: Скачать архив с документом в римской нумерации глав
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-90
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41324291148
+          path: samples/batch90
+
       - name: Установить зависимости
         run: |
           python -m pip install --upgrade pip

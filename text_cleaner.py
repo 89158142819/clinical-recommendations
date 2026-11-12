@@ -207,10 +207,30 @@ def _is_dictionary_word(word):
 def _is_valid_joined_word(word):
     # Для объединённой формы допускаем словарные формы и распознавание
     # по известным окончаниям, но не произвольные догадки анализатора.
-    return _morphology_has_analyzer(
+    if _morphology_has_analyzer(
         word,
         frozenset({"DictionaryAnalyzer", "KnownSuffixAnalyzer"}),
-    )
+    ):
+        return True
+
+    # PDF иногда отделяет последнюю «й» от окончания прилагательного:
+    # «достаточно й» -> «достаточной». В этом узком случае проверяем,
+    # что морфологический анализатор распознаёт именно прилагательное.
+    if word.endswith("ой"):
+        analyzer = _get_morph_analyzer()
+        if analyzer is not None:
+            try:
+                for parsed in analyzer.parse(word.lower()):
+                    if (
+                        getattr(parsed, "score", 0) >= 0.5
+                        and getattr(parsed.tag, "POS", None)
+                        in {"ADJF", "ADJS", "PRTF", "PRTS"}
+                    ):
+                        return True
+            except Exception:
+                pass
+
+    return False
 
 
 def repair_split_words(text):

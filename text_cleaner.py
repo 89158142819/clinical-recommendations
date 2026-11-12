@@ -200,18 +200,27 @@ def _is_dictionary_word(word):
 
 def repair_split_words(text):
     """
-    Склеивает фрагменты внутри слов только тогда, когда:
-    1) хотя бы одна часть не является самостоятельным словом;
-    2) объединённая форма подтверждается русским морфологическим словарём.
+    Восстанавливает части слов, разделённые пробелом при извлечении PDF.
+
+    Объединение выполняется только если:
+    - одна из частей короткая (1–3 буквы), то есть похожа на фрагмент слова;
+    - обе части по отдельности не являются самостоятельными словами;
+      исключение — короткий фрагмент, который вместе с соседней частью
+      образует подтверждённую морфологическим словарём форму;
+    - объединённая форма распознаётся русским морфологическим анализатором.
 
     Обычные сочетания вроде «в процессе», «с пациентом», «по показаниям»
-    остаются без изменений.
+    сохраняются.
     """
     if not text:
         return text
 
     token_pair = re.compile(
-        r"(?<![А-Яа-яЁё])([А-Яа-яЁё]{1,3})([ \t]+|\n[ \t]*)([А-Яа-яЁё]{1,})(?![А-Яа-яЁё])",
+        r"(?<![А-Яа-яЁё])"
+        r"(?P<left>[А-Яа-яЁё]+)"
+        r"(?P<separator>[ \\t]+)"
+        r"(?P<right>[А-Яа-яЁё]+)"
+        r"(?![А-Яа-яЁё])",
         re.IGNORECASE,
     )
 
@@ -226,23 +235,29 @@ def repair_split_words(text):
     }
 
     def replace_pair(match):
-        left = match.group(1)
-        separator = match.group(2)
-        right = match.group(3)
-
+        left = match.group("left")
+        right = match.group("right")
         left_lower = left.lower()
         right_lower = right.lower()
-        joined = left + right
 
         expanded = expanded_prepositions.get((left_lower, right_lower))
         if expanded:
+            if left.isupper() and right.isupper():
+                return expanded.upper()
+            if left[:1].isupper():
+                return expanded.capitalize()
             return expanded
 
-        # Не объединяем два самостоятельных слова: это защищает
-        # нормальные словосочетания и медицинские формулировки.
+        # Не рассматриваем два длинных самостоятельных токена:
+        # это резко снижает риск склеивания соседних слов.
+        if len(left) > 3 and len(right) > 3:
+            return match.group(0)
+
+        # Если обе части являются словами, сохраняем исходный пробел.
         if _is_dictionary_word(left_lower) and _is_dictionary_word(right_lower):
             return match.group(0)
 
+        joined = left + right
         if _is_dictionary_word(joined.lower()):
             return joined
 
@@ -251,7 +266,8 @@ def repair_split_words(text):
     previous = None
     current = text
 
-    # Несколько проходов нужны для цепочек наподобие «п о краю».
+    # Повторные проходы нужны для последовательностей из нескольких
+    # фрагментов, например «п о краю» -> «по краю».
     for _ in range(3):
         if current == previous:
             break

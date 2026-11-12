@@ -1,11 +1,17 @@
 name: Тест очистки на реальных клинических рекомендациях
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - ".github/workflows/test-cleaner-samples.yml"
+      - "tests/test_real_pdf_samples.py"
+      - "text_cleaner.py"
+      - "download_batch.py"
+      - "extract_sections_v2.py"
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -22,6 +28,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Скачать архив с первыми контрольными PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-0
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41186718385
+          path: samples/batch0
+
+      - name: Скачать архив со вторым набором контрольных PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-10
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41188581569
+          path: samples/batch10
+
       - name: Установить зависимости
         run: |
           python -m pip install --upgrade pip
@@ -29,104 +53,20 @@ jobs:
 
       - name: Проверить синтаксис
         run: |
-          python -m py_compile text_cleaner.py download_batch.py extract_sections_v2.py
+          python -m py_compile text_cleaner.py download_batch.py extract_sections_v2.py tests/test_real_pdf_samples.py
 
-      - name: Скачать и обработать контрольные рекомендации
+      - name: Повторно извлечь текст из реальных PDF и проверить парсер
         run: |
-          python download_batch.py --ids 750_2 1087_1 1090_1 1086_1 759_2 --force --fail-on-document-errors
-
-      - name: Проверить очистку и структуру результатов
-        run: |
-          python - <<'PY'
-          import json
-          import re
-          import sys
-          from pathlib import Path
-
-          ids = ["750_2", "1087_1", "1090_1", "1086_1", "759_2"]
-          failed = []
-
-          print("=" * 72)
-          print("ПРОВЕРКА РЕЗУЛЬТАТОВ ОЧИСТКИ И ПАРСИНГА")
-          print("=" * 72)
-
-          for document_id in ids:
-              input_path = Path(f"output/{document_id}.json")
-              sections_path = Path(f"output/{document_id}_sections_v2.json")
-              report_path = Path(f"output/{document_id}_quality_report_v2.json")
-
-              print(f"\nДокумент: {document_id}")
-
-              for path in (input_path, sections_path, report_path):
-                  if not path.exists():
-                      print(f"ОШИБКА: не создан файл {path}")
-                      failed.append(f"{document_id}: отсутствует {path.name}")
-
-              if not input_path.exists() or not sections_path.exists() or not report_path.exists():
-                  continue
-
-              source = json.loads(input_path.read_text(encoding="utf-8"))
-              result = json.loads(sections_path.read_text(encoding="utf-8"))
-              report = json.loads(report_path.read_text(encoding="utf-8"))
-
-              full_text = source.get("full_text", "")
-              sections = result.get("sections", {})
-
-              print("Символов исходного текста:", len(full_text))
-              print("Статус качества:", report.get("quality_check"))
-              print("Метод извлечения:", source.get("extraction_info", {}).get("method"))
-
-              if not full_text.strip():
-                  failed.append(f"{document_id}: пустой исходный текст")
-
-              if re.search(r"\[Страница\s+\d+\]", full_text, re.IGNORECASE):
-                  failed.append(f"{document_id}: в очищенном тексте остались метки страниц")
-
-              if report.get("quality_check") != "passed":
-                  failed.append(f"{document_id}: quality_check не passed")
-
-              if not sections.get("diagnostics", "").strip():
-                  failed.append(f"{document_id}: отсутствует раздел диагностики")
-
-              if not sections.get("treatment", "").strip():
-                  failed.append(f"{document_id}: отсутствует раздел лечения")
-
-              if len(full_text) < 1000:
-                  failed.append(f"{document_id}: подозрительно короткий извлечённый текст")
-
-              print("Длина диагностики:", len(sections.get("diagnostics", "")))
-              print("Длина лечения:", len(sections.get("treatment", "")))
-
-          print("\n" + "=" * 72)
-          if failed:
-              print("ИТОГ: ПРОВЕРКА НЕ ПРОЙДЕНА")
-              for item in failed:
-                  print("-", item)
-              sys.exit(1)
-
-          print("ИТОГ: ВСЕ КОНТРОЛЬНЫЕ ДОКУМЕНТЫ ПРОШЛИ ПРОВЕРКУ")
-          PY
+          python tests/test_real_pdf_samples.py
 
       - name: Сохранить результаты тестирования
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cleaned-clinical-recommendations-samples
+          name: cleaned-clinical-recommendations-real-pdf-tests
           path: |
-            output/750_2.json
-            output/750_2_sections_v2.json
-            output/750_2_quality_report_v2.json
-            output/1087_1.json
-            output/1087_1_sections_v2.json
-            output/1087_1_quality_report_v2.json
-            output/1090_1.json
-            output/1090_1_sections_v2.json
-            output/1090_1_quality_report_v2.json
-            output/1086_1.json
-            output/1086_1_sections_v2.json
-            output/1086_1_quality_report_v2.json
-            output/759_2.json
-            output/759_2_sections_v2.json
-            output/759_2_quality_report_v2.json
+            output/
+            samples/batch0/output/*.pdf
+            samples/batch10/output/*.pdf
           if-no-files-found: warn
           retention-days: 14

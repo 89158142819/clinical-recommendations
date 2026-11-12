@@ -124,7 +124,7 @@ def main():
                     f"{len(definition_text.strip())} символов"
                 )
 
-            if re.search(r"\\.{3,}\\s*\\d{1,4}\\s*$", "\\n".join(definition_text.splitlines()[:4])):
+            if re.search(r"\.{3,}\s*\d{1,4}\s*$", "\n".join(definition_text.splitlines()[:4])):
                 raise RuntimeError(
                     "В начале раздела «Определение» обнаружена строка оглавления"
                 )

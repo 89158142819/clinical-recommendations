@@ -23,6 +23,7 @@ SAMPLES = {
     "1086_1": "batch10",
     "1061_1": "batch40",
     "1066_1": "batch40",
+    "1021_1": "batch90",
 }
 
 PAGE_LABEL_RE = re.compile(
@@ -71,6 +72,11 @@ def main():
             reader, full_text, pages_with_text, empty_pages = (
                 extract_text(pdf_content)
             )
+
+            if document_id == "1021_1" and len(reader.pages) != 44:
+                raise RuntimeError(
+                    "Контрольный документ с римской нумерацией должен содержать 44 страницы"
+                )
 
             if document_id in {"1061_1", "1066_1"} and len(reader.pages) > 25:
                 raise RuntimeError(
@@ -121,6 +127,11 @@ def main():
                 f"символов={len(full_text)}; "
                 f"метод={method}"
             )
+
+            if document_id == "1021_1" and method != "roman_numeral_chapters_v1":
+                failures.append(
+                    "1021_1: не выбран профиль roman_numeral_chapters_v1"
+                )
 
             if status != "passed":
                 failures.append(

@@ -1,5 +1,6 @@
 import re
 from collections import Counter
+from functools import lru_cache
 
 
 PAGE_LABEL_RE = re.compile(
@@ -102,6 +103,7 @@ def clean_page_text(page_text, repeated_margins=None):
         normalized_lines.append(line)
 
     text = "\n".join(normalized_lines)
+    text = repair_split_words(text)
     text = re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", text)
     text = re.sub(r"[ \t]+\n", "\n", text)
     text = re.sub(r"\n[ \t]+", "\n", text)
@@ -139,3 +141,104 @@ def clean_full_text(text):
     # Без меток страниц удаляем только номера на внешних краях текста,
     # чтобы не затронуть нумерованные медицинские перечни внутри.
     return clean_page_text(text)
+
+
+# Морфологическая проверка помогает восстанавливать слова, которые PDF
+# разбил пробелом внутри слова: «подозрение м», «ул ьтразвукового».
+try:
+    import pymorphy3
+except ImportError:
+    pymorphy3 = None
+
+
+@lru_cache(maxsize=1)
+def _get_morph_analyzer():
+    if pymorphy3 is None:
+        return None
+    return pymorphy3.MorphAnalyzer()
+
+
+@lru_cache(maxsize=50000)
+def _is_dictionary_word(word):
+    if not word or not re.fullmatch(r"[а-яё]+", word, re.IGNORECASE):
+        return False
+
+    analyzer = _get_morph_analyzer()
+    if analyzer is None:
+        return False
+
+    try:
+        parses = analyzer.parse(word.lower())
+    except Exception:
+        return False
+
+    for parsed in parses:
+        for method in getattr(parsed, "methods_stack", ()):
+            analyzer_method = method[0] if method else None
+            if analyzer_method and type(analyzer_method).__name__ == "DictionaryAnalyzer":
+                return True
+
+    return False
+
+
+def repair_split_words(text):
+    """
+    Склеивает фрагменты внутри слов только тогда, когда:
+    1) хотя бы одна часть не является самостоятельным словом;
+    2) объединённая форма подтверждается русским морфологическим словарём.
+
+    Обычные сочетания вроде «в процессе», «с пациентом», «по показаниям»
+    остаются без изменений.
+    """
+    if not text:
+        return text
+
+    token_pair = re.compile(
+        r"(?<![А-Яа-яЁё])([А-Яа-яЁё]{1,3})([ \t]+|\n[ \t]*)([А-Яа-яЁё]{1,})(?![А-Яа-яЁё])",
+        re.IGNORECASE,
+    )
+
+    expanded_prepositions = {
+        ("в", "о"): "во",
+        ("с", "о"): "со",
+        ("к", "о"): "ко",
+        ("из", "о"): "изо",
+        ("от", "о"): "ото",
+        ("под", "о"): "подо",
+        ("над", "о"): "надо",
+    }
+
+    def replace_pair(match):
+        left = match.group(1)
+        separator = match.group(2)
+        right = match.group(3)
+
+        left_lower = left.lower()
+        right_lower = right.lower()
+        joined = left + right
+
+        expanded = expanded_prepositions.get((left_lower, right_lower))
+        if expanded:
+            return expanded
+
+        # Не объединяем два самостоятельных слова: это защищает
+        # нормальные словосочетания и медицинские формулировки.
+        if _is_dictionary_word(left_lower) and _is_dictionary_word(right_lower):
+            return match.group(0)
+
+        if _is_dictionary_word(joined.lower()):
+            return joined
+
+        return match.group(0)
+
+    previous = None
+    current = text
+
+    # Несколько проходов нужны для цепочек наподобие «п о краю».
+    for _ in range(3):
+        if current == previous:
+            break
+        previous = current
+        current = token_pair.sub(replace_pair, current)
+
+    return current

@@ -631,7 +631,254 @@ def select_headings(all_candidates):
 # Извлечение разделов
 # ============================================================
 
+
+
+# ============================================================
+# Альтернативный профиль: главы с римской нумерацией
+# ============================================================
+
+ROMAN_EXTRACTION_METHOD = "roman_numeral_chapters_v1"
+
+
+def find_roman_heading(text, roman, aliases):
+    candidates = []
+
+    for alias in aliases:
+        phrase_pattern = build_phrase_pattern(alias)
+        pattern = (
+            r"(?im)^[ \t]*"
+            + re.escape(roman)
+            + r"\s*[.)]?\s*"
+            + phrase_pattern
+        )
+
+        for match in re.finditer(pattern, text):
+            candidates.append({
+                "key": None,
+                "number": roman,
+                "alias": alias,
+                "start": match.start(),
+                "matched_text": match.group(0),
+            })
+
+    if not candidates:
+        return None, []
+
+    unique = {}
+    for candidate in candidates:
+        unique[candidate["start"]] = candidate
+
+    ordered = sorted(unique.values(), key=lambda item: item["start"])
+    return ordered[-1], ordered
+
+
+def find_alias_candidates_in_range(text, section, start, end):
+    candidates = []
+    aliases = list(section["aliases"])
+
+    # В отдельных PDF встречаются дубли слов в заголовке,
+    # например «Особенности кодирования кодирования...».
+    if section["key"] == "icd10":
+        aliases = ["Особенности кодирования"] + aliases
+
+    for alias in aliases:
+        phrase_pattern = build_phrase_pattern(alias)
+        pattern = (
+            r"(?im)^[ \t]*"
+            r"(?:\d+(?:\.\d+)*\s*[.)]?\s*)?"
+            + phrase_pattern
+        )
+
+        for match in re.finditer(pattern, text):
+            if start < match.start() < end:
+                candidates.append({
+                    "key": section["key"],
+                    "number": None,
+                    "alias": alias,
+                    "start": match.start(),
+                    "matched_text": match.group(0),
+                })
+
+    unique = {}
+    for candidate in candidates:
+        old = unique.get(candidate["start"])
+        if old is None or len(candidate["matched_text"]) > len(old["matched_text"]):
+            unique[candidate["start"]] = candidate
+
+    return sorted(unique.values(), key=lambda item: item["start"])
+
+
+def extract_sections_roman(text):
+    chapter_specs = [
+        ("V", "short_information", ["Краткая информация по заболеванию или состоянию"]),
+        ("VI", "diagnostics", ["Диагностика заболевания или состояния", "Диагностика"]),
+        ("VII", "treatment", ["Лечение"]),
+        ("VIII", "rehabilitation", ["Медицинская реабилитация"]),
+        ("IX", "prevention", ["Профилактика и диспансерное наблюдение"]),
+    ]
+
+    chapters = {}
+    chapter_candidates = {}
+
+    for roman, key, aliases in chapter_specs:
+        heading, candidates = find_roman_heading(text, roman, aliases)
+        if heading is None:
+            return None
+        chapters[key] = heading
+        chapter_candidates[key] = candidates
+
+    ordered_chapters = [
+        chapters["short_information"]["start"],
+        chapters["diagnostics"]["start"],
+        chapters["treatment"]["start"],
+        chapters["rehabilitation"]["start"],
+        chapters["prevention"]["start"],
+    ]
+
+    if ordered_chapters != sorted(ordered_chapters):
+        return None
+
+    terms_heading, terms_candidates = find_roman_heading(
+        text,
+        "IV",
+        ["Термины и определения"],
+    )
+
+    if (
+        terms_heading is None
+        or terms_heading["start"] >= chapters["short_information"]["start"]
+    ):
+        return None
+
+    matched_headings = {
+        "terms": terms_heading,
+        "diagnostics": chapters["diagnostics"],
+        "treatment": chapters["treatment"],
+        "rehabilitation": chapters["rehabilitation"],
+    }
+
+    all_candidates = {
+        section["key"]: []
+        for section in SECTIONS
+    }
+
+    all_candidates["terms"] = terms_candidates
+    all_candidates["diagnostics"] = chapter_candidates["diagnostics"]
+    all_candidates["treatment"] = chapter_candidates["treatment"]
+    all_candidates["rehabilitation"] = chapter_candidates["rehabilitation"]
+
+    # Подразделы главы V.
+    chapter_v_start = chapters["short_information"]["start"]
+    chapter_vi_start = chapters["diagnostics"]["start"]
+    previous_start = chapter_v_start
+
+    for key in (
+        "definition",
+        "etiology_pathogenesis",
+        "epidemiology",
+        "icd10",
+        "classification",
+        "clinical_picture",
+    ):
+        section = next(item for item in SECTIONS if item["key"] == key)
+        candidates = find_alias_candidates_in_range(
+            text, section, previous_start, chapter_vi_start
+        )
+        all_candidates[key] = candidates
+
+        if candidates:
+            chosen = candidates[0]
+            matched_headings[key] = chosen
+            previous_start = chosen["start"]
+
+    # Подразделы главы VI. Их нумерация начинается заново
+    # и не обязана совпадать с арабской нумерацией главы II.
+    chapter_vii_start = chapters["treatment"]["start"]
+    previous_start = chapter_vi_start
+
+    for key in (
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics",
+        "other_diagnostics",
+    ):
+        section = next(item for item in SECTIONS if item["key"] == key)
+        candidates = find_alias_candidates_in_range(
+            text, section, previous_start, chapter_vii_start
+        )
+        all_candidates[key] = candidates
+
+        if candidates:
+            chosen = candidates[0]
+            matched_headings[key] = chosen
+            previous_start = chosen["start"]
+
+    # Для профиля главы V и VI выбираются по смысловым заголовкам,
+    # а лечение и реабилитация — по подтверждённым римским главам.
+    ordered_found = [
+        section for section in SECTIONS
+        if section["key"] in matched_headings
+    ]
+
+    extracted = {}
+
+    for index, section in enumerate(ordered_found):
+        key = section["key"]
+        start = matched_headings[key]["start"]
+
+        if index + 1 < len(ordered_found):
+            next_key = ordered_found[index + 1]["key"]
+            end = matched_headings[next_key]["start"]
+        else:
+            end = len(text)
+
+        extracted[key] = {
+            "start": start,
+            "end": end,
+            "text": text[start:end].strip(),
+        }
+
+    chapter5_heading = {
+        "start": chapters["prevention"]["start"],
+        "matched_text": chapters["prevention"]["matched_text"],
+        "toc_title": "IX. Профилактика и диспансерное наблюдение",
+        "match_type": "roman_numeral",
+        "profile": "roman_numeral",
+    }
+    chapter5_candidates = chapter_candidates["prevention"]
+
+    if "rehabilitation" in extracted:
+        rehab_start = extracted["rehabilitation"]["start"]
+        rehab_end = chapter5_heading["start"]
+        extracted["rehabilitation"]["end"] = rehab_end
+        extracted["rehabilitation"]["text"] = text[rehab_start:rehab_end].strip()
+
+    for optional_key in OPTIONAL_SECTION_KEYS:
+        if optional_key not in extracted:
+            extracted[optional_key] = {
+                "start": None,
+                "end": None,
+                "text": "",
+            }
+
+    return (
+        extracted,
+        matched_headings,
+        all_candidates,
+        chapter5_heading,
+        chapter5_candidates,
+    )
+
+
 def extract_sections(text):
+    roman_result = extract_sections_roman(text)
+    if roman_result is not None:
+        return roman_result
+    return extract_sections_standard(text)
+
+
+def extract_sections_standard(text):
 
     all_candidates = {}
 
@@ -1070,7 +1317,11 @@ def build_quality_report(
 
         "quality_check": quality_check,
 
-        "extraction_method": EXTRACTION_METHOD,
+        "extraction_method": (
+            ROMAN_EXTRACTION_METHOD
+            if chapter5_heading and chapter5_heading.get("profile") == "roman_numeral"
+            else EXTRACTION_METHOD
+        ),
 
         "text_length": len(text),
 
@@ -1143,6 +1394,15 @@ def build_quality_report(
         },
 
         "note": (
+            "Для документов с римской нумерацией верхнеуровневых "
+            "глав применяется отдельный профиль. Границы лечения "
+            "и реабилитации определяются по главам VII, VIII и IX. "
+            "Для стандартного профиля граница главы 4 определяется "
+            "сопоставлением названия главы 5 из оглавления с основным "
+            "текстом. Медицинская полнота, сохранность текста и "
+            "соответствие исходному PDF требуют отдельной проверки."
+            if chapter5_heading and chapter5_heading.get("profile") == "roman_numeral"
+            else
             "Проверка подтверждает обнаружение структурных "
             "заголовков и определение границ глав 3 и 4. "
             "Для отдельных документов допускается альтернативная "
@@ -1551,7 +1811,7 @@ def main():
 
         "title": source_data.get("title"),
 
-        "extraction_method": EXTRACTION_METHOD,
+        "extraction_method": quality_report["extraction_method"],
 
         "quality_check": quality_report["quality_check"],
 
@@ -1640,7 +1900,7 @@ def main():
 
     print(f"Документ: {document_id}")
 
-    print(f"Метод: {EXTRACTION_METHOD}")
+    print(f"Метод: {quality_report['extraction_method']}")
 
     print(f"Длина исходного текста: {len(full_text)}")
 

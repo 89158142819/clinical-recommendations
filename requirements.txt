@@ -3,3 +3,5 @@ requests
 beautifulsoup4
 pypdf
 openpyxl
+pymorphy3
+pymorphy3-dicts-ru

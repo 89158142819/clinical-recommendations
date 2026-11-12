@@ -324,8 +324,23 @@ def find_heading_candidates(text, section):
 
 
 # ============================================================
-# Нормализация названий глав
+# Нормализация названий глав и заголовков разделов
 # ============================================================
+
+def normalize_section_text(key, value):
+    value = str(value or "")
+
+    # В части PDF между словами заголовка теряется пробел.
+    # Исправляем только известный заголовок, не меняя медицинский текст.
+    if key == "complaints_anamnesis":
+        value = re.sub(
+            r"(?i)Жалобыи(?=\\s+анамнез)",
+            "Жалобы и",
+            value,
+        )
+
+    return value
+
 
 def normalize_heading_text(value):
 
@@ -895,7 +910,10 @@ def extract_sections_roman(text):
         extracted[key] = {
             "start": start,
             "end": end,
-            "text": text[start:end].strip(),
+            "text": normalize_section_text(
+                key,
+                text[start:end].strip(),
+            ),
         }
 
     chapter5_heading = {

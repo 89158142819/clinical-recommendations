@@ -21,10 +21,11 @@ SAMPLES = {
     "1087_1": "batch0",
     "1090_1": "batch0",
     "1086_1": "batch10",
+    "1061_1": "batch40",
 }
 
 PAGE_LABEL_RE = re.compile(
-    r"(?im)^\\s*\\[?\\s*(?:страница|стр\\.?|page)\\s*\\d+\\s*\\]?\\s*$"
+    r"(?im)^\s*\[?\s*(?:страница|стр\.?|page)\s*\d+\s*\]?\s*$"
 )
 
 
@@ -69,6 +70,11 @@ def main():
             reader, full_text, pages_with_text, empty_pages = (
                 extract_text(pdf_content)
             )
+
+            if document_id == "1061_1" and len(reader.pages) > 25:
+                raise RuntimeError(
+                    "Контрольный компактный документ неожиданно превышает 25 страниц"
+                )
 
             if not full_text.strip():
                 raise RuntimeError("После извлечения и очистки текст пуст")

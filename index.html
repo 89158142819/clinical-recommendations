@@ -254,7 +254,8 @@
           const negative = /^[\s•●▪◦]*Не\s+рекомендуется(?![а-яё])/i.test(blockText);
           const card = make("article", "treatment-recommendation" + (negative ? " not-recommended" : ""));
           card.append(make("span", "treatment-recommendation-label", negative ? "НЕ РЕКОМЕНДУЕТСЯ" : "РЕКОМЕНДУЕТСЯ"));
-          card.append(make("div", "", blockText.replace(/^[•●▪◦]\s*/, "")));
+          const statementText = blockText.replace(/^[\s•●▪◦]*(?:Не\s+)?рекомендуется(?![а-яё])\s*/i, "");
+          card.append(make("div", "", statementText));
           content.append(card);
         }
         cursor = end;

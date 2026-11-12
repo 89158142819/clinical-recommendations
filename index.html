@@ -307,9 +307,18 @@
       return "unknown";
     }
 
-    function getDiagnosticStudyTitle(value) {
+    function getDiagnosticStudyTitle(value, sectionKind) {
       let text = normalizeDiagnosticText(value);
       text = text.replace(/^(?:лучевая диагностика|лабораторные диагностические исследования|инструментальные диагностические исследования|иные диагностические исследования)\s*/i, "");
+
+      if (sectionKind === "instrumental") {
+        const instrumentalStudy = text.match(
+          /рекомендуется\s+инструментальное\s+обследование\s*[-–—:]\s*(осмотр\s+верхних\s+дыхательных\s+путей[^.!?]*?)(?=\s+(?:всем\s+детям|всем\s+взрослым|всем\s+пациентам|для\s+выявления|Уровень\s+убедительности))/i
+        );
+        if (instrumentalStudy) {
+          return instrumentalStudy[1].trim().replace(/[,:;\s.]+$/, "");
+        }
+      }
 
       // Для некоторых лабораторных рекомендаций название исследования
       // представляет собой весь перечень методов после слова
@@ -400,18 +409,26 @@
       return "";
     }
 
-    function prepareDiagnosticDisplayText(value) {
-      const text = normalizeDiagnosticText(value);
+    function prepareDiagnosticDisplayText(value, sectionKind) {
+      let text = normalizeDiagnosticText(value);
       if (!text) return "";
 
-      const study = getDiagnosticStudyTitle(text);
+      // В старых JSON подготовительная инструкция могла попасть
+      // в начало карточки. Полный исходный текст остаётся ниже в подразделе.
+      if (sectionKind === "instrumental") {
+        const formalRecommendation = text.match(
+          /(?:^|[.!?]\s+)(рекомендуется\s+инструментальное\s+обследование\s*[-–—:]\s*[\s\S]*)$/i
+        );
+        if (formalRecommendation) text = formalRecommendation[1].trim();
+      }
+
+      const study = getDiagnosticStudyTitle(text, sectionKind);
       if (!study) return text;
 
-      // Исходная формулировка полностью сохраняется ниже названия исследования.
       return "Исследование: " + study + "\n\nУсловия и текст рекомендации: " + text;
     }
 
-    function renderDiagnosticCards(container, items) {
+    function renderDiagnosticCards(container, items, sectionKind) {
       if (!Array.isArray(items) || !items.length) {
         container.append(make("p", "muted", "В этом подразделе не обнаружены отдельные блоки рекомендаций с уровнем убедительности. Исходный текст раздела доступен ниже."));
         return;
@@ -444,7 +461,7 @@
         heading.append(make("span", recommendationClass, recommendationLabel));
         card.append(heading);
         if (item.text) {
-          card.append(make("div", "section-text", prepareDiagnosticDisplayText(item.text)));
+          card.append(make("div", "section-text", prepareDiagnosticDisplayText(item.text, sectionKind)));
         } else {
           card.append(make("p", "muted", "Карточка создана прежней версией парсера. Для полного текста рекомендации откройте исходный текст раздела ниже."));
           if (item.source_excerpt) {
@@ -518,7 +535,7 @@
             : null;
 
           if (summaryKey && data.diagnostic_summary) {
-            renderDiagnosticCards(section, diagnosticItems);
+            renderDiagnosticCards(section, diagnosticItems, summaryKey);
             const sourceDetails = make("details", "source-details");
             sourceDetails.append(make("summary", "", "Показать полный исходный текст раздела"));
             sourceDetails.append(make("div", "section-text", cleanSectionText(content, key) || "Раздел отсутствует в документе."));

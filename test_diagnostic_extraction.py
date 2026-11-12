@@ -218,6 +218,25 @@ if "683_2" in SOURCES:
                     f"683_2: OCR-фрагмент или хвост уровня попал в начало блока {index + 1}"
                 )
 
+        instrumental_items = item["diagnostic_summary"]["instrumental"]
+        if len(instrumental_items) != 1:
+            errors.append(
+                "683_2: ожидался 1 инструментальный блок, "
+                f"получено {len(instrumental_items)}"
+            )
+        elif instrumental_items:
+            instrumental_text = instrumental_items[0].get("text", "").strip().lower()
+            if not instrumental_text.startswith("рекомендуется инструментальное обследование"):
+                errors.append(
+                    "683_2: инструментальный блок начинается не с клинической рекомендации: "
+                    f"{instrumental_text[:160]}"
+                )
+            if "перед осмотром пациенту рекомендуется" in instrumental_text:
+                errors.append(
+                    "683_2: инструкция по подготовке пациента ошибочно включена "
+                    "в блок инструментальной рекомендации"
+                )
+
 OUTPUT.write_text(
     json.dumps(results, ensure_ascii=False, indent=2),
     encoding="utf-8",

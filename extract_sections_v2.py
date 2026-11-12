@@ -511,7 +511,7 @@ def find_next_major_chapter(
     # в подзаголовках других глав или содержит только номер страницы.
     semantic_pattern = (
         r"(?im)^[ \t]*"
-        r"5(?:\s*[.)])?\s+"
+        r"(?:5(?:\s*[.)])?\s+)?"
         r"(?=Профилактика\s+и\s+диспансерное\s+наблюдение)"
     )
 
@@ -522,7 +522,10 @@ def find_next_major_chapter(
 
         semantic_candidates.append({
             "start": match.start(),
-            "matched_text": match.group(0).strip(),
+            "matched_text": (
+                match.group(0).strip()
+                or text[match.start():].splitlines()[0].strip()
+            ),
             "toc_title": "Профилактика и диспансерное наблюдение",
             "normalized_title": normalize_heading_text(
                 "Профилактика и диспансерное наблюдение"

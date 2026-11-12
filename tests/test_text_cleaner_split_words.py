@@ -1,5 +1,12 @@
 import json
+import sys
 from pathlib import Path
+
+# При запуске файла напрямую Python добавляет в sys.path папку tests,
+# а не корень репозитория. Добавляем корень проекта, чтобы импортировать
+# text_cleaner.py из корневой папки.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from text_cleaner import repair_split_words
 
@@ -61,7 +68,7 @@ def main():
             "passed": actual == source and error is None,
         })
 
-    output = Path("text_cleaner_regression_results.json")
+    output = ROOT / "text_cleaner_regression_results.json"
     output.write_text(
         json.dumps(results, ensure_ascii=False, indent=2),
         encoding="utf-8",

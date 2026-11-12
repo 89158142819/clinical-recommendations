@@ -22,6 +22,7 @@ SAMPLES = {
     "1090_1": "batch0",
     "1086_1": "batch10",
     "1061_1": "batch40",
+    "1066_1": "batch40",
 }
 
 PAGE_LABEL_RE = re.compile(
@@ -71,7 +72,7 @@ def main():
                 extract_text(pdf_content)
             )
 
-            if document_id == "1061_1" and len(reader.pages) > 25:
+            if document_id in {"1061_1", "1066_1"} and len(reader.pages) > 25:
                 raise RuntimeError(
                     "Контрольный компактный документ неожиданно превышает 25 страниц"
                 )

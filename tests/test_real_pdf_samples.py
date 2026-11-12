@@ -108,6 +108,32 @@ def main():
 
             status, report, method, details = check_results(document_id)
 
+            # Проверяем не только наличие заголовков, но и то, что
+            # парсер не захватил строку оглавления вместо текста раздела.
+            sections_path = OUTPUT_DIR / f"{document_id}_sections_v2.json"
+            with sections_path.open("r", encoding="utf-8") as file:
+                parsed_data = json.load(file)
+
+            parsed_sections = parsed_data.get("sections", {})
+            definition_text = str(parsed_sections.get("definition", ""))
+            complaints_text = str(parsed_sections.get("complaints_anamnesis", ""))
+
+            if len(definition_text.strip()) < 100:
+                raise RuntimeError(
+                    "Раздел «Определение» подозрительно короткий: "
+                    f"{len(definition_text.strip())} символов"
+                )
+
+            if re.search(r"\\.{3,}\\s*\\d{1,4}\\s*$", "\\n".join(definition_text.splitlines()[:4])):
+                raise RuntimeError(
+                    "В начале раздела «Определение» обнаружена строка оглавления"
+                )
+
+            if "Жалобыи анамнез" in complaints_text:
+                raise RuntimeError(
+                    "В заголовке раздела «Жалобы и анамнез» не восстановлен пробел"
+                )
+
             result = {
                 "id": document_id,
                 "title": document["title"],

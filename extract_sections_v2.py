@@ -506,6 +506,33 @@ def find_next_major_chapter(
     if str(chapter_number) != "5":
         return None, []
 
+    # Сначала ищем саму главу профилактики после реабилитации.
+    # Это надёжнее оглавления, где номер 5 иногда встречается
+    # в подзаголовках других глав или содержит только номер страницы.
+    semantic_pattern = (
+        r"(?im)^[ \\t]*"
+        r"5(?:\\s*[.)])?\\s+"
+        r"(?=Профилактика\\s+и\\s+диспансерное\\s+наблюдение)"
+    )
+
+    semantic_candidates = []
+    for match in re.finditer(semantic_pattern, text):
+        if match.start() <= after_position:
+            continue
+
+        semantic_candidates.append({
+            "start": match.start(),
+            "matched_text": match.group(0).strip(),
+            "toc_title": "Профилактика и диспансерное наблюдение",
+            "normalized_title": normalize_heading_text(
+                "Профилактика и диспансерное наблюдение"
+            ),
+            "match_type": "semantic_heading",
+        })
+
+    if semantic_candidates:
+        return semantic_candidates[0], semantic_candidates
+
     toc_heading = find_chapter_title_in_contents(
         text,
         after_position

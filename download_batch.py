@@ -34,7 +34,10 @@ READ_TIMEOUT = 300
 
 USER_AGENT = "ClinicalRecommendationsCatalog/1.0"
 
-PARSER_METHOD = "universal_structural_headings_v12"
+PARSER_METHODS = {
+    "universal_structural_headings_v12",
+    "roman_numeral_chapters_v1",
+}
 
 
 # ============================================================
@@ -517,12 +520,12 @@ def check_results(document_id):
         "extraction_method"
     )
 
-    if extraction_method != PARSER_METHOD:
+    if extraction_method not in PARSER_METHODS:
 
         raise RuntimeError(
             "Неверный метод извлечения: "
             f"{extraction_method!r}. "
-            f"Ожидался {PARSER_METHOD!r}"
+            f"Допустимые методы: {sorted(PARSER_METHODS)!r}"
         )
 
     # --------------------------------------------------------

@@ -228,19 +228,19 @@
       }
 
       const content = make("div", "treatment-content");
-      const starts = [...text.matchAll(/(?:[•●▪◦]\s*(?:Не\s+)?рекомендуется(?![а-яё])|(?:^|\n)\s*(?:Не\s+)?рекомендуется(?![а-яё]))/gi)];
+      const starts = [...text.matchAll(/(?:^|[^а-яё])((?:Не\s+)?рекомендуется)(?![а-яё])/gi)];
       const levelPattern = /Уровень\s+убедительности\s+рекомендаций?[^.\n]*(?:\([^\n)]*\))?\.?/i;
       let cursor = 0;
 
       starts.forEach((match, index) => {
-        const start = match.index;
+        const start = match.index + match[0].length - match[1].length;
         if (start > cursor) {
           const before = text.slice(cursor, start).trim();
           if (before) content.append(make("div", "treatment-paragraph", before));
         }
 
         const nextStart = index + 1 < starts.length
-          ? starts[index + 1].index
+          ? starts[index + 1].index + starts[index + 1][0].length - starts[index + 1][1].length
           : text.length;
         const remaining = text.slice(start, nextStart);
         const levelMatch = levelPattern.exec(remaining);

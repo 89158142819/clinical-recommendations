@@ -512,6 +512,33 @@ def find_next_major_chapter(
     )
 
     if toc_heading is None:
+        # В некоторых PDF оглавление содержит только номер страницы
+        # после «5.», а полное название профилактики есть в основном тексте.
+        # В этом случае используем строгое смысловое совпадение заголовка.
+        fallback_pattern = (
+            r"(?im)^[ \\t]*"
+            r"5(?:\\s*[.)])?\\s+"
+            r"(?=Профилактика\\s+и\\s+диспансерное\\s+наблюдение)"
+        )
+        fallback_candidates = []
+
+        for match in re.finditer(fallback_pattern, text):
+            if match.start() <= after_position:
+                continue
+
+            fallback_candidates.append({
+                "start": match.start(),
+                "matched_text": match.group(0).strip(),
+                "toc_title": "Профилактика и диспансерное наблюдение",
+                "normalized_title": normalize_heading_text(
+                    "Профилактика и диспансерное наблюдение"
+                ),
+                "match_type": "semantic_fallback",
+            })
+
+        if fallback_candidates:
+            return fallback_candidates[0], fallback_candidates
+
         return None, []
 
     lines = text.splitlines()

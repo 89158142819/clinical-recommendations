@@ -30,21 +30,35 @@ def main():
     results = []
 
     for source, expected in CASES:
-        actual = repair_split_words(source)
+        try:
+            actual = repair_split_words(source)
+            error = None
+        except Exception as exc:
+            actual = None
+            error = f"{type(exc).__name__}: {exc}"
+
         results.append({
             "source": source,
             "expected": expected,
             "actual": actual,
-            "passed": actual == expected,
+            "error": error,
+            "passed": actual == expected and error is None,
         })
 
     for source in UNCHANGED:
-        actual = repair_split_words(source)
+        try:
+            actual = repair_split_words(source)
+            error = None
+        except Exception as exc:
+            actual = None
+            error = f"{type(exc).__name__}: {exc}"
+
         results.append({
             "source": source,
             "expected": source,
             "actual": actual,
-            "passed": actual == source,
+            "error": error,
+            "passed": actual == source and error is None,
         })
 
     output = Path("output")
@@ -59,7 +73,8 @@ def main():
         print(
             f"ОШИБКА: {item['source']!r}; "
             f"ожидалось {item['expected']!r}; "
-            f"получено {item['actual']!r}"
+            f"получено {item['actual']!r}; "
+            f"ошибка {item['error']!r}"
         )
 
     if failures:

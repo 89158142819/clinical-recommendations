@@ -64,9 +64,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cleaned-clinical-recommendations-real-pdf-tests
-          path: |
-            output/
-            samples/batch0/output/*.pdf
-            samples/batch10/output/*.pdf
+          path: output/
           if-no-files-found: warn
           retention-days: 14

@@ -3,6 +3,9 @@ import re
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
 from download_batch import (
     OUTPUT_DIR,
     check_results,
@@ -41,7 +44,8 @@ def main():
         print("=" * 72)
 
         pdf_path = (
-            Path("samples")
+            ROOT
+            / "samples"
             / batch_name
             / "output"
             / f"{document_id}.pdf"
@@ -74,7 +78,7 @@ def main():
 
             input_data = create_json(
                 document=document,
-                pdf_url=f"archived GitHub Actions artifact: {pdf_path}",
+                pdf_url=f"archived GitHub Actions artifact: {pdf_path.name}",
                 reader=reader,
                 full_text=full_text,
                 pages_with_text=pages_with_text,
@@ -92,7 +96,7 @@ def main():
             result = {
                 "id": document_id,
                 "title": document["title"],
-                "pdf": str(pdf_path),
+                "pdf": pdf_path.name,
                 "pages_total": len(reader.pages),
                 "pages_with_text": pages_with_text,
                 "empty_pages": empty_pages,

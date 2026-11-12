@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/test-cleaner-samples.yml"
       - "tests/test_real_pdf_samples.py"
+      - "tests/test_text_cleaner_split_words.py"
+      - "requirements.txt"
       - "text_cleaner.py"
       - "download_batch.py"
       - "extract_sections_v2.py"
@@ -71,7 +73,10 @@ jobs:
 
       - name: Проверить синтаксис
         run: |
-          python -m py_compile text_cleaner.py download_batch.py extract_sections_v2.py tests/test_real_pdf_samples.py
+          python -m py_compile text_cleaner.py download_batch.py extract_sections_v2.py tests/test_real_pdf_samples.py tests/test_text_cleaner_split_words.py
+
+      - name: Проверить восстановление слов, разорванных PDF
+        run: python tests/test_text_cleaner_split_words.py
 
       - name: Повторно извлечь текст из реальных PDF и проверить парсер
         run: |

@@ -1632,6 +1632,29 @@ def extract_diagnostic_recommendations(section_text, section_kind):
 
         return sentence
 
+    def recommendation_matches(value):
+        matches = list(recommendation_re.finditer(value))
+        if section_kind != "instrumental_diagnostics":
+            return matches
+
+        # В описании подготовки к осмотру встречается фраза
+        # «пациенту рекомендуется в течение ... не употреблять...».
+        # Это инструкция пациенту, а не клиническая рекомендация.
+        filtered = []
+        for match in matches:
+            prefix = value[max(0, match.start() - 100):match.start()]
+            suffix = value[match.end():match.end() + 100]
+            is_preparation_advice = (
+                re.search(r"(?i)\\bпациенту\\s*$", prefix) is not None
+                and re.match(
+                    r"(?i)\\s*(?:в течение|накануне|непосредственно перед|не употреблять|воздержаться)",
+                    suffix,
+                ) is not None
+            )
+            if not is_preparation_advice:
+                filtered.append(match)
+        return filtered
+
     def polarity(match):
         return "negative" if re.match(
             r"не\s+", match.group(0), re.IGNORECASE
@@ -1659,7 +1682,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
 
     for marker in markers:
         segment = text[cursor:marker.start()]
-        matches = list(recommendation_re.finditer(segment))
+        matches = recommendation_matches(segment)
 
         if matches:
             clusters = []
@@ -1707,7 +1730,7 @@ def extract_diagnostic_recommendations(section_text, section_kind):
         cursor = marker.end()
 
     tail = text[cursor:]
-    matches = list(recommendation_re.finditer(tail))
+    matches = recommendation_matches(tail)
     if matches:
         starts = []
         current_polarity = None

@@ -46,6 +46,15 @@ jobs:
           run-id: 41188581569
           path: samples/batch10
 
+      - name: Скачать архив с компактной клинической рекомендацией
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-40
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41314075250
+          path: samples/batch40
+
       - name: Установить зависимости
         run: |
           python -m pip install --upgrade pip

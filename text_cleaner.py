@@ -155,7 +155,10 @@ except ImportError:
 def _get_morph_analyzer():
     if pymorphy3 is None:
         return None
-    return pymorphy3.MorphAnalyzer()
+    try:
+        return pymorphy3.MorphAnalyzer()
+    except Exception:
+        return None
 
 
 @lru_cache(maxsize=50000)

@@ -1,5 +1,101 @@
 {
-  "updated_at": null,
-  "total_processed": 0,
-  "results": {}
+  "updated_at": "2026-11-12T06:15:49.552170+00:00",
+  "total_processed": 3,
+  "results": {
+    "750_2": {
+      "id": "750_2",
+      "title": "Соматическая дисфункция",
+      "status": "passed",
+      "started_at": "2026-11-12T06:15:37.774854+00:00",
+      "finished_at": "2026-11-12T06:15:43.375241+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 104,
+      "pages_with_text": 104,
+      "empty_pages": [],
+      "text_length": 200497,
+      "pdf_file": "output/750_2.pdf",
+      "input_file": "output/750_2.json",
+      "sections_file": "output/750_2_sections_v2.json",
+      "report_file": "output/750_2_quality_report_v2.json"
+    },
+    "1066_1": {
+      "id": "1066_1",
+      "title": "Дивертикул мочевого пузыря",
+      "status": "passed",
+      "started_at": "2026-11-12T06:15:43.376346+00:00",
+      "finished_at": "2026-11-12T06:15:46.722672+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 25,
+      "pages_with_text": 23,
+      "empty_pages": [
+        1,
+        25
+      ],
+      "text_length": 39498,
+      "pdf_file": "output/1066_1.pdf",
+      "input_file": "output/1066_1.json",
+      "sections_file": "output/1066_1_sections_v2.json",
+      "report_file": "output/1066_1_quality_report_v2.json"
+    },
+    "1061_1": {
+      "id": "1061_1",
+      "title": "Кожный рог",
+      "status": "passed",
+      "started_at": "2026-11-12T06:15:46.723469+00:00",
+      "finished_at": "2026-11-12T06:15:49.551416+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 21,
+      "pages_with_text": 20,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 35408,
+      "pdf_file": "output/1061_1.pdf",
+      "input_file": "output/1061_1.json",
+      "sections_file": "output/1061_1_sections_v2.json",
+      "report_file": "output/1061_1_quality_report_v2.json"
+    }
+  }
 }

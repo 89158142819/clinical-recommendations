@@ -45,6 +45,10 @@
     details { border-top: 1px solid var(--border); padding: 12px 0; }
     summary { cursor: pointer; font-weight: 700; }
     .section-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; margin-top: 12px; }
+    .icd-code-list { margin: 12px 0 0; padding-left: 24px; }
+    .icd-code-list li { margin: 0 0 10px; line-height: 1.55; }
+    .icd-code-list strong { font-weight: 750; white-space: nowrap; }
+
     .treatment-content { margin-top: 12px; }
     .treatment-paragraph { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; margin: 10px 0; }
     .treatment-recommendation {
@@ -167,8 +171,8 @@
 
     function cleanSectionText(value, key) {
       let text = String(value || "").replace(/\r/g, "");
-      // Удаляем технические маркеры страниц и склеиваем переносы PDF.
       text = text.replace(/\[\s*Страница\s+\d+\s*\]/gi, " ");
+
       const paragraphMarker = "<<<PDF_PARAGRAPH>>>";
       const recommendationLineMarker = "<<<PDF_RECOMMENDATION_LINE>>>";
       text = text
@@ -181,46 +185,64 @@
         .replace(/ *\n */g, "\n")
         .trim();
 
-      // Убираем повтор основного заголовка: он уже показан интерфейсом.
+      // Заголовки из PDF не дублируем: заголовок секции уже выводит интерфейс.
       const headingPatterns = {
         terms: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Термины\s+и\s+определения\s*/i,
         definition: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Определение\s+заболевания\s+или\s+состояния(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*/i,
         etiology_pathogenesis: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Этиология\s+и\s+патогенез(?:\s+заболевания\s+или\s+состояния)?(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*/i,
-        epidemiology: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Эпидемиология(?:\s+заболевания\s+или\s+состояния)?\s*/i,
-        icd10: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?(?:Особенности\s+)?кодирования\s+по\s+МКБ[-–]10\s*/i,
+        epidemiology: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Эпидемиология(?:\s+заболевания\s+или\s+состояния)?(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*/i,
+        icd10: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?(?:Особенности\s+кодирования\s+)?(?:заболевания\s+или\s+состояния\s*)?(?:\(группы\s+заболеваний\s+или\s+состояний\)\s*)?по\s+Международной\s+статистической\s+классификации\s+болезней\s+и\s+проблем,\s*связанных\s+со\s+здоровьем\s*/i,
         classification: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Классификация\s+заболевания\s+или\s+состояния(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*/i,
-        clinical_picture: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Клиническая\s+картина(?:\s+заболевания\s+или\s+состояния)?\s*/i,
-        diagnostics: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Диагностика(?:\s+заболевания\s+или\s+состояния)?(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*/i,
+        clinical_picture: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Клиническая\s+картина(?:\s+заболевания\s+или\s+состояния)?(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*/i,
+        diagnostics: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Диагностика\s+заболевания\s+или\s+состояния(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?[\s,;:.-]*(?:медицинские\s+показания\s+и\s+противопоказания\s+к\s+применению\s+методов\s+диагностики)?[\s,;:.-]*(?:Критерии\s+установления\s+диагноза)?[\s,;:.-]*/i,
         complaints_anamnesis: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Жалобы\s+и\s+анамнез\s*/i,
         physical_examination: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Физикальное\s+обследование\s*/i,
         laboratory_diagnostics: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Лабораторные\s+диагностические\s+исследования\s*/i,
         instrumental_diagnostics: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Инструментальные\s+диагностические\s+исследования\s*/i,
         other_diagnostics: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Иные\s+диагностические\s+исследования\s*/i,
         treatment: /^\s*(?:\d+\.\s*)?Лечение,\s*включая[\s\S]*?противопоказания\s+к\s+применению\s+методов\s+лечения\s*/i,
-        rehabilitation: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Медицинская\s+реабилитация(?:\s+и\s+санаторно-курортное\s+лечение)?\s*/i
+        rehabilitation: /^\s*(?:\d+(?:\.\d+)*\.?\s*)?Медицинская\s+реабилитация(?:\s+и\s+санаторно-курортное\s+лечение)?[\s\S]*?методов\s+медицинской\s+реабилитации(?:,\s*в\s+том\s+числе[\s\S]*?лечебных\s+факторов)?\s*/i
       };
       if (headingPatterns[key]) text = text.replace(headingPatterns[key], "");
 
-      // Удаляем отдельные повторные строки-заголовки после разрывов страниц.
+      // В диагностике это подзаголовок, а не содержание раздела.
+      if (key === "diagnostics") {
+        text = text.replace(/^\s*Критерии\s+установления\s+диагноза\s*/i, "");
+      }
+
+      // Удаляем повторные заголовки, если они попали в середину текста отдельной строкой.
       const repeatedHeadingPatterns = {
         terms: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Термины\s+и\s+определения\s*(?=\n|$)/gi,
         definition: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Определение\s+заболевания\s+или\s+состояния(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*(?=\n|$)/gi,
         etiology_pathogenesis: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Этиология\s+и\s+патогенез(?:\s+заболевания\s+или\s+состояния)?(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*(?=\n|$)/gi,
-        epidemiology: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Эпидемиология(?:\s+заболевания\s+или\s+состояния)?\s*(?=\n|$)/gi,
-        icd10: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?(?:Особенности\s+)?кодирования\s+по\s+МКБ[-–]10\s*(?=\n|$)/gi,
-        classification: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Классификация\s+заболевания\s+или\s+состояния(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*(?=\n|$)/gi,
-        clinical_picture: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Клиническая\s+картина(?:\s+заболевания\s+или\s+состояния)?\s*(?=\n|$)/gi,
-        diagnostics: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Диагностика(?:\s+заболевания\s+или\s+состояния)?(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*(?=\n|$)/gi,
-        complaints_anamnesis: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Жалобы\s+и\s+анамнез\s*(?=\n|$)/gi,
-        physical_examination: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Физикальное\s+обследование\s*(?=\n|$)/gi,
-        laboratory_diagnostics: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Лабораторные\s+диагностические\s+исследования\s*(?=\n|$)/gi,
-        instrumental_diagnostics: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Инструментальные\s+диагностические\s+исследования\s*(?=\n|$)/gi,
-        other_diagnostics: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Иные\s+диагностические\s+исследования\s*(?=\n|$)/gi,
-        treatment: /(?:^|\n\n)\s*(?:\d+\.\s*)?Лечение,\s*включая[^\n]*?(?=\n|$)/gi,
-        rehabilitation: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Медицинская\s+реабилитация(?:\s+и\s+санаторно-курортное\s+лечение)?\s*(?=\n|$)/gi
+        epidemiology: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Эпидемиология(?:\s+заболевания\s+или\s+состояния)?(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?\s*(?=\n|$)/gi,
+        icd10: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?(?:Особенности\s+кодирования\s+)?(?:заболевания\s+или\s+состояния\s*)?(?:\(группы\s+заболеваний\s+или\s+состояний\)\s*)?по\s+Международной\s+статистической\s+классификации\s+болезней\s+и\s+проблем,\s*связанных\s+со\s+здоровьем\s*(?=\n|$)/gi,
+        diagnostics: /(?:^|\n\n)\s*(?:\d+(?:\.\d+)*\.?\s*)?Диагностика\s+заболевания\s+или\s+состояния(?:\s*\(группы\s+заболеваний\s+или\s+состояний\))?[\s,;:.-]*(?:медицинские\s+показания\s+и\s+противопоказания\s+к\s+применению\s+методов\s+диагностики)?[\s,;:.-]*(?:Критерии\s+установления\s+диагноза)?\s*(?=\n|$)/gi
       };
       if (repeatedHeadingPatterns[key]) text = text.replace(repeatedHeadingPatterns[key], "\n\n");
       return text.replace(/\n{3,}/g, "\n\n").trim();
+    }
+
+    function renderIcd10Content(container, value) {
+      const text = cleanSectionText(value, "icd10");
+      const matches = [...text.matchAll(/(^|[\s\n])([A-ZА-Я]\d{2}(?:\.\d{1,2})?)\s*[–—-]\s*/g)];
+      if (!matches.length) {
+        container.append(make("div", "section-text", text || "Коды МКБ-10 не указаны."));
+        return;
+      }
+
+      const list = make("ul", "icd-code-list");
+      matches.forEach((match, index) => {
+        const code = match[2];
+        const descriptionStart = match.index + match[0].length;
+        const descriptionEnd = index + 1 < matches.length ? matches[index + 1].index : text.length;
+        const description = text.slice(descriptionStart, descriptionEnd).trim().replace(/\s+/g, " ");
+        const item = make("li");
+        item.append(make("strong", "", code));
+        if (description) item.append(document.createTextNode(" — " + description));
+        list.append(item);
+      });
+      container.append(list);
     }
 
     function renderTreatmentContent(container, value) {
@@ -503,6 +525,8 @@
             section.append(sourceDetails);
           } else if (key === "treatment") {
             renderTreatmentContent(section, content);
+          } else if (key === "icd10") {
+            renderIcd10Content(section, content);
           } else {
             section.append(make("div", "section-text", cleanSectionText(content, key) || "Раздел отсутствует в документе."));
           }

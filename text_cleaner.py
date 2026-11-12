@@ -162,7 +162,7 @@ def _get_morph_analyzer():
 
 
 @lru_cache(maxsize=50000)
-def _is_dictionary_word(word):
+def _morphology_has_analyzer(word, accepted_analyzers):
     if not word or not re.fullmatch(r"[а-яё]+", word, re.IGNORECASE):
         return False
 
@@ -174,14 +174,6 @@ def _is_dictionary_word(word):
         parses = analyzer.parse(word.lower())
     except Exception:
         return False
-
-    # Учитываем не только прямые словарные формы, но и формы,
-    # распознанные анализатором по известным окончаниям.
-    # Не принимаем произвольные догадки для неизвестных слов.
-    accepted_analyzers = {
-        "DictionaryAnalyzer",
-        "KnownSuffixAnalyzer",
-    }
 
     for parsed in parses:
         if getattr(parsed, "score", 0) < 0.5:
@@ -196,6 +188,29 @@ def _is_dictionary_word(word):
                 return True
 
     return False
+
+
+@lru_cache(maxsize=50000)
+def _is_dictionary_word(word):
+    # Однобуквенные самостоятельные русские слова ограничены этим набором.
+    # Буква «й» и другие обломки не должны считаться отдельными словами.
+    if len(word) == 1 and word.lower() not in {"а", "в", "и", "к", "о", "с", "у", "я"}:
+        return False
+
+    return _morphology_has_analyzer(
+        word,
+        frozenset({"DictionaryAnalyzer"}),
+    )
+
+
+@lru_cache(maxsize=50000)
+def _is_valid_joined_word(word):
+    # Для объединённой формы допускаем словарные формы и распознавание
+    # по известным окончаниям, но не произвольные догадки анализатора.
+    return _morphology_has_analyzer(
+        word,
+        frozenset({"DictionaryAnalyzer", "KnownSuffixAnalyzer"}),
+    )
 
 
 def repair_split_words(text):
@@ -258,7 +273,7 @@ def repair_split_words(text):
             return match.group(0)
 
         joined = left + right
-        if _is_dictionary_word(joined.lower()):
+        if _is_valid_joined_word(joined.lower()):
             return joined
 
         return match.group(0)

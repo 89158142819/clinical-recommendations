@@ -228,19 +228,19 @@
       }
 
       const content = make("div", "treatment-content");
-      const starts = [...text.matchAll(/(?:^|\n)([ \t]*(?:[•●▪◦]\s*)?(?:Не\s+)?рекомендуется\b)/gi)];
+      const starts = [...text.matchAll(/(?:[•●▪◦]\s*(?:Не\s+)?рекомендуется\b|(?:^|\n)\s*(?:Не\s+)?рекомендуется\b)/gi)];
       const levelPattern = /Уровень\s+убедительности\s+рекомендаций?[^.\n]*(?:\([^\n)]*\))?\.?/i;
       let cursor = 0;
 
       starts.forEach((match, index) => {
-        const start = match.index + match[0].length - match[1].length;
+        const start = match.index;
         if (start > cursor) {
           const before = text.slice(cursor, start).trim();
           if (before) content.append(make("div", "treatment-paragraph", before));
         }
 
         const nextStart = index + 1 < starts.length
-          ? starts[index + 1].index + starts[index + 1][0].length - starts[index + 1][1].length
+          ? starts[index + 1].index
           : text.length;
         const remaining = text.slice(start, nextStart);
         const levelMatch = levelPattern.exec(remaining);
@@ -248,7 +248,7 @@
         const blockText = text.slice(start, end).trim();
 
         if (blockText) {
-          const negative = /^\s*(?:[•●▪◦]\s*)?Не\s+рекомендуется\b/i.test(blockText);
+          const negative = /^[\s•●▪◦]*Не\s+рекомендуется\b/i.test(blockText);
           const card = make("article", "treatment-recommendation" + (negative ? " not-recommended" : ""));
           card.append(make("span", "treatment-recommendation-label", negative ? "НЕ РЕКОМЕНДУЕТСЯ" : "РЕКОМЕНДУЕТСЯ"));
           card.append(make("div", "", blockText.replace(/^[•●▪◦]\s*/, "")));

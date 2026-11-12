@@ -175,10 +175,24 @@ def _is_dictionary_word(word):
     except Exception:
         return False
 
+    # Учитываем не только прямые словарные формы, но и формы,
+    # распознанные анализатором по известным окончаниям.
+    # Не принимаем произвольные догадки для неизвестных слов.
+    accepted_analyzers = {
+        "DictionaryAnalyzer",
+        "KnownSuffixAnalyzer",
+    }
+
     for parsed in parses:
+        if getattr(parsed, "score", 0) < 0.5:
+            continue
+
         for method in getattr(parsed, "methods_stack", ()):
             analyzer_method = method[0] if method else None
-            if analyzer_method and type(analyzer_method).__name__ == "DictionaryAnalyzer":
+            if (
+                analyzer_method
+                and type(analyzer_method).__name__ in accepted_analyzers
+            ):
                 return True
 
     return False

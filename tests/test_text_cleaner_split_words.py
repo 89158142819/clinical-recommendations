@@ -61,9 +61,8 @@ def main():
             "passed": actual == source and error is None,
         })
 
-    output = Path("output")
-    output.mkdir(parents=True, exist_ok=True)
-    (output / "text_cleaner_regression_results.json").write_text(
+    output = Path("text_cleaner_regression_results.json")
+    output.write_text(
         json.dumps(results, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )

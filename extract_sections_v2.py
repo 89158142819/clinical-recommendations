@@ -1645,9 +1645,9 @@ def extract_diagnostic_recommendations(section_text, section_kind):
             prefix = value[max(0, match.start() - 100):match.start()]
             suffix = value[match.end():match.end() + 100]
             is_preparation_advice = (
-                re.search(r"(?i)\\bпациенту\\s*$", prefix) is not None
+                re.search(r"(?i)\bпациенту\s*$", prefix) is not None
                 and re.match(
-                    r"(?i)\\s*(?:в течение|накануне|непосредственно перед|не употреблять|воздержаться)",
+                    r"(?i)\s*(?:в течение|накануне|непосредственно перед|не употреблять|воздержаться)",
                     suffix,
                 ) is not None
             )

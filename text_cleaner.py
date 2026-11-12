@@ -223,8 +223,7 @@ def _is_valid_joined_word(word):
             try:
                 for parsed in analyzer.parse(word.lower()):
                     if (
-                        getattr(parsed, "score", 0) >= 0.5
-                        and getattr(parsed.tag, "POS", None)
+                        getattr(parsed.tag, "POS", None)
                         in {"ADJF", "ADJS", "PRTF", "PRTS"}
                     ):
                         return True

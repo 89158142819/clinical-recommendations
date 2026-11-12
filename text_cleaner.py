@@ -218,7 +218,7 @@ def repair_split_words(text):
     token_pair = re.compile(
         r"(?<![А-Яа-яЁё])"
         r"(?P<left>[А-Яа-яЁё]+)"
-        r"(?P<separator>[ \\t]+)"
+        r"(?P<separator>[ \t]+)"
         r"(?P<right>[А-Яа-яЁё]+)"
         r"(?![А-Яа-яЁё])",
         re.IGNORECASE,

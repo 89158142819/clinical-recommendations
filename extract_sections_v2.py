@@ -334,7 +334,7 @@ def normalize_section_text(key, value):
     # Исправляем только известный заголовок, не меняя медицинский текст.
     if key == "complaints_anamnesis":
         value = re.sub(
-            r"(?i)Жалобыи(?=\\s+анамнез)",
+            r"(?i)Жалобыи(?=\s+анамнез)",
             "Жалобы и",
             value,
         )

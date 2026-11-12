@@ -170,13 +170,16 @@
       // Удаляем технические маркеры страниц и склеиваем переносы PDF.
       text = text.replace(/\[\s*Страница\s+\d+\s*\]/gi, " ");
       const paragraphMarker = "<<<PDF_PARAGRAPH>>>";
+      const recommendationLineMarker = "<<<PDF_RECOMMENDATION_LINE>>>";
       text = text
+        .replace(/[ \t]*\n[ \t]*(?=(?:[•●▪◦]\s*)?(?:Не\s+)?рекомендуется(?![а-яё]))/gi, recommendationLineMarker)
         .replace(/[ \t]*\n[ \t]*\n(?:[ \t]*\n)*/g, paragraphMarker)
         .replace(/[ \t]*\n[ \t]*/g, " ")
+        .replace(new RegExp(recommendationLineMarker, "g"), "\n")
         .replace(new RegExp(paragraphMarker, "g"), "\n\n")
         .replace(/[ \t]{2,}/g, " ")
         .replace(/ *\n */g, "\n")
-        .trim();
+        .trim();.trim();
 
       // Убираем повтор основного заголовка: он уже показан интерфейсом.
       const headingPatterns = {
@@ -228,7 +231,7 @@
       }
 
       const content = make("div", "treatment-content");
-      const starts = [...text.matchAll(/(?:^|[^а-яё])((?:Не\s+)?рекомендуется)(?![а-яё])/gi)];
+      const starts = [...text.matchAll(/(?:^|\n)([ \t]*(?:[•●▪◦]\s*)?(?:Не\s+)?рекомендуется(?![а-яё]))/gi)];
       const levelPattern = /Уровень\s+убедительности\s+рекомендаций?[^.\n]*(?:\([^\n)]*\))?\.?/i;
       let cursor = 0;
 

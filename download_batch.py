@@ -228,6 +228,36 @@ def is_already_processed(document_id, registry):
 
 def download_pdf(document_id):
 
+    # Для контрольной повторной обработки допускаем заранее сохранённый
+    # официальный PDF из GitHub Actions artifact. Это позволяет повторить
+    # обработку без зависимости от временной доступности API Минздрава.
+    archived_pdf = (
+        ROOT
+        / "samples"
+        / "batch0"
+        / "output"
+        / f"{document_id}.pdf"
+    )
+
+    if archived_pdf.is_file():
+        pdf_content = archived_pdf.read_bytes()
+
+        if not pdf_content.startswith(b"%PDF"):
+            raise RuntimeError(
+                f"Архивный файл {archived_pdf} не является корректным PDF"
+            )
+
+        logging.info(
+            "Используется архивный официальный PDF для %s: %s",
+            document_id,
+            archived_pdf,
+        )
+
+        return (
+            pdf_content,
+            f"archived GitHub Actions artifact: {archived_pdf.name}",
+        )
+
     url = (
         "https://apicr.minzdrav.gov.ru/api.ashx"
         f"?id={document_id}&op=GetClinrecPdf"

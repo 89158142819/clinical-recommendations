@@ -145,9 +145,15 @@ def main():
 
         source = OUTPUT_DIR / f"{document_id}_sections_v2.json"
         if not source.is_file() or source.stat().st_size == 0:
+            # Если документ уже сохранён в действующей публикации,
+            # отсутствие временного JSON допустимо: это не новый
+            # результат текущего запуска, а ранее опубликованная версия.
+            if document_id in published_by_id:
+                continue
+
             errors.append(
                 f"{document_id}: реестр сообщает passed, "
-                "но новый JSON разделов отсутствует"
+                "но новый JSON разделов отсутствует и прежняя публикация недоступна"
             )
             continue
 

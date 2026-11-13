@@ -50,6 +50,26 @@ class TextCleanerTests(unittest.TestCase):
         cleaned = clean_full_text("Лабора-\nторное исследование.")
         self.assertIn("Лабораторное исследование.", cleaned)
 
+    def test_repairs_concatenated_words_from_pdf(self):
+        source = (
+            "рентгенографиипораженной части костногоскелета. "
+            "анамнез, жалобыили физикальные данныепозволяют "
+            "предположитьСВТ."
+        )
+        cleaned = clean_full_text(source)
+        self.assertIn("рентгенографии пораженной", cleaned)
+        self.assertIn("костного скелета", cleaned)
+        self.assertIn("жалобы или", cleaned)
+        self.assertIn("данные позволяют", cleaned)
+        self.assertIn("предположить СВТ", cleaned)
+
+    def test_preserves_valid_medical_words(self):
+        source = "электрокардиограмма новорождённого рентгеноденситометрия."
+        cleaned = clean_full_text(source)
+        self.assertIn("электрокардиограмма", cleaned)
+        self.assertIn("новорождённого", cleaned)
+        self.assertIn("рентгеноденситометрия", cleaned)
+
     def test_preserves_doses_and_ranges(self):
         cleaned = clean_full_text("Назначить 500 мг 2 раза в сутки. Уровень 3,5–5,5 ммоль/л.")
         self.assertIn("500 мг", cleaned)

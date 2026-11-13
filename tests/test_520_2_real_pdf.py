@@ -19,10 +19,11 @@ from download_batch import (
 
 
 DOCUMENT_ID = "520_2"
+ARCHIVED_PDF = ROOT / "samples" / "batch0" / "output" / f"{DOCUMENT_ID}.pdf"
 
 
 def normalize(text):
-    return re.sub(r"\\s+", " ", str(text or "")).strip().lower()
+    return re.sub(r"\s+", " ", str(text or "")).strip().lower()
 
 
 def require(condition, message):
@@ -44,7 +45,20 @@ def main():
     print(document["title"])
     print("=" * 72)
 
-    pdf_content, pdf_url = download_pdf(DOCUMENT_ID)
+    # Используем ранее загруженный официальный PDF из контрольного
+    # GitHub Actions artifact. Это исключает зависимость теста от
+    # доступности API Минздрава во время каждого запуска.
+    if ARCHIVED_PDF.is_file():
+        pdf_content = ARCHIVED_PDF.read_bytes()
+        pdf_url = (
+            "archived GitHub Actions artifact: "
+            "clinical-recommendations-batch-0/output/520_2.pdf"
+        )
+        print(f"Источник PDF: архивный файл {ARCHIVED_PDF}")
+    else:
+        print("Архивный PDF не найден; пробуем скачать PDF с Минздрава.")
+        pdf_content, pdf_url = download_pdf(DOCUMENT_ID)
+
     reader, full_text, pages_with_text, empty_pages = extract_text(pdf_content)
 
     print(f"PDF: {len(reader.pages)} страниц")
@@ -95,7 +109,7 @@ def main():
     with paths["input"].open("w", encoding="utf-8") as file:
         json.dump(input_data, file, ensure_ascii=False, indent=2)
 
-    # Важно: запускаем настоящий парсер поверх уже очищенного текста.
+    # Запускаем настоящий парсер поверх уже очищенного текста.
     # Это дополнительно проверяет повторную очистку внутри extract_sections_v2.py.
     run_parser(paths["input"])
 

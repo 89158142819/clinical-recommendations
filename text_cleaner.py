@@ -322,12 +322,41 @@ COMMON_SEGMENT_WORDS = {
     "либо", "также", "может", "быть", "были", "было", "этой", "этот",
 }
 
+# Медицинские термины и словоформы, которые могут отсутствовать
+# в стандартном словаре pymorphy3. Они используются только как
+# подтверждённые компоненты при разборе склеенных PDF-токенов.
+MEDICAL_SEGMENT_WORDS = {
+    "бисфосфонат", "бисфосфоната", "бисфосфонаты",
+    "бисфосфонатов", "бисфосфонатами", "бисфосфонатах",
+    "паратиреоидный", "паратиреоидного", "паратиреоидном",
+    "дезоксипиридинолин", "дезоксипиридинолина",
+    "аспартатаминотрансфераза", "аспартатаминотрансферазы",
+    "аланинаминотрансфераза", "аланинаминотрансферазы",
+    "лактатдегидрогеназа", "лактатдегидрогеназы",
+    "нефрокальциноз", "нефрокальциноза",
+    "нефролитиаз", "нефролитиаза",
+}
+
+# Короткие предлоги и союзы разрешены как отдельные части только
+# при разборе склеенного токена. Это, например, восстанавливает
+# «кальцияв» -> «кальция в» и «нормыисвоевременной».
+SHORT_SEGMENT_WORDS = {
+    "а", "в", "и", "к", "о", "с", "у", "я",
+    "на", "по", "за", "до", "из", "от", "об",
+    "при", "без", "над", "под", "для", "во", "со",
+}
+
 
 def _is_segment_word(word):
-    return word in COMMON_SEGMENT_WORDS or _is_dictionary_word(word)
+    return (
+        word in COMMON_SEGMENT_WORDS
+        or word in MEDICAL_SEGMENT_WORDS
+        or word in SHORT_SEGMENT_WORDS
+        or _is_dictionary_word(word)
+    )
 
 
-def _split_concatenated_token(token, min_part_length=3, max_parts=4):
+def _split_concatenated_token(token, min_part_length=3, max_parts=6):
     """
     Делит склеенные PDF слова только тогда, когда каждая часть
     подтверждается русским морфологическим словарём.
@@ -353,8 +382,10 @@ def _split_concatenated_token(token, min_part_length=3, max_parts=4):
         candidates = []
         max_end = min(length, start + 30)
 
-        for end in range(start + min_part_length, max_end + 1):
+        for end in range(start + 1, max_end + 1):
             part = lowered[start:end]
+            if len(part) < min_part_length and part not in SHORT_SEGMENT_WORDS:
+                continue
             if not _is_segment_word(part):
                 continue
 
@@ -382,9 +413,12 @@ def _split_concatenated_token(token, min_part_length=3, max_parts=4):
     if not parts or len(parts) < 2:
         return None
 
-    # Не делим слово на заведомо неравные случайные фрагменты:
-    # каждый компонент должен быть не короче трёх букв.
-    if any(len(part) < min_part_length for part in parts):
+    # Короткие части допустимы только если это известные предлоги
+    # или союзы; случайные одно- и двухбуквенные фрагменты запрещены.
+    if any(
+        len(part) < min_part_length and part not in SHORT_SEGMENT_WORDS
+        for part in parts
+    ):
         return None
 
     if token[:1].isupper():

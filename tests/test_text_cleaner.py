@@ -63,6 +63,18 @@ class TextCleanerTests(unittest.TestCase):
         self.assertIn("данные позволяют", cleaned)
         self.assertIn("предположить СВТ", cleaned)
 
+    def test_repairs_osteogenesis_medical_terms(self):
+        source = (
+            "перед каждым курсом терапиибисфосфонатами пациентам "
+            "исследование уровня ионизированногокальцияв крови "
+            "и паратиреоидногогормонав крови."
+        )
+        cleaned = clean_full_text(source)
+
+        self.assertIn("терапии бисфосфонатами", cleaned)
+        self.assertIn("ионизированного кальция в", cleaned)
+        self.assertIn("паратиреоидного гормона в", cleaned)
+
     def test_preserves_valid_medical_words(self):
         source = "электрокардиограмма новорождённого рентгеноденситометрия."
         cleaned = clean_full_text(source)

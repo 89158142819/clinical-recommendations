@@ -1,6 +1,6 @@
 import unittest
 
-from text_cleaner import clean_extracted_pages, clean_full_text
+from text_cleaner import clean_extracted_pages, clean_full_text, _get_morph_analyzer, _is_dictionary_word, _split_concatenated_token
 
 
 class TextCleanerTests(unittest.TestCase):
@@ -56,6 +56,14 @@ class TextCleanerTests(unittest.TestCase):
             "анамнез, жалобыили физикальные данныепозволяют "
             "предположитьСВТ."
         )
+        analyzer = _get_morph_analyzer()
+        print("DEBUG_ANALYZER", analyzer is not None, hasattr(analyzer, "word_is_known") if analyzer else None)
+        if analyzer:
+            for word in ["рентгенографии", "пораженной", "костного", "скелета", "жалобы", "или", "данные", "позволяют"]:
+                parsed = analyzer.parse(word)
+                print("DEBUG_WORD", word, analyzer.word_is_known(word) if hasattr(analyzer, "word_is_known") else None,
+                      [(p.score, [type(m[0]).__name__ for m in p.methods_stack]) for p in parsed[:2]])
+        print("DEBUG_SPLIT", _split_concatenated_token("рентгенографиипораженной"))
         cleaned = clean_full_text(source)
         self.assertIn("рентгенографии пораженной", cleaned)
         self.assertIn("костного скелета", cleaned)

@@ -11,6 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -21,6 +22,15 @@ jobs:
     steps:
       - name: Получить репозиторий
         uses: actions/checkout@v4
+
+      - name: Скачать архивный исходный PDF 520_2
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-0
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41186718385
+          path: samples/batch0
 
       - name: Установить Python
         uses: actions/setup-python@v5
@@ -36,7 +46,7 @@ jobs:
         run: |
           python -m py_compile text_cleaner.py download_batch.py extract_sections_v2.py tests/test_520_2_real_pdf.py
 
-      - name: Скачать исходный PDF 520_2 и проверить полный цикл
+      - name: Очистить архивный PDF 520_2 и проверить полный цикл
         run: python tests/test_520_2_real_pdf.py
 
       - name: Сохранить результаты

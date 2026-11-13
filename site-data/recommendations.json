@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-13T18:43:56.310939+00:00",
+  "updated_at": "2026-11-13T18:46:08.066383+00:00",
   "source": "https://cr.minzdrav.gov.ru/clin-rec",
-  "total": 601,
+  "total": 602,
   "recommendations": [
     {
       "id": "750_2",
@@ -2236,6 +2236,19 @@
       "publication_date": "2025-10-23T17:04:52.003000",
       "application_status": "Применяется",
       "document_file": "docs/567_2.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
+      "id": "749_2",
+      "title": "Грипп у взрослых",
+      "icd10": "J09, J10, J11",
+      "age_category": "Взрослые",
+      "developer": "Общероссийская общественная организация \"Российское научное медицинское общество терапевтов\", Национальная ассоциация специалистов по инфекционным болезням имени академика В. И. Покровского (НАСИБ)",
+      "nps_approved": "Да",
+      "publication_date": "2025-10-20T17:09:00.307000",
+      "application_status": "Применяется",
+      "document_file": "docs/749_2.json",
       "quality_check": "passed",
       "sections_count": 15
     },

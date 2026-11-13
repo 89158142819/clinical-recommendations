@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-13T18:43:56.084986+00:00",
-  "total_processed": 8,
+  "updated_at": "2026-11-13T18:46:07.844877+00:00",
+  "total_processed": 9,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -250,6 +250,38 @@
       "input_file": "output/1088_1.json",
       "sections_file": "output/1088_1_sections_v2.json",
       "report_file": "output/1088_1_quality_report_v2.json"
+    },
+    "749_2": {
+      "id": "749_2",
+      "title": "Грипп у взрослых",
+      "status": "passed",
+      "started_at": "2026-11-13T18:45:49.571409+00:00",
+      "finished_at": "2026-11-13T18:46:07.843676+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 98,
+      "pages_with_text": 97,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 195385,
+      "pdf_file": "output/749_2.pdf",
+      "input_file": "output/749_2.json",
+      "sections_file": "output/749_2_sections_v2.json",
+      "report_file": "output/749_2_quality_report_v2.json"
     }
   }
 }

@@ -336,7 +336,7 @@ def _split_concatenated_token(token, min_part_length=3, max_parts=4):
     Для неоднозначных вариантов предпочитается разбиение на меньшее
     число частей с максимально длинными составляющими.
     """
-    if len(token) < 12:
+    if len(token) < 8:
         return None
 
     lowered = token.lower()
@@ -412,7 +412,7 @@ def repair_joined_words(text):
     # «СВТв», «ЭКГноворождённым».
     text = re.sub(r"([А-ЯЁ]{2,})([а-яё]{2,})", r"\1 \2", text)
 
-    token_pattern = re.compile(r"(?<![А-Яа-яЁё])([А-Яа-яЁё]{12,})(?![А-Яа-яЁё])")
+    token_pattern = re.compile(r"(?<![А-Яа-яЁё])([А-Яа-яЁё]{8,})(?![А-Яа-яЁё])")
 
     def replace_token(match):
         token = match.group(1)

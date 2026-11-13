@@ -1,6 +1,9 @@
 name: Полная обработка и публикация клинических рекомендаций
 
 on:
+  push:
+    paths:
+      - "process-all-trigger.txt"
   workflow_dispatch:
     inputs:
       batch_size:
@@ -28,6 +31,7 @@ concurrency:
 
 jobs:
   process-and-publish:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'Run full processing')
     runs-on: ubuntu-latest
     timeout-minutes: 360
 
@@ -45,9 +49,9 @@ jobs:
 
       - name: Проверить параметры и каталог
         env:
-          BATCH_SIZE: ${{ inputs.batch_size }}
-          START_OFFSET: ${{ inputs.start_offset }}
-          END_OFFSET: ${{ inputs.end_offset }}
+          BATCH_SIZE: ${{ inputs.batch_size || '50' }}
+          START_OFFSET: ${{ inputs.start_offset || '0' }}
+          END_OFFSET: ${{ inputs.end_offset || '778' }}
         run: python validate_processing_inputs.py
 
       - name: Проверить синтаксис парсера и регрессионные примеры
@@ -57,9 +61,9 @@ jobs:
 
       - name: Обработать каталог партиями и публиковать успешные результаты
         env:
-          BATCH_SIZE: ${{ inputs.batch_size }}
-          START_OFFSET: ${{ inputs.start_offset }}
-          END_OFFSET: ${{ inputs.end_offset }}
+          BATCH_SIZE: ${{ inputs.batch_size || '50' }}
+          START_OFFSET: ${{ inputs.start_offset || '0' }}
+          END_OFFSET: ${{ inputs.end_offset || '778' }}
         run: |
           set -e
           batch_size="$BATCH_SIZE"

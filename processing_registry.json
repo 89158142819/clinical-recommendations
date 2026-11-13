@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T16:54:27.070936+00:00",
+  "updated_at": "2026-11-13T18:43:56.084986+00:00",
   "total_processed": 8,
   "results": {
     "750_2": {
@@ -101,8 +101,8 @@
       "id": "520_2",
       "title": "Незавершенный остеогенез (Несовершенный остеогенез)",
       "status": "passed",
-      "started_at": "2026-11-13T16:53:48.494452+00:00",
-      "finished_at": "2026-11-13T16:53:59.441673+00:00",
+      "started_at": "2026-11-13T18:43:41.651664+00:00",
+      "finished_at": "2026-11-13T18:43:56.083887+00:00",
       "error": null,
       "quality_check": "passed",
       "extraction_method": "universal_structural_headings_v12",
@@ -121,7 +121,7 @@
       "pages_count": 130,
       "pages_with_text": 130,
       "empty_pages": [],
-      "text_length": 263965,
+      "text_length": 266192,
       "pdf_file": "output/520_2.pdf",
       "input_file": "output/520_2.json",
       "sections_file": "output/520_2_sections_v2.json",

@@ -172,6 +172,9 @@ def _morphology_has_analyzer(word, accepted_analyzers):
         return False
 
     try:
+        # pymorphy3 проверяет наличие словоформы непосредственно по словарю.
+        if hasattr(analyzer, "word_is_known") and analyzer.word_is_known(word.lower()):
+            return True
         parses = analyzer.parse(word.lower())
     except Exception:
         return False

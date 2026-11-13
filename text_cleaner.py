@@ -351,10 +351,6 @@ def _split_concatenated_token(token, min_part_length=3, max_parts=4):
             if len(candidate) > max_parts:
                 continue
 
-            # Не допускаем разбиение на множество коротких фрагментов.
-            if len(candidate) == 1:
-                continue
-
             candidates.append(candidate)
 
         if candidates:

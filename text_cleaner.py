@@ -315,6 +315,18 @@ def repair_split_words(text):
     return current
 
 
+COMMON_SEGMENT_WORDS = {
+    "или", "что", "как", "при", "для", "его", "ее", "это", "они",
+    "нам", "вам", "над", "под", "без", "все", "так", "уже", "где",
+    "чем", "тем", "ему", "ими", "их", "она", "оно", "про", "если",
+    "либо", "также", "может", "быть", "были", "было", "этой", "этот",
+}
+
+
+def _is_segment_word(word):
+    return word in COMMON_SEGMENT_WORDS or _is_dictionary_word(word)
+
+
 def _split_concatenated_token(token, min_part_length=3, max_parts=4):
     """
     Делит склеенные PDF слова только тогда, когда каждая часть
@@ -343,7 +355,7 @@ def _split_concatenated_token(token, min_part_length=3, max_parts=4):
 
         for end in range(start + min_part_length, max_end + 1):
             part = lowered[start:end]
-            if not _is_dictionary_word(part):
+            if not _is_segment_word(part):
                 continue
 
             tail = best[end]

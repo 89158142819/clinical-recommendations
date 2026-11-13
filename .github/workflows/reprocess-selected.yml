@@ -13,6 +13,7 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: write
 
 concurrency:
@@ -28,6 +29,15 @@ jobs:
     steps:
       - name: Получить файлы проекта
         uses: actions/checkout@v4
+
+      - name: Скачать архивный PDF для контрольных рекомендаций
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-0
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41186718385
+          path: samples/batch0
 
       - name: Установить Python
         uses: actions/setup-python@v5

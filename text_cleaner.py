@@ -324,7 +324,7 @@ def _split_concatenated_token(token, min_part_length=3, max_parts=4):
     if len(token) < 12:
         return None
 
-    lowered = token.lower().replace("ё", "е")
+    lowered = token.lower()
     if _is_dictionary_word(lowered):
         return None
 

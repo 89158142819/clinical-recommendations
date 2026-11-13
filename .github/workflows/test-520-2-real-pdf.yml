@@ -1,0 +1,49 @@
+name: Сквозная проверка очистки PDF — несовершенный остеогенез 520_2
+
+on:
+  push:
+    paths:
+      - "text_cleaner.py"
+      - "download_batch.py"
+      - "extract_sections_v2.py"
+      - "tests/test_520_2_real_pdf.py"
+      - ".github/workflows/test-520-2-real-pdf.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-520-2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Получить репозиторий
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить зависимости
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Проверить синтаксис
+        run: |
+          python -m py_compile text_cleaner.py download_batch.py extract_sections_v2.py tests/test_520_2_real_pdf.py
+
+      - name: Скачать исходный PDF 520_2 и проверить полный цикл
+        run: python tests/test_520_2_real_pdf.py
+
+      - name: Сохранить результаты
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: osteogenesis-520-2-cleaning-test
+          path: output/
+          if-no-files-found: warn
+          retention-days: 14

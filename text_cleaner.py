@@ -287,12 +287,33 @@ def repair_split_words(text):
                 return expanded.capitalize()
             return expanded
 
-        # Если обе части являются самостоятельными словами,
-        # сохраняем исходный пробел. Если хотя бы одна часть не является
-        # словарным словом, проверяем объединённую форму морфологически.
-        # Это восстанавливает не только короткие обломки, но и разрывы
-        # внутри длинных слов, например «состоя ния» -> «состояния».
-        if _is_dictionary_word(left_lower) and _is_dictionary_word(right_lower):
+        # Сохраняем пробел между самостоятельными словами.
+        # Дополнительно защищаем ситуацию, когда PDF-слово уже склеено
+        # внутри правой или левой части: например, «курсом терапиибисфосфонатами»
+        # нельзя превращать в один токен до запуска repair_joined_words().
+        if (
+            _is_dictionary_word(left_lower)
+            and _is_dictionary_word(right_lower)
+        ):
+            return match.group(0)
+
+        known_segments = COMMON_SEGMENT_WORDS | MEDICAL_SEGMENT_WORDS
+        if (
+            _is_dictionary_word(left_lower)
+            and any(
+                len(word) >= 4 and right_lower.startswith(word)
+                for word in known_segments
+            )
+        ):
+            return match.group(0)
+
+        if (
+            _is_dictionary_word(right_lower)
+            and any(
+                len(word) >= 4 and left_lower.endswith(word)
+                for word in known_segments
+            )
+        ):
             return match.group(0)
 
         joined = left + right

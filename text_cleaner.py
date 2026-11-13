@@ -104,6 +104,7 @@ def clean_page_text(page_text, repeated_margins=None):
 
     text = "\n".join(normalized_lines)
     text = repair_split_words(text)
+    text = repair_joined_words(text)
     text = re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", text)
     text = re.sub(r"[ \t]+\n", "\n", text)
     text = re.sub(r"\n[ \t]+", "\n", text)
@@ -307,5 +308,112 @@ def repair_split_words(text):
             break
         previous = current
         current = token_pair.sub(replace_pair, current)
+
+    return current
+
+
+def _split_concatenated_token(token, min_part_length=3, max_parts=4):
+    """
+    Делит склеенные PDF слова только тогда, когда каждая часть
+    подтверждается русским морфологическим словарём.
+
+    Исходное слово сохраняется, если оно само является словарной формой.
+    Для неоднозначных вариантов предпочитается разбиение на меньшее
+    число частей с максимально длинными составляющими.
+    """
+    if len(token) < 12:
+        return None
+
+    lowered = token.lower().replace("ё", "е")
+    if _is_dictionary_word(lowered):
+        return None
+
+    length = len(lowered)
+    best = [None] * (length + 1)
+    best[length] = []
+
+    # Слова медицинской терминологии могут быть длинными, поэтому
+    # ограничиваем длину одной части только общей длиной токена.
+    for start in range(length - 1, -1, -1):
+        candidates = []
+        max_end = min(length, start + 30)
+
+        for end in range(start + min_part_length, max_end + 1):
+            part = lowered[start:end]
+            if not _is_dictionary_word(part):
+                continue
+
+            tail = best[end]
+            if tail is None:
+                continue
+
+            candidate = [part] + tail
+            if len(candidate) > max_parts:
+                continue
+
+            # Не допускаем разбиение на множество коротких фрагментов.
+            if len(candidate) == 1:
+                continue
+
+            candidates.append(candidate)
+
+        if candidates:
+            candidates.sort(
+                key=lambda parts: (
+                    len(parts),
+                    -min(map(len, parts)),
+                    -sum(len(part) ** 2 for part in parts),
+                )
+            )
+            best[start] = candidates[0]
+
+    parts = best[0]
+    if not parts or len(parts) < 2:
+        return None
+
+    # Не делим слово на заведомо неравные случайные фрагменты:
+    # каждый компонент должен быть не короче трёх букв.
+    if any(len(part) < min_part_length for part in parts):
+        return None
+
+    if token[:1].isupper():
+        parts[0] = parts[0].capitalize()
+
+    return " ".join(parts)
+
+
+def repair_joined_words(text):
+    """
+    Восстанавливает пробелы, потерянные между самостоятельными словами
+    при извлечении PDF.
+
+    Использует словарную морфологическую проверку, не меняет уже
+    распознанные цельные слова и отдельно обрабатывает прилепленные
+    к словам аббревиатуры (например, «предположитьСВТ»).
+    """
+    if not text:
+        return text
+
+    # Границы между строчными словами и аббревиатурами:
+    # «предположитьСВТ», «кодАТХ», «регистрацияЭКГ».
+    text = re.sub(r"(?<=[а-яё])(?=[А-ЯЁ]{2,})", " ", text)
+    # Аббревиатура, к которой без пробела приклеилось следующее слово:
+    # «СВТв», «ЭКГноворождённым».
+    text = re.sub(r"([А-ЯЁ]{2,})([а-яё]{2,})", r"\1 \2", text)
+
+    token_pattern = re.compile(r"(?<![А-Яа-яЁё])([А-Яа-яЁё]{12,})(?![А-Яа-яЁё])")
+
+    def replace_token(match):
+        token = match.group(1)
+        repaired = _split_concatenated_token(token)
+        return repaired if repaired else token
+
+    previous = None
+    current = text
+    for _ in range(2):
+        if current == previous:
+            break
+        previous = current
+        current = token_pattern.sub(replace_token, current)
 
     return current

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T16:47:38.398663+00:00",
+  "updated_at": "2026-11-14T17:30:17.247291+00:00",
   "total_processed": 141,
   "results": {
     "750_2": {
@@ -3460,14 +3460,44 @@
     "54_3": {
       "id": "54_3",
       "title": "Инфекционный эндокардит и инфекция внутрисердечных устройств",
-      "status": "failed",
-      "started_at": "2026-11-14T16:08:42.673289+00:00",
-      "finished_at": "2026-11-14T16:10:27.081346+00:00",
-      "error": "'utf-8' codec can't encode character '\\ud835' in position 439220: surrogates not allowed",
-      "quality_check": null,
-      "extraction_method": null,
-      "missing_sections": [],
-      "warnings": []
+      "status": "review_required",
+      "started_at": "2026-11-14T17:26:31.404278+00:00",
+      "finished_at": "2026-11-14T17:30:17.242079+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [
+        "physical_examination"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: physical_examination"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "physical_examination"
+        ],
+        "missing_sections": [
+          "physical_examination"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: physical_examination"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 244,
+      "pages_with_text": 243,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 480988,
+      "pdf_file": "output/54_3.pdf",
+      "input_file": "output/54_3.json",
+      "sections_file": "output/54_3_sections_v2.json",
+      "report_file": "output/54_3_quality_report_v2.json"
     },
     "832_2": {
       "id": "832_2",

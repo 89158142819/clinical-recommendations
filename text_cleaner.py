@@ -12,6 +12,9 @@ PAGE_NUMBER_RE = re.compile(r"^\s*(?:\d{1,4}|[-–—]\s*\d{1,4}\s*[-–—])\s*
 
 
 def _normalize_line(line):
+    # PDF text may contain isolated UTF-16 surrogate code points. Replace them
+    # before JSON serialization so one malformed glyph cannot abort a document.
+    line = str(line).encode("utf-8", errors="replace").decode("utf-8")
     line = line.replace("\u00a0", " ")
     line = line.replace("\u202f", " ")
     line = line.replace("\u00ad", "")

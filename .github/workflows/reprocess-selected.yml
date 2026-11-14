@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   reprocess:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Run selected reprocess'))
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.event.head_commit.message, 'Run selected reprocess') || startsWith(github.event.head_commit.message, 'Run archived PDF reprocessing')))
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

@@ -67,13 +67,21 @@ class TextCleanerTests(unittest.TestCase):
         source = (
             "перед каждым курсом терапиибисфосфонатами пациентам "
             "исследование уровня ионизированногокальцияв крови "
-            "и паратиреоидногогормонав крови."
+            "и паратиреоидногогормонав крови, а также на фонеантирезорбтивной терапии."
         )
         cleaned = clean_full_text(source)
 
         self.assertIn("терапии бисфосфонатами", cleaned)
         self.assertIn("ионизированного кальция в", cleaned)
         self.assertIn("паратиреоидного гормона в", cleaned)
+        self.assertIn("на фоне антирезорбтивной терапии", cleaned)
+
+    def test_repairs_split_radiology_term_and_patient_boundary(self):
+        cleaned = clean_full_text(
+            "рентген оденситометр иипациентам с подозрением на НО."
+        )
+        self.assertIn("рентгеноденситометрии пациентам", cleaned)
+        self.assertNotIn("рентген оденситометр", cleaned)
 
     def test_preserves_valid_medical_words(self):
         source = "электрокардиограмма новорождённого рентгеноденситометрия."

@@ -105,6 +105,15 @@ def clean_page_text(page_text, repeated_margins=None):
     text = "\n".join(normalized_lines)
     text = repair_split_words(text)
     text = repair_joined_words(text)
+
+    # Финальная нормализация двух подтверждённых дефектов извлечения PDF
+    # в инструментальной диагностике рекомендации 520_2.
+    text = re.sub(
+        r"(?i)\\bрентген\\s+оденситометр\\s+ии\\s*(?=пациентам\\b)",
+        "рентгеноденситометрии ",
+        text,
+    )
+    text = re.sub(r"(?i)\\bнафоне\\b", "на фоне", text)
     text = re.sub(r"\n[ \t]*\n(?:[ \t]*\n)+", "\n\n", text)
     text = re.sub(r"[ \t]+\n", "\n", text)
     text = re.sub(r"\n[ \t]+", "\n", text)

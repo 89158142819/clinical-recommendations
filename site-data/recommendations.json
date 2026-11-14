@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-14T14:05:32.244041+00:00",
+  "updated_at": "2026-11-14T14:27:20.057335+00:00",
   "source": "https://cr.minzdrav.gov.ru/clin-rec",
-  "total": 602,
+  "total": 607,
   "recommendations": [
     {
       "id": "750_2",
@@ -784,6 +784,19 @@
       "sections_count": 15
     },
     {
+      "id": "1054_1",
+      "title": "Воспалительные заболевания век",
+      "icd10": "H00, H00.0, H00.1, H01, H01.0, H01.1, H01.8, H01.9",
+      "age_category": "Взрослые, дети",
+      "developer": "Общероссийская общественная организация \"Ассоциация врачей-офтальмологов\", Общероссийская общественная организация «Общество офтальмологов России»",
+      "nps_approved": "Да",
+      "publication_date": "2026-07-03T13:00:39.993000",
+      "application_status": "Применяется",
+      "document_file": "docs/1054_1.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
       "id": "1053_1",
       "title": "Саркопения у пациентов пожилого и старческого возраста",
       "icd10": "M62.8",
@@ -797,6 +810,19 @@
       "sections_count": 15
     },
     {
+      "id": "1052_1",
+      "title": "Нистагм",
+      "icd10": "H55",
+      "age_category": "Дети",
+      "developer": "Общероссийская общественная организация \"Ассоциация врачей-офтальмологов\"",
+      "nps_approved": "Да",
+      "publication_date": "2026-07-01T12:50:58.330000",
+      "application_status": "Применяется",
+      "document_file": "docs/1052_1.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
       "id": "404_2",
       "title": "Целиакия",
       "icd10": "K90.0, K90.4",
@@ -806,6 +832,19 @@
       "publication_date": "2026-06-30T16:31:01.267000",
       "application_status": "Применяется",
       "document_file": "docs/404_2.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
+      "id": "1051_1",
+      "title": "Нарушения аккомодации",
+      "icd10": "H52.5",
+      "age_category": "Дети",
+      "developer": "Общероссийская общественная организация \"Ассоциация врачей-офтальмологов\"",
+      "nps_approved": "Да",
+      "publication_date": "2026-06-29T17:00:02.147000",
+      "application_status": "Применяется",
+      "document_file": "docs/1051_1.json",
       "quality_check": "passed",
       "sections_count": 15
     },
@@ -832,6 +871,32 @@
       "publication_date": "2026-06-25T15:50:08.340000",
       "application_status": "Применяется",
       "document_file": "docs/773_2.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
+      "id": "1055_1",
+      "title": "Диффузный токсический зоб (Болезнь Грейвса)",
+      "icd10": "E05.0, E05.3, E05.4, E05.5, E05.8",
+      "age_category": "Дети",
+      "developer": "Российская ассоциация эндокринологов",
+      "nps_approved": "Да",
+      "publication_date": "2026-06-22T17:40:03.337000",
+      "application_status": "Применяется",
+      "document_file": "docs/1055_1.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
+      "id": "1049_1",
+      "title": "Воспалительные заболевания челюстей. Одонтогенный остеомиелит челюсти.",
+      "icd10": "K10.2",
+      "age_category": "Взрослые",
+      "developer": "ООО «Общество специалистов в области челюстно-лицевой хирургии»",
+      "nps_approved": "Да",
+      "publication_date": "2026-06-19T11:35:42.857000",
+      "application_status": "Применяется",
+      "document_file": "docs/1049_1.json",
       "quality_check": "passed",
       "sections_count": 15
     },

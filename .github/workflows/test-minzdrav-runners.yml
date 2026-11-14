@@ -24,23 +24,28 @@ jobs:
           python - <<'PY'
           import socket
           import time
-          import requests
+          import urllib.request
+          import urllib.error
+
           hosts = ["cr.minzdrav.gov.ru", "apicr.minzdrav.gov.ru"]
           for host in hosts:
               try:
                   ips = sorted({x[4][0] for x in socket.getaddrinfo(host, 443)})
-                  print(f"DNS {host}: {ips}")
+                  print(f"DNS {host}: {ips}", flush=True)
               except Exception as e:
-                  print(f"DNS ERROR {host}: {e}")
+                  print(f"DNS ERROR {host}: {e}", flush=True)
+
           urls = [
               "https://cr.minzdrav.gov.ru/",
               "https://apicr.minzdrav.gov.ru/api.ashx?id=749_2&op=GetClinrecPdf",
           ]
           for url in urls:
               start = time.monotonic()
+              req = urllib.request.Request(url, headers={"User-Agent": "ClinicalRecommendationsCatalog/1.0"})
               try:
-                  r = requests.get(url, timeout=(8, 15), headers={"User-Agent":"ClinicalRecommendationsCatalog/1.0"})
-                  print(f"HTTP {r.status_code}; bytes={len(r.content)}; pdf={r.content.startswith(b'%PDF')}; elapsed={time.monotonic()-start:.1f}s; url={url}")
+                  with urllib.request.urlopen(req, timeout=12) as response:
+                      data = response.read(1024)
+                      print(f"HTTP {response.status}; first_bytes={len(data)}; pdf={data.startswith(b'%PDF')}; elapsed={time.monotonic()-start:.1f}s; url={url}", flush=True)
               except Exception as e:
-                  print(f"ERROR {type(e).__name__}: {e}; elapsed={time.monotonic()-start:.1f}s; url={url}")
+                  print(f"ERROR {type(e).__name__}: {e}; elapsed={time.monotonic()-start:.1f}s; url={url}", flush=True)
           PY

@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T15:59:46.587583+00:00",
-  "total_processed": 112,
+  "updated_at": "2026-11-14T16:10:27.085093+00:00",
+  "total_processed": 121,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -3058,8 +3058,8 @@
       "id": "1021_1",
       "title": "Кариес зубов",
       "status": "passed",
-      "started_at": "2026-11-14T15:59:08.600273+00:00",
-      "finished_at": "2026-11-14T15:59:13.179669+00:00",
+      "started_at": "2026-11-14T16:07:14.746094+00:00",
+      "finished_at": "2026-11-14T16:07:19.591770+00:00",
       "error": null,
       "quality_check": "passed",
       "extraction_method": "roman_numeral_chapters_v1",
@@ -3191,6 +3191,283 @@
       "input_file": "output/516_3.json",
       "sections_file": "output/516_3_sections_v2.json",
       "report_file": "output/516_3_quality_report_v2.json"
+    },
+    "107_2": {
+      "id": "107_2",
+      "title": "Ретинопатия недоношенных",
+      "status": "passed",
+      "started_at": "2026-11-14T16:07:19.594526+00:00",
+      "finished_at": "2026-11-14T16:07:23.956758+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 53,
+      "pages_with_text": 51,
+      "empty_pages": [
+        1,
+        53
+      ],
+      "text_length": 93295,
+      "pdf_file": "output/107_2.pdf",
+      "input_file": "output/107_2.json",
+      "sections_file": "output/107_2_sections_v2.json",
+      "report_file": "output/107_2_quality_report_v2.json"
+    },
+    "1019_1": {
+      "id": "1019_1",
+      "title": "Другие гепатиты",
+      "status": "passed",
+      "started_at": "2026-11-14T16:07:23.959892+00:00",
+      "finished_at": "2026-11-14T16:07:56.462275+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 101,
+      "pages_with_text": 101,
+      "empty_pages": [],
+      "text_length": 218257,
+      "pdf_file": "output/1019_1.pdf",
+      "input_file": "output/1019_1.json",
+      "sections_file": "output/1019_1_sections_v2.json",
+      "report_file": "output/1019_1_quality_report_v2.json"
+    },
+    "1018_1": {
+      "id": "1018_1",
+      "title": "Плоскостопие у детей",
+      "status": "passed",
+      "started_at": "2026-11-14T16:07:56.465480+00:00",
+      "finished_at": "2026-11-14T16:08:00.558225+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 55,
+      "pages_with_text": 55,
+      "empty_pages": [],
+      "text_length": 100726,
+      "pdf_file": "output/1018_1.pdf",
+      "input_file": "output/1018_1.json",
+      "sections_file": "output/1018_1_sections_v2.json",
+      "report_file": "output/1018_1_quality_report_v2.json"
+    },
+    "16_4": {
+      "id": "16_4",
+      "title": "Туберкулез у взрослых",
+      "status": "passed",
+      "started_at": "2026-11-14T16:08:00.560965+00:00",
+      "finished_at": "2026-11-14T16:08:22.789437+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 251,
+      "pages_with_text": 250,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 461825,
+      "pdf_file": "output/16_4.pdf",
+      "input_file": "output/16_4.json",
+      "sections_file": "output/16_4_sections_v2.json",
+      "report_file": "output/16_4_quality_report_v2.json"
+    },
+    "232_2": {
+      "id": "232_2",
+      "title": "Пиодермии",
+      "status": "passed",
+      "started_at": "2026-11-14T16:08:22.792403+00:00",
+      "finished_at": "2026-11-14T16:08:26.299485+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 39,
+      "pages_with_text": 38,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 68466,
+      "pdf_file": "output/232_2.pdf",
+      "input_file": "output/232_2.json",
+      "sections_file": "output/232_2_sections_v2.json",
+      "report_file": "output/232_2_quality_report_v2.json"
+    },
+    "1017_1": {
+      "id": "1017_1",
+      "title": "Чесотка",
+      "status": "review_required",
+      "started_at": "2026-11-14T16:08:26.302577+00:00",
+      "finished_at": "2026-11-14T16:08:29.317121+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [
+        "epidemiology"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: epidemiology"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "epidemiology"
+        ],
+        "missing_sections": [
+          "epidemiology"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: epidemiology"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 39,
+      "pages_with_text": 38,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 74191,
+      "pdf_file": "output/1017_1.pdf",
+      "input_file": "output/1017_1.json",
+      "sections_file": "output/1017_1_sections_v2.json",
+      "report_file": "output/1017_1_quality_report_v2.json"
+    },
+    "734_2": {
+      "id": "734_2",
+      "title": "Сотрясение головного мозга",
+      "status": "passed",
+      "started_at": "2026-11-14T16:08:29.320425+00:00",
+      "finished_at": "2026-11-14T16:08:31.625767+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 33,
+      "pages_with_text": 33,
+      "empty_pages": [],
+      "text_length": 52566,
+      "pdf_file": "output/734_2.pdf",
+      "input_file": "output/734_2.json",
+      "sections_file": "output/734_2_sections_v2.json",
+      "report_file": "output/734_2_quality_report_v2.json"
+    },
+    "1016_1": {
+      "id": "1016_1",
+      "title": "Критическая ишемия нижних конечностей (КИНК)",
+      "status": "passed",
+      "started_at": "2026-11-14T16:08:31.628629+00:00",
+      "finished_at": "2026-11-14T16:08:42.670087+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 95,
+      "pages_with_text": 94,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 220656,
+      "pdf_file": "output/1016_1.pdf",
+      "input_file": "output/1016_1.json",
+      "sections_file": "output/1016_1_sections_v2.json",
+      "report_file": "output/1016_1_quality_report_v2.json"
+    },
+    "54_3": {
+      "id": "54_3",
+      "title": "Инфекционный эндокардит и инфекция внутрисердечных устройств",
+      "status": "failed",
+      "started_at": "2026-11-14T16:08:42.673289+00:00",
+      "finished_at": "2026-11-14T16:10:27.081346+00:00",
+      "error": "'utf-8' codec can't encode character '\\ud835' in position 439220: surrogates not allowed",
+      "quality_check": null,
+      "extraction_method": null,
+      "missing_sections": [],
+      "warnings": []
     }
   }
 }

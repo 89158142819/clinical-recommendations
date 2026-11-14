@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-14T15:59:46.955447+00:00",
+  "updated_at": "2026-11-14T16:10:27.291859+00:00",
   "source": "https://cr.minzdrav.gov.ru/clin-rec",
-  "total": 609,
+  "total": 610,
   "recommendations": [
     {
       "id": "750_2",
@@ -1391,6 +1391,19 @@
       "publication_date": "2026-01-19T10:51:25.707000",
       "application_status": "Применяется",
       "document_file": "docs/1019_1.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
+      "id": "1018_1",
+      "title": "Плоскостопие у детей",
+      "icd10": "M21.0, M21.4, Q66.5, Q66.6, Q66.8, Q74.8",
+      "age_category": "Дети",
+      "developer": "Ассоциация травматологов-ортопедов России",
+      "nps_approved": "Да",
+      "publication_date": "2026-01-16T13:19:00.307000",
+      "application_status": "Применяется",
+      "document_file": "docs/1018_1.json",
       "quality_check": "passed",
       "sections_count": 15
     },

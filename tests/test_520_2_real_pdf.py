@@ -73,6 +73,9 @@ def main():
         "каждые 3 месяца",
         "ионизированного кальция в",
         "паратиреоидного гормона в",
+        "рентгенографии пораженной части костного скелета",
+        "рентгеноденситометрии пациентам",
+        "на фоне антирезорбтивной терапии",
     )
 
     for phrase in required_phrases:
@@ -86,6 +89,8 @@ def main():
         "терапиибисфосфонатами",
         "ионизированногокальцияв",
         "паратиреоидногогормонав",
+        "рентген оденситометр",
+        "фонеантирезорбтивной",
     )
 
     for phrase in forbidden_joined:
@@ -120,6 +125,20 @@ def main():
 
     summary = parsed.get("diagnostic_summary", {})
     lab_items = summary.get("laboratory", [])
+
+    instrumental_text = str(
+        parsed.get("sections", {}).get("instrumental_diagnostics", "")
+    )
+    normalized_instrumental = normalize(instrumental_text)
+    for phrase in (
+        "рентгенографии пораженной части костного скелета",
+        "рентгеноденситометрии пациентам",
+        "на фоне антирезорбтивной терапии",
+    ):
+        require(
+            phrase in normalized_instrumental,
+            f"В инструментальной диагностике после парсинга отсутствует фраза: {phrase}",
+        )
 
     require(
         len(lab_items) == 5,

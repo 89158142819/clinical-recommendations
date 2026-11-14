@@ -1,1 +1,1 @@
-Compare GitHub-hosted runner network access to official Minzdrav endpoints.
+Compare official Minzdrav HTTPS access across GitHub-hosted runner operating systems. Retry after fixing workflow dependencies.

@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T16:28:45.801678+00:00",
-  "total_processed": 131,
+  "updated_at": "2026-11-14T16:47:38.398663+00:00",
+  "total_processed": 141,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -3831,6 +3831,309 @@
       "input_file": "output/1009_1.json",
       "sections_file": "output/1009_1_sections_v2.json",
       "report_file": "output/1009_1_quality_report_v2.json"
+    },
+    "1008_1": {
+      "id": "1008_1",
+      "title": "Дилатационная кардиомиопатия",
+      "status": "passed",
+      "started_at": "2026-11-14T16:45:14.440013+00:00",
+      "finished_at": "2026-11-14T16:45:37.084322+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 140,
+      "pages_with_text": 139,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 317871,
+      "pdf_file": "output/1008_1.pdf",
+      "input_file": "output/1008_1.json",
+      "sections_file": "output/1008_1_sections_v2.json",
+      "report_file": "output/1008_1_quality_report_v2.json"
+    },
+    "87_5": {
+      "id": "87_5",
+      "title": "Остеопороз",
+      "status": "passed",
+      "started_at": "2026-11-14T16:45:37.088088+00:00",
+      "finished_at": "2026-11-14T16:45:58.396784+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 135,
+      "pages_with_text": 133,
+      "empty_pages": [
+        1,
+        130
+      ],
+      "text_length": 295249,
+      "pdf_file": "output/87_5.pdf",
+      "input_file": "output/87_5.json",
+      "sections_file": "output/87_5_sections_v2.json",
+      "report_file": "output/87_5_quality_report_v2.json"
+    },
+    "1006_1": {
+      "id": "1006_1",
+      "title": "Острая ишемия конечностей",
+      "status": "review_required",
+      "started_at": "2026-11-14T16:45:58.400786+00:00",
+      "finished_at": "2026-11-14T16:46:13.529402+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [
+        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [
+          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 119,
+      "pages_with_text": 119,
+      "empty_pages": [],
+      "text_length": 256979,
+      "pdf_file": "output/1006_1.pdf",
+      "input_file": "output/1006_1.json",
+      "sections_file": "output/1006_1_sections_v2.json",
+      "report_file": "output/1006_1_quality_report_v2.json"
+    },
+    "1007_1": {
+      "id": "1007_1",
+      "title": "Воспалительные болезни органов мошонки",
+      "status": "passed",
+      "started_at": "2026-11-14T16:46:13.533387+00:00",
+      "finished_at": "2026-11-14T16:46:17.164469+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 25,
+      "pages_with_text": 25,
+      "empty_pages": [],
+      "text_length": 41479,
+      "pdf_file": "output/1007_1.pdf",
+      "input_file": "output/1007_1.json",
+      "sections_file": "output/1007_1_sections_v2.json",
+      "report_file": "output/1007_1_quality_report_v2.json"
+    },
+    "1004_1": {
+      "id": "1004_1",
+      "title": "Талассемия",
+      "status": "passed",
+      "started_at": "2026-11-14T16:46:17.168335+00:00",
+      "finished_at": "2026-11-14T16:46:25.673958+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 67,
+      "pages_with_text": 66,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 136838,
+      "pdf_file": "output/1004_1.pdf",
+      "input_file": "output/1004_1.json",
+      "sections_file": "output/1004_1_sections_v2.json",
+      "report_file": "output/1004_1_quality_report_v2.json"
+    },
+    "1003_1": {
+      "id": "1003_1",
+      "title": "Аскаридоз",
+      "status": "failed",
+      "started_at": "2026-11-14T16:46:25.677747+00:00",
+      "finished_at": "2026-11-14T16:46:25.758789+00:00",
+      "error": "PDF не содержит извлекаемого текста",
+      "quality_check": null,
+      "extraction_method": null,
+      "missing_sections": [],
+      "warnings": []
+    },
+    "736_2": {
+      "id": "736_2",
+      "title": "Саркоидоз",
+      "status": "passed",
+      "started_at": "2026-11-14T16:46:25.762828+00:00",
+      "finished_at": "2026-11-14T16:46:49.146103+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 74,
+      "pages_with_text": 74,
+      "empty_pages": [],
+      "text_length": 179852,
+      "pdf_file": "output/736_2.pdf",
+      "input_file": "output/736_2.json",
+      "sections_file": "output/736_2_sections_v2.json",
+      "report_file": "output/736_2_quality_report_v2.json"
+    },
+    "523_3": {
+      "id": "523_3",
+      "title": "Геморрагический инсульт",
+      "status": "passed",
+      "started_at": "2026-11-14T16:46:49.150127+00:00",
+      "finished_at": "2026-11-14T16:47:11.389359+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 174,
+      "pages_with_text": 173,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 380549,
+      "pdf_file": "output/523_3.pdf",
+      "input_file": "output/523_3.json",
+      "sections_file": "output/523_3_sections_v2.json",
+      "report_file": "output/523_3_quality_report_v2.json"
+    },
+    "998_1": {
+      "id": "998_1",
+      "title": "Токсические и метаболические поражения нервной системы",
+      "status": "passed",
+      "started_at": "2026-11-14T16:47:11.393162+00:00",
+      "finished_at": "2026-11-14T16:47:31.971858+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 180,
+      "pages_with_text": 179,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 386017,
+      "pdf_file": "output/998_1.pdf",
+      "input_file": "output/998_1.json",
+      "sections_file": "output/998_1_sections_v2.json",
+      "report_file": "output/998_1_quality_report_v2.json"
+    },
+    "1002_1": {
+      "id": "1002_1",
+      "title": "Пиодермия гангренозная",
+      "status": "passed",
+      "started_at": "2026-11-14T16:47:31.975726+00:00",
+      "finished_at": "2026-11-14T16:47:38.394887+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 70,
+      "pages_with_text": 69,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 136846,
+      "pdf_file": "output/1002_1.pdf",
+      "input_file": "output/1002_1.json",
+      "sections_file": "output/1002_1_sections_v2.json",
+      "report_file": "output/1002_1_quality_report_v2.json"
     }
   }
 }

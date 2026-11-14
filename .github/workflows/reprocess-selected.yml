@@ -39,6 +39,33 @@ jobs:
           run-id: 41186718385
           path: samples/batch0
 
+      - name: Скачать второй архив контрольных PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-10
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41188581569
+          path: samples/batch10
+
+      - name: Скачать третий архив контрольных PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-40
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41314075250
+          path: samples/batch40
+
+      - name: Скачать четвёртый архив контрольных PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: clinical-recommendations-batch-90
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41324291148
+          path: samples/batch90
+
       - name: Установить Python
         uses: actions/setup-python@v5
         with:

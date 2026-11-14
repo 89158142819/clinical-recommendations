@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T14:35:47.201438+00:00",
-  "total_processed": 82,
+  "updated_at": "2026-11-14T15:06:59.467779+00:00",
+  "total_processed": 92,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -2174,6 +2174,375 @@
       "input_file": "output/1040_1.json",
       "sections_file": "output/1040_1_sections_v2.json",
       "report_file": "output/1040_1_quality_report_v2.json"
+    },
+    "1041_1": {
+      "id": "1041_1",
+      "title": "Недостаточность питания у детей старше 1 года (Белково-энергетическая недостаточность)",
+      "status": "passed",
+      "started_at": "2026-11-14T15:04:03.525725+00:00",
+      "finished_at": "2026-11-14T15:04:27.082007+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 156,
+      "pages_with_text": 155,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 310524,
+      "pdf_file": "output/1041_1.pdf",
+      "input_file": "output/1041_1.json",
+      "sections_file": "output/1041_1_sections_v2.json",
+      "report_file": "output/1041_1_quality_report_v2.json"
+    },
+    "1039_1": {
+      "id": "1039_1",
+      "title": "Варикозное расширение вен таза и вульвы у женщин",
+      "status": "review_required",
+      "started_at": "2026-11-14T15:04:27.085855+00:00",
+      "finished_at": "2026-11-14T15:04:54.790910+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [
+        "complaints_anamnesis",
+        "physical_examination",
+        "laboratory_diagnostics",
+        "instrumental_diagnostics",
+        "rehabilitation"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: complaints_anamnesis",
+        "Не найден заголовок раздела: physical_examination",
+        "Не найден заголовок раздела: laboratory_diagnostics",
+        "Не найден заголовок раздела: instrumental_diagnostics",
+        "Не найден заголовок раздела: rehabilitation",
+        "Не найден заголовок главы 4.",
+        "Не удалось извлечь текст главы 4."
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "rehabilitation"
+        ],
+        "missing_sections": [
+          "complaints_anamnesis",
+          "physical_examination",
+          "laboratory_diagnostics",
+          "instrumental_diagnostics",
+          "rehabilitation"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: complaints_anamnesis",
+          "Не найден заголовок раздела: physical_examination",
+          "Не найден заголовок раздела: laboratory_diagnostics",
+          "Не найден заголовок раздела: instrumental_diagnostics",
+          "Не найден заголовок раздела: rehabilitation",
+          "Не найден заголовок главы 4.",
+          "Не удалось извлечь текст главы 4."
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 157,
+      "pages_with_text": 156,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 315156,
+      "pdf_file": "output/1039_1.pdf",
+      "input_file": "output/1039_1.json",
+      "sections_file": "output/1039_1_sections_v2.json",
+      "report_file": "output/1039_1_quality_report_v2.json"
+    },
+    "1037_1": {
+      "id": "1037_1",
+      "title": "Дерматофития",
+      "status": "passed",
+      "started_at": "2026-11-14T15:04:54.794276+00:00",
+      "finished_at": "2026-11-14T15:05:14.164941+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 91,
+      "pages_with_text": 90,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 195733,
+      "pdf_file": "output/1037_1.pdf",
+      "input_file": "output/1037_1.json",
+      "sections_file": "output/1037_1_sections_v2.json",
+      "report_file": "output/1037_1_quality_report_v2.json"
+    },
+    "1038_1": {
+      "id": "1038_1",
+      "title": "Крипторхизм у детей",
+      "status": "review_required",
+      "started_at": "2026-11-14T15:05:14.168269+00:00",
+      "finished_at": "2026-11-14T15:05:23.547438+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [
+        "clinical_picture"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: clinical_picture"
+      ],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "clinical_picture"
+        ],
+        "missing_sections": [
+          "clinical_picture"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: clinical_picture"
+        ],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 49,
+      "pages_with_text": 49,
+      "empty_pages": [],
+      "text_length": 68964,
+      "pdf_file": "output/1038_1.pdf",
+      "input_file": "output/1038_1.json",
+      "sections_file": "output/1038_1_sections_v2.json",
+      "report_file": "output/1038_1_quality_report_v2.json"
+    },
+    "1033_1": {
+      "id": "1033_1",
+      "title": "Первичный билиарный холангит",
+      "status": "passed",
+      "started_at": "2026-11-14T15:05:23.550874+00:00",
+      "finished_at": "2026-11-14T15:06:16.902120+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 194,
+      "pages_with_text": 194,
+      "empty_pages": [],
+      "text_length": 390295,
+      "pdf_file": "output/1033_1.pdf",
+      "input_file": "output/1033_1.json",
+      "sections_file": "output/1033_1_sections_v2.json",
+      "report_file": "output/1033_1_quality_report_v2.json"
+    },
+    "1036_1": {
+      "id": "1036_1",
+      "title": "Болезнь Гиршпрунга",
+      "status": "passed",
+      "started_at": "2026-11-14T15:06:16.905396+00:00",
+      "finished_at": "2026-11-14T15:06:26.807476+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 55,
+      "pages_with_text": 54,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 99065,
+      "pdf_file": "output/1036_1.pdf",
+      "input_file": "output/1036_1.json",
+      "sections_file": "output/1036_1_sections_v2.json",
+      "report_file": "output/1036_1_quality_report_v2.json"
+    },
+    "1035_1": {
+      "id": "1035_1",
+      "title": "Хирургические инфекции кожи и подкожной клетчатки у детей",
+      "status": "passed",
+      "started_at": "2026-11-14T15:06:26.811544+00:00",
+      "finished_at": "2026-11-14T15:06:30.478922+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 37,
+      "pages_with_text": 36,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 58325,
+      "pdf_file": "output/1035_1.pdf",
+      "input_file": "output/1035_1.json",
+      "sections_file": "output/1035_1_sections_v2.json",
+      "report_file": "output/1035_1_quality_report_v2.json"
+    },
+    "1034_1": {
+      "id": "1034_1",
+      "title": "Травма зубов",
+      "status": "passed",
+      "started_at": "2026-11-14T15:06:30.482599+00:00",
+      "finished_at": "2026-11-14T15:06:36.486996+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 46,
+      "pages_with_text": 45,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 83530,
+      "pdf_file": "output/1034_1.pdf",
+      "input_file": "output/1034_1.json",
+      "sections_file": "output/1034_1_sections_v2.json",
+      "report_file": "output/1034_1_quality_report_v2.json"
+    },
+    "1032_1": {
+      "id": "1032_1",
+      "title": "Атрофия и аномалии зрительного нерва",
+      "status": "passed",
+      "started_at": "2026-11-14T15:06:36.490369+00:00",
+      "finished_at": "2026-11-14T15:06:46.762922+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 53,
+      "pages_with_text": 51,
+      "empty_pages": [
+        1,
+        53
+      ],
+      "text_length": 109022,
+      "pdf_file": "output/1032_1.pdf",
+      "input_file": "output/1032_1.json",
+      "sections_file": "output/1032_1_sections_v2.json",
+      "report_file": "output/1032_1_quality_report_v2.json"
+    },
+    "1031_1": {
+      "id": "1031_1",
+      "title": "Клещевой вирусный энцефалит у детей",
+      "status": "passed",
+      "started_at": "2026-11-14T15:06:46.766271+00:00",
+      "finished_at": "2026-11-14T15:06:59.464337+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 71,
+      "pages_with_text": 70,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 145598,
+      "pdf_file": "output/1031_1.pdf",
+      "input_file": "output/1031_1.json",
+      "sections_file": "output/1031_1_sections_v2.json",
+      "report_file": "output/1031_1_quality_report_v2.json"
     }
   }
 }

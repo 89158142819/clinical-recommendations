@@ -1,0 +1,1 @@
+Compare GitHub-hosted runner network access to official Minzdrav endpoints.

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T22:21:38.954119+00:00",
+  "updated_at": "2026-11-14T13:26:26.450601+00:00",
   "total_processed": 52,
   "results": {
     "750_2": {
@@ -61,14 +61,32 @@
     "520_2": {
       "id": "520_2",
       "title": "Незавершенный остеогенез (Несовершенный остеогенез)",
-      "status": "failed",
-      "started_at": "2026-11-13T18:51:32.092174+00:00",
-      "finished_at": "2026-11-13T18:55:46.547267+00:00",
-      "error": "Не удалось скачать документ: HTTPSConnectionPool(host='apicr.minzdrav.gov.ru', port=443): Max retries exceeded with url: /api.ashx?id=520_2&op=GetClinrecPdf (Caused by ConnectTimeoutError(<HTTPSConnection(host='apicr.minzdrav.gov.ru', port=443) at 0x7bef07d315e0>, 'Connection to apicr.minzdrav.gov.ru timed out. (connect timeout=30)'))",
-      "quality_check": null,
-      "extraction_method": null,
+      "status": "passed",
+      "started_at": "2026-11-14T13:26:15.741871+00:00",
+      "finished_at": "2026-11-14T13:26:26.449379+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
       "missing_sections": [],
-      "warnings": []
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 130,
+      "pages_with_text": 130,
+      "empty_pages": [],
+      "text_length": 266190,
+      "pdf_file": "output/520_2.pdf",
+      "input_file": "output/520_2.json",
+      "sections_file": "output/520_2_sections_v2.json",
+      "report_file": "output/520_2_quality_report_v2.json"
     },
     "1090_1": {
       "id": "1090_1",

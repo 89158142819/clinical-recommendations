@@ -231,15 +231,17 @@ def download_pdf(document_id):
     # Для контрольной повторной обработки допускаем заранее сохранённый
     # официальный PDF из GitHub Actions artifact. Это позволяет повторить
     # обработку без зависимости от временной доступности API Минздрава.
-    archived_pdf = (
-        ROOT
-        / "samples"
-        / "batch0"
-        / "output"
-        / f"{document_id}.pdf"
+    # Ищем документ во всех заранее сохранённых архивах GitHub Actions.
+    # Это позволяет повторно обработать весь доступный архив без обращения
+    # к API Минздрава, недоступному с GitHub-hosted runners.
+    archived_candidates = sorted(
+        (ROOT / "samples").glob(f"**/output/{document_id}.pdf")
     )
 
-    if archived_pdf.is_file():
+    for archived_pdf in archived_candidates:
+        if not archived_pdf.is_file():
+            continue
+
         pdf_content = archived_pdf.read_bytes()
 
         if not pdf_content.startswith(b"%PDF"):
@@ -255,7 +257,7 @@ def download_pdf(document_id):
 
         return (
             pdf_content,
-            f"archived GitHub Actions artifact: {archived_pdf.name}",
+            f"archived GitHub Actions artifact: {archived_pdf}",
         )
 
     url = (

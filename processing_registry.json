@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T15:06:59.467779+00:00",
-  "total_processed": 92,
+  "updated_at": "2026-11-14T15:31:30.583837+00:00",
+  "total_processed": 102,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -2543,6 +2543,328 @@
       "input_file": "output/1031_1.json",
       "sections_file": "output/1031_1_sections_v2.json",
       "report_file": "output/1031_1_quality_report_v2.json"
+    },
+    "1030_1": {
+      "id": "1030_1",
+      "title": "Омфалит у новорожденных",
+      "status": "passed",
+      "started_at": "2026-11-14T15:30:14.526633+00:00",
+      "finished_at": "2026-11-14T15:30:16.981592+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 40,
+      "pages_with_text": 39,
+      "empty_pages": [
+        2
+      ],
+      "text_length": 70958,
+      "pdf_file": "output/1030_1.pdf",
+      "input_file": "output/1030_1.json",
+      "sections_file": "output/1030_1_sections_v2.json",
+      "report_file": "output/1030_1_quality_report_v2.json"
+    },
+    "1029_1": {
+      "id": "1029_1",
+      "title": "Центральная серозная хориоретинопатия",
+      "status": "passed",
+      "started_at": "2026-11-14T15:30:16.983864+00:00",
+      "finished_at": "2026-11-14T15:30:21.563946+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 40,
+      "pages_with_text": 38,
+      "empty_pages": [
+        1,
+        40
+      ],
+      "text_length": 80619,
+      "pdf_file": "output/1029_1.pdf",
+      "input_file": "output/1029_1.json",
+      "sections_file": "output/1029_1_sections_v2.json",
+      "report_file": "output/1029_1_quality_report_v2.json"
+    },
+    "80_2": {
+      "id": "80_2",
+      "title": "Трофобластические опухоли",
+      "status": "passed",
+      "started_at": "2026-11-14T15:30:21.566300+00:00",
+      "finished_at": "2026-11-14T15:30:25.730370+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [
+        "other_diagnostics"
+      ],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [
+          "other_diagnostics"
+        ],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 67,
+      "pages_with_text": 67,
+      "empty_pages": [],
+      "text_length": 135222,
+      "pdf_file": "output/80_2.pdf",
+      "input_file": "output/80_2.json",
+      "sections_file": "output/80_2_sections_v2.json",
+      "report_file": "output/80_2_quality_report_v2.json"
+    },
+    "1028_1": {
+      "id": "1028_1",
+      "title": "Другие уточненные врожденные аномалии органов дыхания (первичная цилиарная дискинезия)",
+      "status": "passed",
+      "started_at": "2026-11-14T15:30:25.732754+00:00",
+      "finished_at": "2026-11-14T15:30:40.770894+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 187,
+      "pages_with_text": 186,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 383951,
+      "pdf_file": "output/1028_1.pdf",
+      "input_file": "output/1028_1.json",
+      "sections_file": "output/1028_1_sections_v2.json",
+      "report_file": "output/1028_1_quality_report_v2.json"
+    },
+    "286_3": {
+      "id": "286_3",
+      "title": "Сахарный диабет 1 типа у взрослых",
+      "status": "passed",
+      "started_at": "2026-11-14T15:30:40.773639+00:00",
+      "finished_at": "2026-11-14T15:30:57.624944+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 201,
+      "pages_with_text": 201,
+      "empty_pages": [],
+      "text_length": 423950,
+      "pdf_file": "output/286_3.pdf",
+      "input_file": "output/286_3.json",
+      "sections_file": "output/286_3_sections_v2.json",
+      "report_file": "output/286_3_quality_report_v2.json"
+    },
+    "340_2": {
+      "id": "340_2",
+      "title": "Синдром дыхательного расстройства у новорожденного",
+      "status": "passed",
+      "started_at": "2026-11-14T15:30:57.627251+00:00",
+      "finished_at": "2026-11-14T15:31:01.859339+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 68,
+      "pages_with_text": 66,
+      "empty_pages": [
+        1,
+        2
+      ],
+      "text_length": 124204,
+      "pdf_file": "output/340_2.pdf",
+      "input_file": "output/340_2.json",
+      "sections_file": "output/340_2_sections_v2.json",
+      "report_file": "output/340_2_quality_report_v2.json"
+    },
+    "1027_1": {
+      "id": "1027_1",
+      "title": "Аутоиммунная гемолитическая анемия",
+      "status": "passed",
+      "started_at": "2026-11-14T15:31:01.861664+00:00",
+      "finished_at": "2026-11-14T15:31:08.311780+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 60,
+      "pages_with_text": 59,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 104203,
+      "pdf_file": "output/1027_1.pdf",
+      "input_file": "output/1027_1.json",
+      "sections_file": "output/1027_1_sections_v2.json",
+      "report_file": "output/1027_1_quality_report_v2.json"
+    },
+    "1026_1": {
+      "id": "1026_1",
+      "title": "Синдром Мэллори-Вейсса (желудочно-пищеводный разрывно-геморрагический синдром)",
+      "status": "passed",
+      "started_at": "2026-11-14T15:31:08.314096+00:00",
+      "finished_at": "2026-11-14T15:31:12.637819+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 62,
+      "pages_with_text": 61,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 116625,
+      "pdf_file": "output/1026_1.pdf",
+      "input_file": "output/1026_1.json",
+      "sections_file": "output/1026_1_sections_v2.json",
+      "report_file": "output/1026_1_quality_report_v2.json"
+    },
+    "1025_1": {
+      "id": "1025_1",
+      "title": "Отравление сердечными гликозидами и препаратами аналогичного действия",
+      "status": "passed",
+      "started_at": "2026-11-14T15:31:12.640220+00:00",
+      "finished_at": "2026-11-14T15:31:22.541635+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 88,
+      "pages_with_text": 87,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 182707,
+      "pdf_file": "output/1025_1.pdf",
+      "input_file": "output/1025_1.json",
+      "sections_file": "output/1025_1_sections_v2.json",
+      "report_file": "output/1025_1_quality_report_v2.json"
+    },
+    "743_2": {
+      "id": "743_2",
+      "title": "Острые отравления опиоидными наркотическими веществами",
+      "status": "passed",
+      "started_at": "2026-11-14T15:31:22.544090+00:00",
+      "finished_at": "2026-11-14T15:31:30.581506+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 85,
+      "pages_with_text": 84,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 175503,
+      "pdf_file": "output/743_2.pdf",
+      "input_file": "output/743_2.json",
+      "sections_file": "output/743_2_sections_v2.json",
+      "report_file": "output/743_2_quality_report_v2.json"
     }
   }
 }

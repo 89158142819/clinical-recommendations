@@ -1,0 +1,46 @@
+name: Проверка доступа к Минздраву на разных GitHub runners
+
+on:
+  push:
+    paths:
+      - "runner-network-trigger.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connectivity:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - name: Проверить DNS и HTTPS
+        shell: bash
+        run: |
+          python - <<'PY'
+          import socket
+          import time
+          import requests
+          hosts = ["cr.minzdrav.gov.ru", "apicr.minzdrav.gov.ru"]
+          for host in hosts:
+              try:
+                  ips = sorted({x[4][0] for x in socket.getaddrinfo(host, 443)})
+                  print(f"DNS {host}: {ips}")
+              except Exception as e:
+                  print(f"DNS ERROR {host}: {e}")
+          urls = [
+              "https://cr.minzdrav.gov.ru/",
+              "https://apicr.minzdrav.gov.ru/api.ashx?id=749_2&op=GetClinrecPdf",
+          ]
+          for url in urls:
+              start = time.monotonic()
+              try:
+                  r = requests.get(url, timeout=(8, 15), headers={"User-Agent":"ClinicalRecommendationsCatalog/1.0"})
+                  print(f"HTTP {r.status_code}; bytes={len(r.content)}; pdf={r.content.startswith(b'%PDF')}; elapsed={time.monotonic()-start:.1f}s; url={url}")
+              except Exception as e:
+                  print(f"ERROR {type(e).__name__}: {e}; elapsed={time.monotonic()-start:.1f}s; url={url}")
+          PY

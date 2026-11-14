@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T17:30:17.247291+00:00",
+  "updated_at": "2026-11-14T17:39:40.399353+00:00",
   "total_processed": 141,
   "results": {
     "750_2": {
@@ -1848,33 +1848,23 @@
     "1050_1": {
       "id": "1050_1",
       "title": "Одно- и двусторонняя расщелина верхней губы, альвеолярного отростка, твердого и мягкого нёба",
-      "status": "review_required",
-      "started_at": "2026-11-14T14:34:39.012995+00:00",
-      "finished_at": "2026-11-14T14:34:42.680025+00:00",
+      "status": "passed",
+      "started_at": "2026-11-14T17:36:01.354322+00:00",
+      "finished_at": "2026-11-14T17:36:04.630374+00:00",
       "error": null,
-      "quality_check": "review_required",
+      "quality_check": "passed",
       "extraction_method": "universal_structural_headings_v12",
-      "missing_sections": [
-        "instrumental_diagnostics"
-      ],
-      "warnings": [
-        "Не найден заголовок раздела: instrumental_diagnostics"
-      ],
+      "missing_sections": [],
+      "warnings": [],
       "optional_sections_not_found": [],
       "validation_details": {
         "missing_keys": [],
-        "empty_required_sections": [
-          "instrumental_diagnostics"
-        ],
-        "missing_sections": [
-          "instrumental_diagnostics"
-        ],
-        "warnings": [
-          "Не найден заголовок раздела: instrumental_diagnostics"
-        ],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
         "optional_sections_not_found": [],
-        "parser_quality": "review_required",
-        "report_quality": "review_required"
+        "parser_quality": "passed",
+        "report_quality": "passed"
       },
       "pages_count": 43,
       "pages_with_text": 42,
@@ -3153,33 +3143,23 @@
     "516_3": {
       "id": "516_3",
       "title": "Хронический вирусный гепатит С",
-      "status": "review_required",
-      "started_at": "2026-11-14T15:59:40.492878+00:00",
-      "finished_at": "2026-11-14T15:59:46.584916+00:00",
+      "status": "passed",
+      "started_at": "2026-11-14T17:36:04.634330+00:00",
+      "finished_at": "2026-11-14T17:36:11.593602+00:00",
       "error": null,
-      "quality_check": "review_required",
+      "quality_check": "passed",
       "extraction_method": "universal_structural_headings_v12",
-      "missing_sections": [
-        "complaints_anamnesis"
-      ],
-      "warnings": [
-        "Не найден заголовок раздела: complaints_anamnesis"
-      ],
+      "missing_sections": [],
+      "warnings": [],
       "optional_sections_not_found": [],
       "validation_details": {
         "missing_keys": [],
-        "empty_required_sections": [
-          "complaints_anamnesis"
-        ],
-        "missing_sections": [
-          "complaints_anamnesis"
-        ],
-        "warnings": [
-          "Не найден заголовок раздела: complaints_anamnesis"
-        ],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
         "optional_sections_not_found": [],
-        "parser_quality": "review_required",
-        "report_quality": "review_required"
+        "parser_quality": "passed",
+        "report_quality": "passed"
       },
       "pages_count": 89,
       "pages_with_text": 88,
@@ -3352,33 +3332,23 @@
     "1017_1": {
       "id": "1017_1",
       "title": "Чесотка",
-      "status": "review_required",
-      "started_at": "2026-11-14T16:08:26.302577+00:00",
-      "finished_at": "2026-11-14T16:08:29.317121+00:00",
+      "status": "passed",
+      "started_at": "2026-11-14T17:36:11.597701+00:00",
+      "finished_at": "2026-11-14T17:36:15.107543+00:00",
       "error": null,
-      "quality_check": "review_required",
+      "quality_check": "passed",
       "extraction_method": "universal_structural_headings_v12",
-      "missing_sections": [
-        "epidemiology"
-      ],
-      "warnings": [
-        "Не найден заголовок раздела: epidemiology"
-      ],
+      "missing_sections": [],
+      "warnings": [],
       "optional_sections_not_found": [],
       "validation_details": {
         "missing_keys": [],
-        "empty_required_sections": [
-          "epidemiology"
-        ],
-        "missing_sections": [
-          "epidemiology"
-        ],
-        "warnings": [
-          "Не найден заголовок раздела: epidemiology"
-        ],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
         "optional_sections_not_found": [],
-        "parser_quality": "review_required",
-        "report_quality": "review_required"
+        "parser_quality": "passed",
+        "report_quality": "passed"
       },
       "pages_count": 39,
       "pages_with_text": 38,
@@ -3461,8 +3431,8 @@
       "id": "54_3",
       "title": "Инфекционный эндокардит и инфекция внутрисердечных устройств",
       "status": "review_required",
-      "started_at": "2026-11-14T17:26:31.404278+00:00",
-      "finished_at": "2026-11-14T17:30:17.242079+00:00",
+      "started_at": "2026-11-14T17:36:15.111431+00:00",
+      "finished_at": "2026-11-14T17:38:49.126867+00:00",
       "error": null,
       "quality_check": "review_required",
       "extraction_method": "universal_structural_headings_v12",
@@ -3629,8 +3599,8 @@
       "id": "493_3",
       "title": "Черепно-мозговая травма у детей",
       "status": "review_required",
-      "started_at": "2026-11-14T16:27:54.758877+00:00",
-      "finished_at": "2026-11-14T16:28:04.050968+00:00",
+      "started_at": "2026-11-14T17:38:49.130981+00:00",
+      "finished_at": "2026-11-14T17:38:58.734249+00:00",
       "error": null,
       "quality_check": "review_required",
       "extraction_method": "universal_structural_headings_v12",
@@ -3674,8 +3644,8 @@
       "id": "1010_1",
       "title": "Кератит",
       "status": "review_required",
-      "started_at": "2026-11-14T16:28:04.054843+00:00",
-      "finished_at": "2026-11-14T16:28:10.024313+00:00",
+      "started_at": "2026-11-14T17:38:58.738290+00:00",
+      "finished_at": "2026-11-14T17:39:04.701773+00:00",
       "error": null,
       "quality_check": "review_required",
       "extraction_method": "universal_structural_headings_v12",
@@ -3787,37 +3757,27 @@
     "1005_1": {
       "id": "1005_1",
       "title": "Системный склероз",
-      "status": "review_required",
-      "started_at": "2026-11-14T16:28:16.284172+00:00",
-      "finished_at": "2026-11-14T16:28:36.524021+00:00",
+      "status": "passed",
+      "started_at": "2026-11-14T17:39:04.705883+00:00",
+      "finished_at": "2026-11-14T17:39:25.195368+00:00",
       "error": null,
-      "quality_check": "review_required",
+      "quality_check": "passed",
       "extraction_method": "universal_structural_headings_v12",
-      "missing_sections": [
-        "instrumental_diagnostics"
-      ],
-      "warnings": [
-        "Не найден заголовок раздела: instrumental_diagnostics"
-      ],
+      "missing_sections": [],
+      "warnings": [],
       "optional_sections_not_found": [
         "other_diagnostics"
       ],
       "validation_details": {
         "missing_keys": [],
-        "empty_required_sections": [
-          "instrumental_diagnostics"
-        ],
-        "missing_sections": [
-          "instrumental_diagnostics"
-        ],
-        "warnings": [
-          "Не найден заголовок раздела: instrumental_diagnostics"
-        ],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
         "optional_sections_not_found": [
           "other_diagnostics"
         ],
-        "parser_quality": "review_required",
-        "report_quality": "review_required"
+        "parser_quality": "passed",
+        "report_quality": "passed"
       },
       "pages_count": 197,
       "pages_with_text": 196,
@@ -3930,16 +3890,14 @@
     "1006_1": {
       "id": "1006_1",
       "title": "Острая ишемия конечностей",
-      "status": "review_required",
-      "started_at": "2026-11-14T16:45:58.400786+00:00",
-      "finished_at": "2026-11-14T16:46:13.529402+00:00",
+      "status": "passed",
+      "started_at": "2026-11-14T17:39:25.199487+00:00",
+      "finished_at": "2026-11-14T17:39:40.395249+00:00",
       "error": null,
-      "quality_check": "review_required",
+      "quality_check": "passed",
       "extraction_method": "universal_structural_headings_v12",
       "missing_sections": [],
-      "warnings": [
-        "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
-      ],
+      "warnings": [],
       "optional_sections_not_found": [
         "other_diagnostics"
       ],
@@ -3947,14 +3905,12 @@
         "missing_keys": [],
         "empty_required_sections": [],
         "missing_sections": [],
-        "warnings": [
-          "Не найдено подтверждённое совпадение заголовка главы 5 с названием из оглавления. Граница реабилитации не подтверждена."
-        ],
+        "warnings": [],
         "optional_sections_not_found": [
           "other_diagnostics"
         ],
-        "parser_quality": "review_required",
-        "report_quality": "review_required"
+        "parser_quality": "passed",
+        "report_quality": "passed"
       },
       "pages_count": 119,
       "pages_with_text": 119,

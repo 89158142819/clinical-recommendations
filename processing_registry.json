@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T15:31:30.583837+00:00",
-  "total_processed": 102,
+  "updated_at": "2026-11-14T15:59:46.587583+00:00",
+  "total_processed": 112,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -2865,6 +2865,332 @@
       "input_file": "output/743_2.json",
       "sections_file": "output/743_2_sections_v2.json",
       "report_file": "output/743_2_quality_report_v2.json"
+    },
+    "222_2": {
+      "id": "222_2",
+      "title": "Красная волчанка",
+      "status": "passed",
+      "started_at": "2026-11-14T15:58:31.991009+00:00",
+      "finished_at": "2026-11-14T15:58:34.866130+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 34,
+      "pages_with_text": 33,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 59672,
+      "pdf_file": "output/222_2.pdf",
+      "input_file": "output/222_2.json",
+      "sections_file": "output/222_2_sections_v2.json",
+      "report_file": "output/222_2_quality_report_v2.json"
+    },
+    "1024_1": {
+      "id": "1024_1",
+      "title": "Коронавирусная инфекция COVID-19",
+      "status": "passed",
+      "started_at": "2026-11-14T15:58:34.868815+00:00",
+      "finished_at": "2026-11-14T15:58:49.996196+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 171,
+      "pages_with_text": 170,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 324883,
+      "pdf_file": "output/1024_1.pdf",
+      "input_file": "output/1024_1.json",
+      "sections_file": "output/1024_1_sections_v2.json",
+      "report_file": "output/1024_1_quality_report_v2.json"
+    },
+    "1023_1": {
+      "id": "1023_1",
+      "title": "Коклюш у детей",
+      "status": "passed",
+      "started_at": "2026-11-14T15:58:49.998729+00:00",
+      "finished_at": "2026-11-14T15:58:55.490116+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 60,
+      "pages_with_text": 59,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 121684,
+      "pdf_file": "output/1023_1.pdf",
+      "input_file": "output/1023_1.json",
+      "sections_file": "output/1023_1_sections_v2.json",
+      "report_file": "output/1023_1_quality_report_v2.json"
+    },
+    "581_2": {
+      "id": "581_2",
+      "title": "Варикоцеле у детей",
+      "status": "passed",
+      "started_at": "2026-11-14T15:58:55.492552+00:00",
+      "finished_at": "2026-11-14T15:58:58.372249+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 34,
+      "pages_with_text": 34,
+      "empty_pages": [],
+      "text_length": 50311,
+      "pdf_file": "output/581_2.pdf",
+      "input_file": "output/581_2.json",
+      "sections_file": "output/581_2_sections_v2.json",
+      "report_file": "output/581_2_quality_report_v2.json"
+    },
+    "1022_1": {
+      "id": "1022_1",
+      "title": "Синдром прорезывания зубов (временных)",
+      "status": "passed",
+      "started_at": "2026-11-14T15:58:58.375155+00:00",
+      "finished_at": "2026-11-14T15:59:00.678824+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 37,
+      "pages_with_text": 36,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 74719,
+      "pdf_file": "output/1022_1.pdf",
+      "input_file": "output/1022_1.json",
+      "sections_file": "output/1022_1_sections_v2.json",
+      "report_file": "output/1022_1_quality_report_v2.json"
+    },
+    "732_2": {
+      "id": "732_2",
+      "title": "Очаговая травма головного мозга",
+      "status": "passed",
+      "started_at": "2026-11-14T15:59:00.681244+00:00",
+      "finished_at": "2026-11-14T15:59:08.597495+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 78,
+      "pages_with_text": 78,
+      "empty_pages": [],
+      "text_length": 157906,
+      "pdf_file": "output/732_2.pdf",
+      "input_file": "output/732_2.json",
+      "sections_file": "output/732_2_sections_v2.json",
+      "report_file": "output/732_2_quality_report_v2.json"
+    },
+    "1021_1": {
+      "id": "1021_1",
+      "title": "Кариес зубов",
+      "status": "passed",
+      "started_at": "2026-11-14T15:59:08.600273+00:00",
+      "finished_at": "2026-11-14T15:59:13.179669+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "roman_numeral_chapters_v1",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 44,
+      "pages_with_text": 43,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 114977,
+      "pdf_file": "output/1021_1.pdf",
+      "input_file": "output/1021_1.json",
+      "sections_file": "output/1021_1_sections_v2.json",
+      "report_file": "output/1021_1_quality_report_v2.json"
+    },
+    "30_5": {
+      "id": "30_5",
+      "title": "Злокачественное новообразование бронхов и легкого",
+      "status": "passed",
+      "started_at": "2026-11-14T15:59:13.182220+00:00",
+      "finished_at": "2026-11-14T15:59:29.357584+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 156,
+      "pages_with_text": 155,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 348885,
+      "pdf_file": "output/30_5.pdf",
+      "input_file": "output/30_5.json",
+      "sections_file": "output/30_5_sections_v2.json",
+      "report_file": "output/30_5_quality_report_v2.json"
+    },
+    "1020_1": {
+      "id": "1020_1",
+      "title": "Менингококковая инфекция",
+      "status": "passed",
+      "started_at": "2026-11-14T15:59:29.360755+00:00",
+      "finished_at": "2026-11-14T15:59:40.490203+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 116,
+      "pages_with_text": 115,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 233018,
+      "pdf_file": "output/1020_1.pdf",
+      "input_file": "output/1020_1.json",
+      "sections_file": "output/1020_1_sections_v2.json",
+      "report_file": "output/1020_1_quality_report_v2.json"
+    },
+    "516_3": {
+      "id": "516_3",
+      "title": "Хронический вирусный гепатит С",
+      "status": "review_required",
+      "started_at": "2026-11-14T15:59:40.492878+00:00",
+      "finished_at": "2026-11-14T15:59:46.584916+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [
+        "complaints_anamnesis"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: complaints_anamnesis"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "complaints_anamnesis"
+        ],
+        "missing_sections": [
+          "complaints_anamnesis"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: complaints_anamnesis"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 89,
+      "pages_with_text": 88,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 175778,
+      "pdf_file": "output/516_3.pdf",
+      "input_file": "output/516_3.json",
+      "sections_file": "output/516_3_sections_v2.json",
+      "report_file": "output/516_3_quality_report_v2.json"
     }
   }
 }

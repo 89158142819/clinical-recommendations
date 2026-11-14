@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-14T15:31:30.914541+00:00",
+  "updated_at": "2026-11-14T15:59:46.955447+00:00",
   "source": "https://cr.minzdrav.gov.ru/clin-rec",
-  "total": 607,
+  "total": 609,
   "recommendations": [
     {
       "id": "750_2",
@@ -1291,6 +1291,19 @@
       "sections_count": 15
     },
     {
+      "id": "581_2",
+      "title": "Варикоцеле у детей",
+      "icd10": "I86.1",
+      "age_category": "Дети",
+      "developer": "Общероссийская общественная организация \"Российская ассоциация детских хирургов\", Общероссийская общественная организация \"Российское общество детских урологов-андрологов\"",
+      "nps_approved": "Да",
+      "publication_date": "2026-01-26T11:25:47.237000",
+      "application_status": "Применяется",
+      "document_file": "docs/581_2.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
       "id": "1022_1",
       "title": "Синдром прорезывания зубов (временных)",
       "icd10": "K00.7, K09.0",
@@ -1313,6 +1326,19 @@
       "publication_date": "2026-01-22T17:49:21.963000",
       "application_status": "Применяется",
       "document_file": "docs/732_2.json",
+      "quality_check": "passed",
+      "sections_count": 15
+    },
+    {
+      "id": "1021_1",
+      "title": "Кариес зубов",
+      "icd10": "K02",
+      "age_category": "Взрослые",
+      "developer": "Ассоциация общественных объединений \"Стоматологическая Ассоциация России\"",
+      "nps_approved": "Да",
+      "publication_date": "2026-01-22T12:13:10.683000",
+      "application_status": "Применяется",
+      "document_file": "docs/1021_1.json",
       "quality_check": "passed",
       "sections_count": 15
     },

@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-14T14:27:19.771924+00:00",
-  "total_processed": 72,
+  "updated_at": "2026-11-14T14:35:47.201438+00:00",
+  "total_processed": 82,
   "results": {
     "750_2": {
       "id": "750_2",
@@ -1844,6 +1844,336 @@
       "input_file": "output/1049_1.json",
       "sections_file": "output/1049_1_sections_v2.json",
       "report_file": "output/1049_1_quality_report_v2.json"
+    },
+    "1050_1": {
+      "id": "1050_1",
+      "title": "Одно- и двусторонняя расщелина верхней губы, альвеолярного отростка, твердого и мягкого нёба",
+      "status": "review_required",
+      "started_at": "2026-11-14T14:34:39.012995+00:00",
+      "finished_at": "2026-11-14T14:34:42.680025+00:00",
+      "error": null,
+      "quality_check": "review_required",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [
+        "instrumental_diagnostics"
+      ],
+      "warnings": [
+        "Не найден заголовок раздела: instrumental_diagnostics"
+      ],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [
+          "instrumental_diagnostics"
+        ],
+        "missing_sections": [
+          "instrumental_diagnostics"
+        ],
+        "warnings": [
+          "Не найден заголовок раздела: instrumental_diagnostics"
+        ],
+        "optional_sections_not_found": [],
+        "parser_quality": "review_required",
+        "report_quality": "review_required"
+      },
+      "pages_count": 43,
+      "pages_with_text": 42,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 86535,
+      "pdf_file": "output/1050_1.pdf",
+      "input_file": "output/1050_1.json",
+      "sections_file": "output/1050_1_sections_v2.json",
+      "report_file": "output/1050_1_quality_report_v2.json"
+    },
+    "1048_1": {
+      "id": "1048_1",
+      "title": "Идиопатическая низкорослость у детей и подростков",
+      "status": "passed",
+      "started_at": "2026-11-14T14:34:42.696163+00:00",
+      "finished_at": "2026-11-14T14:34:47.316371+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 45,
+      "pages_with_text": 44,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 77111,
+      "pdf_file": "output/1048_1.pdf",
+      "input_file": "output/1048_1.json",
+      "sections_file": "output/1048_1_sections_v2.json",
+      "report_file": "output/1048_1_quality_report_v2.json"
+    },
+    "1047_1": {
+      "id": "1047_1",
+      "title": "Врожденный гиперинсулинизм",
+      "status": "passed",
+      "started_at": "2026-11-14T14:34:47.319799+00:00",
+      "finished_at": "2026-11-14T14:34:54.514578+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 49,
+      "pages_with_text": 48,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 95095,
+      "pdf_file": "output/1047_1.pdf",
+      "input_file": "output/1047_1.json",
+      "sections_file": "output/1047_1_sections_v2.json",
+      "report_file": "output/1047_1_quality_report_v2.json"
+    },
+    "511_2": {
+      "id": "511_2",
+      "title": "Врожденная инфекция, вызванная вирусом простого герпеса [herpes simplex]",
+      "status": "passed",
+      "started_at": "2026-11-14T14:34:54.517431+00:00",
+      "finished_at": "2026-11-14T14:35:01.809331+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 70,
+      "pages_with_text": 69,
+      "empty_pages": [
+        2
+      ],
+      "text_length": 150982,
+      "pdf_file": "output/511_2.pdf",
+      "input_file": "output/511_2.json",
+      "sections_file": "output/511_2_sections_v2.json",
+      "report_file": "output/511_2_quality_report_v2.json"
+    },
+    "1045_1": {
+      "id": "1045_1",
+      "title": "Врожденный буллезный эпидермолиз",
+      "status": "passed",
+      "started_at": "2026-11-14T14:35:01.812376+00:00",
+      "finished_at": "2026-11-14T14:35:14.193215+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 88,
+      "pages_with_text": 87,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 165967,
+      "pdf_file": "output/1045_1.pdf",
+      "input_file": "output/1045_1.json",
+      "sections_file": "output/1045_1_sections_v2.json",
+      "report_file": "output/1045_1_quality_report_v2.json"
+    },
+    "1046_1": {
+      "id": "1046_1",
+      "title": "Синдром истощения митохондриальной ДНК, TK2-ассоциированный",
+      "status": "passed",
+      "started_at": "2026-11-14T14:35:14.196150+00:00",
+      "finished_at": "2026-11-14T14:35:24.497977+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 83,
+      "pages_with_text": 83,
+      "empty_pages": [],
+      "text_length": 149383,
+      "pdf_file": "output/1046_1.pdf",
+      "input_file": "output/1046_1.json",
+      "sections_file": "output/1046_1_sections_v2.json",
+      "report_file": "output/1046_1_quality_report_v2.json"
+    },
+    "1043_1": {
+      "id": "1043_1",
+      "title": "Острое повреждение почек у новорождённых детей",
+      "status": "passed",
+      "started_at": "2026-11-14T14:35:24.501665+00:00",
+      "finished_at": "2026-11-14T14:35:31.819385+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 65,
+      "pages_with_text": 64,
+      "empty_pages": [
+        2
+      ],
+      "text_length": 120364,
+      "pdf_file": "output/1043_1.pdf",
+      "input_file": "output/1043_1.json",
+      "sections_file": "output/1043_1_sections_v2.json",
+      "report_file": "output/1043_1_quality_report_v2.json"
+    },
+    "1044_1": {
+      "id": "1044_1",
+      "title": "Уропатия, обусловленная пузырно-мочеточниковым рефлюксом",
+      "status": "passed",
+      "started_at": "2026-11-14T14:35:31.822633+00:00",
+      "finished_at": "2026-11-14T14:35:36.693364+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 33,
+      "pages_with_text": 32,
+      "empty_pages": [
+        1
+      ],
+      "text_length": 56009,
+      "pdf_file": "output/1044_1.pdf",
+      "input_file": "output/1044_1.json",
+      "sections_file": "output/1044_1_sections_v2.json",
+      "report_file": "output/1044_1_quality_report_v2.json"
+    },
+    "1042_1": {
+      "id": "1042_1",
+      "title": "Несодружественное косоглазие",
+      "status": "passed",
+      "started_at": "2026-11-14T14:35:36.696516+00:00",
+      "finished_at": "2026-11-14T14:35:41.890525+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 53,
+      "pages_with_text": 51,
+      "empty_pages": [
+        1,
+        53
+      ],
+      "text_length": 93306,
+      "pdf_file": "output/1042_1.pdf",
+      "input_file": "output/1042_1.json",
+      "sections_file": "output/1042_1_sections_v2.json",
+      "report_file": "output/1042_1_quality_report_v2.json"
+    },
+    "1040_1": {
+      "id": "1040_1",
+      "title": "Периферические дегенерации сетчатки",
+      "status": "passed",
+      "started_at": "2026-11-14T14:35:41.893958+00:00",
+      "finished_at": "2026-11-14T14:35:47.198060+00:00",
+      "error": null,
+      "quality_check": "passed",
+      "extraction_method": "universal_structural_headings_v12",
+      "missing_sections": [],
+      "warnings": [],
+      "optional_sections_not_found": [],
+      "validation_details": {
+        "missing_keys": [],
+        "empty_required_sections": [],
+        "missing_sections": [],
+        "warnings": [],
+        "optional_sections_not_found": [],
+        "parser_quality": "passed",
+        "report_quality": "passed"
+      },
+      "pages_count": 48,
+      "pages_with_text": 46,
+      "empty_pages": [
+        1,
+        48
+      ],
+      "text_length": 80501,
+      "pdf_file": "output/1040_1.pdf",
+      "input_file": "output/1040_1.json",
+      "sections_file": "output/1040_1_sections_v2.json",
+      "report_file": "output/1040_1_quality_report_v2.json"
     }
   }
 }
